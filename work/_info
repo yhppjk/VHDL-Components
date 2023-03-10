@@ -71,11 +71,11 @@ R12
 Abehavior
 R1
 R2
-Z18 DEx4 work 11 dec3to8i_tb 0 22 Gj88HUCEUU3N1FfVC1=FH0
+DEx4 work 11 dec3to8i_tb 0 22 Gj88HUCEUU3N1FfVC1=FH0
 l25
 L10
-Z19 V?gfGKkT=SQXUbnL`PLGQ22
-Z20 !s100 >4@=Vc]_YgI3LiXoiK[;Q0
+V?gfGKkT=SQXUbnL`PLGQ22
+!s100 >4@=Vc]_YgI3LiXoiK[;Q0
 R6
 32
 R7
@@ -83,6 +83,88 @@ R7
 R8
 R16
 R17
+!i113 1
+R11
+R12
+Edec3to8u
+Z18 w1677860759
+Z19 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+R1
+R2
+R3
+Z20 8C:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8u.vhd
+Z21 FC:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8u.vhd
+l0
+L7
+VRN>9RT@hb<hRfd7HM:c^f2
+!s100 b5:D>]Hc;5]2HBZ<3FROL0
+R6
+32
+Z22 !s110 1678464043
+!i10b 1
+Z23 !s108 1678464043.000000
+Z24 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8u.vhd|
+Z25 !s107 C:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8u.vhd|
+!i113 1
+R11
+R12
+Atable
+R19
+R1
+R2
+Z26 DEx4 work 8 dec3to8u 0 22 RN>9RT@hb<hRfd7HM:c^f2
+l16
+L14
+Z27 V0d@A>27AGDC[NlT^gSAjB3
+Z28 !s100 1eKk8XczQ?jg;Zom`jBPG2
+R6
+32
+R22
+!i10b 1
+R23
+R24
+R25
+!i113 1
+R11
+R12
+Edec3to8u_tb
+Z29 w1677861262
+R19
+R1
+R2
+R3
+Z30 8C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8u_tb.vhd
+Z31 FC:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8u_tb.vhd
+l0
+L6
+V5aiTbaoH14boZHaaQVhH70
+!s100 3JlXeUJd5]]PUSU6CBL=U3
+R6
+32
+R22
+!i10b 1
+R23
+Z32 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8u_tb.vhd|
+Z33 !s107 C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8u_tb.vhd|
+!i113 1
+R11
+R12
+Abehavior
+R19
+R1
+R2
+DEx4 work 11 dec3to8u_tb 0 22 5aiTbaoH14boZHaaQVhH70
+l26
+L11
+VYeGMIm?bMiNhhRz;oAHnJ3
+!s100 EZNYPzz2FT?J3b?6I`Ac12
+R6
+32
+R22
+!i10b 1
+R23
+R32
+R33
 !i113 1
 R11
 R12
