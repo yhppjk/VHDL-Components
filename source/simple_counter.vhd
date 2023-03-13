@@ -22,10 +22,7 @@ architecture Behavioral of simple_counter is
   signal mcount_sig : std_logic := '0';
   
 begin
-
-  count <= count_sig;
-  mcount <= mcount_sig;
-
+	
   -- counter
   process(clk, rst)
   begin
@@ -33,15 +30,26 @@ begin
       count_sig <= 0;
       mcount_sig <= '0';
     elsif rising_edge(clk) then
-      if count_sig > MAX_COUNT then
+	
+      if count_sig = MAX_COUNT then
         mcount_sig <= '1';
-		count_sig <= '0'
       else
         count_sig <= count_sig + 1;
-		mcount_sig <= '0';
+	mcount_sig <= '0';
       end if;
     end if;
+	
   end process;
+
+  process(mcount_sig)
+begin
+	mcount <= mcount_sig;
+  end process;
+  process(count_sig)
+begin
+	count <= count_sig;
+  end process;
+
 
 end architecture;
 
