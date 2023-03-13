@@ -1,0 +1,19 @@
+{C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8i_tb.vhd} {2 {vcom -work work -2002 -explicit -stats=none {C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8i_tb.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity dec3to8i_tb
+-- Compiling architecture behavior of dec3to8i_tb
+** Warning: C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8i_tb.vhd(42): (vcom-1207) An abstract literal and an identifier must have a separator between them.
+** Warning: C:/Users/yhp/Desktop/tech/project_lab/VHDL components/sim/dec3to8i_tb.vhd(48): (vcom-1207) An abstract literal and an identifier must have a separator between them.
+
+} {} {}} {C:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8i.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Users/yhp/Desktop/tech/project_lab/VHDL components/source/dec3to8i.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity dec3to8i
+-- Compiling architecture table of dec3to8i
+
+} {} {}}
