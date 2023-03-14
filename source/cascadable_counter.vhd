@@ -41,7 +41,7 @@ BEGIN
 	cout <= cout_sig;
 
 --! @brief cascadable_counter process
-  --! @details with the clk and rst detected, the process will react in different ways
+--! @details with the clk and rst detected, the process will react in different ways
 PROCESS(clk, rst)
 BEGIN
 	IF rst = '1' THEN

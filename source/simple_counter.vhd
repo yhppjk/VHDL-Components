@@ -26,7 +26,7 @@ entity simple_counter is
   port (
     clk : in std_logic;		--! the clock signal input
     rst: IN std_logic := '1';	--! the reset signal input
-    count : out integer range 0 to MAX_COUNT;	--! the count number output
+    count : out integer range 0 to MAX_COUNT;	--!	 the count number output
     mcount: OUT std_logic :='0'		--! Output to figure if the counter reach the limit
   );
 end entity;
