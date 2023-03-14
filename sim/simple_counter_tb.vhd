@@ -1,25 +1,41 @@
---YIN Haoping
--- Simple counter test bench
+----------------------------------------------------------
+--! @file
+--! @A testbench of the simple_counter
+-- Filename: simple_counter_tb.vhd
+-- Description: A testbench of the simple_counter
+-- Author: YIN Haoping
+-- Date: March 13, 2023
+----------------------------------------------------------
+
+--! Use standard library
 LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+--! Use logic elements
+use ieee.std_logic_1164.all;
+--! Use numeric elements
 USE ieee.numeric_std.ALL;
+
+--! simple_counter_tb entity description
+
+--! Detailed description of this
+--! simple_counter_tb design element.
 ENTITY simple_counter_tb IS
 END ENTITY simple_counter_tb;
 
+--! @brief Architecture definition of start_stop
+--! @details More details about this start_stop element
 ARCHITECTURE behavior OF simple_counter_tb IS 
 
-CONSTANT TB_MAX_COUNT : integer := 10;
+CONSTANT TB_MAX_COUNT : integer := 10;		
 COMPONENT simple_counter
 	GENERIC(
-		MAX_COUNT : integer :=TB_MAX_COUNT
+		MAX_COUNT : integer :=TB_MAX_COUNT	--! limit of count
 );
 	PORT(
-		rst: IN std_logic := '1';
-		clk: IN std_logic;
-		mcount: OUT std_logic;
-		count: OUT integer range 0 to TB_MAX_COUNT
+		rst: IN std_logic := '1';		--! the reset input
+		clk: IN std_logic;				--! the clock input
+		mcount: OUT std_logic;			--! the limit figure output
+		count: OUT integer range 0 to TB_MAX_COUNT	--! the count number output
 );
-
 END COMPONENT simple_counter;
 	--INPUTS
 	signal rst : std_logic := '1';

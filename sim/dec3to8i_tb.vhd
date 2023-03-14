@@ -35,13 +35,13 @@ BEGIN
 	-- Stimulus process
 	stim_proc: process
 	begin
-		-- PUT YOUR CODE HERE TO ASSIGN ALL POSSIBLE VALUES TO din
-		-- Remember to wait 100 ns before changing the value of din
+
 	loop2 : FOR i IN 0 to 7 LOOP
 	din <= i;
 	WAIT FOR 20 ns;
 	END LOOP loop2;
 	
+	--! an assert statement to stop the simulation
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "
 	  SEVERITY failure ;

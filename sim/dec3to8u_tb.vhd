@@ -48,7 +48,6 @@ BEGIN
 	  SEVERITY failure ;
 	WAIT FOR 10 ns;
 
-
 		for i in 0 to 7 loop
 			din <= to_unsigned(i,3);
 			wait for 20 ns;

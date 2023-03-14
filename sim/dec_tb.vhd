@@ -1,20 +1,34 @@
---YIN Haoping
--- Testbench interface (no ports)
+----------------------------------------------------------
+--! @file
+--! @A flexible decoder testbench
+-- Filename: dec_tb.vhd
+-- Description: A flexible decoder testbench
+-- Author: YIN Haoping
+-- Date: March 13, 2023
+----------------------------------------------------------
+
+--! Use standard library
 LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+--! Use logic elements
+use ieee.std_logic_1164.all;
+--! Use numeric elements
 USE ieee.numeric_std.ALL;
+
+--! dec_tb entity description
+--! Detailed description of this
+--! dec_tb design element.
 ENTITY dec_tb IS
 END ENTITY dec_tb;
 
-
--- Testbench implementation
+--! @brief Architecture definition of dec_tb
+--! @details Testbench implementation
 ARCHITECTURE behavior OF dec_tb IS 
  
     -- Component declaration for the Design Under Test (DUT)
-   CONSTANT TBWDITH : POSITIVE := 4;
+   CONSTANT TBWDITH : POSITIVE := 4;	
    COMPONENT dec
    GENERIC	(
-	width : POSITIVE := TBWDITH
+	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
 );
    PORT (
 	din :  IN  std_logic_vector(width-1 downto 0);
