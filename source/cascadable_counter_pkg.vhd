@@ -79,7 +79,7 @@ package body cascadable_counter_pkg is
 		elsif rising_edge(clk) and (ena = '1') and (cin = '1') then
 			count_v := (count_v + 1) mod (max_count+1);
 		end if;
-		wait for 1ns;
+		wait for 1 ns;
 		if ((count_v = max_count) and (cin = '1')) then cout_v := '1'; end if;
 		assert cout = cout_v report name & ": cout value error. Expected value " & std_logic'image(cout_v) & 
 			", actual value " & std_logic'image(cout) severity warning;

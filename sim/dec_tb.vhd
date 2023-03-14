@@ -44,7 +44,7 @@ BEGIN
 		-- Remember to wait 100 ns before changing the value of din
 	loop2 : FOR i IN 0 to 2**TBWDITH-1 LOOP
 	din <= std_logic_vector(to_unsigned(i,TBWDITH));
-	WAIT FOR 20ns;
+	WAIT FOR 20 ns;
 	END LOOP loop2;
 	
 	ASSERT false

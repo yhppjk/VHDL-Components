@@ -39,13 +39,13 @@ BEGIN
 		-- Remember to wait 100 ns before changing the value of din
 	loop2 : FOR i IN 0 to 7 LOOP
 	din <= i;
-	WAIT FOR 20ns;
+	WAIT FOR 20 ns;
 	END LOOP loop2;
 	
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "
 	  SEVERITY failure ;
-	WAIT FOR 10ns;
+	WAIT FOR 10 ns;
 
 
 		for i in 0 to 7 loop

@@ -75,7 +75,7 @@ BEGIN
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "
 	  SEVERITY failure ;
-	WAIT FOR 10ns;
+	WAIT FOR 10 ns;
 END PROCESS;
 
 

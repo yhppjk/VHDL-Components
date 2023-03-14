@@ -201,20 +201,25 @@ begin
 	check1: process is
 		variable cout_v: std_logic := '0';
 		variable count_v: integer:= 0;
+		
 	begin
 		proc: cascadable_counter_check(clk, rst, ena, one, cout_5, count_0to4_i, max_count1, "counter1", cout_v, count_v);
+		WAIT FOR 1 ns;
 	end process check1;
 	check2: process is
 		variable cout_v: std_logic := '0';
 		variable count_v: integer:= 0;
+
 	begin
 		proc: cascadable_counter_check(clk, rst, ena, cout_5, cout_5x3, count_0to2_i, max_count2, "counter2", cout_v, count_v);
+		WAIT FOR 1 ns;
 	end process check2;
 	check3: process is
 		variable cout_v: std_logic := '0';
 		variable count_v: integer:= 0;
 	begin
 		proc: cascadable_counter_check(clk, rst, ena, one, cout_15, count_0to14_i, max_count3, "counter3", cout_v, count_v);
+		WAIT FOR 1 ns;
 	end process check3;
 
 end architecture sim;
