@@ -21,6 +21,7 @@ vsim.dbg
 
 # ignore the work folder
 work/
+not_ready/work
 
 # ignore the doxygen output files
 html/
