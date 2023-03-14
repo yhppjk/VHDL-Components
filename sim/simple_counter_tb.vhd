@@ -38,11 +38,11 @@ COMPONENT simple_counter
 );
 END COMPONENT simple_counter;
 	--INPUTS
-	signal rst : std_logic := '1';
-	signal clk : std_logic;
+	signal rst : std_logic := '1';		--! the reset signal
+	signal clk : std_logic;				--! the clock signal
 	--OUTPUTS
-	signal mcount: std_logic;
-	signal count: integer range 0 to TB_MAX_COUNT;
+	signal mcount: std_logic;			--! the output to figure if the counter reach the limit
+	signal count: integer range 0 to TB_MAX_COUNT;	--! the count number signal
 
 BEGIN
 	-- Instantiate the Design Under Test (DUT) and map its ports
@@ -54,6 +54,9 @@ BEGIN
 		mcount => mcount,
 		count => count 
 	);
+	
+  --! @brief Clock generate process
+  --! @details generate a clock signal
 clock_proc:PROCESS
 BEGIN
 	clk <= '0';
@@ -62,6 +65,8 @@ BEGIN
 	WAIT FOR 10 ns;
 END PROCESS;
 
+  --! @brief stimuli process
+  --! @details To create different condition to test the code
 stimuli:PROCESS
 BEGIN
 	rst <= '0';
@@ -93,9 +98,4 @@ BEGIN
 	  SEVERITY failure ;
 	WAIT FOR 10 ns;
 END PROCESS;
-
-
-
-
-
 END ARCHITECTURE;

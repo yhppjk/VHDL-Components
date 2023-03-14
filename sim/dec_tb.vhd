@@ -24,55 +24,44 @@ END ENTITY dec_tb;
 --! @details Testbench implementation
 ARCHITECTURE behavior OF dec_tb IS 
  
-    -- Component declaration for the Design Under Test (DUT)
-   CONSTANT TBWDITH : POSITIVE := 4;	
+   CONSTANT TBWDITH : POSITIVE := 4;	--! Component declaration for the Design Under Test (DUT
    COMPONENT dec
    GENERIC	(
 	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
 );
    PORT (
-	din :  IN  std_logic_vector(width-1 downto 0);
-	dout : OUT std_logic_vector(2**width-1 downto 0)
+	din :  IN  std_logic_vector(width-1 downto 0);		--! data input port 
+	dout : OUT std_logic_vector(2**width-1 downto 0)	--! data output port
 );
     END COMPONENT dec;
     
    --Inputs
-   signal din : std_logic_vector(TBWDITH-1 downto 0);
+   signal din : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
  	--Outputs
-   signal dout : std_logic_vector(2**TBWDITH-1 downto 0);
+   signal dout : std_logic_vector(2**TBWDITH-1 downto 0);	--! data output signal
  
 BEGIN
  
-	-- Instantiate the Design Under Test (DUT) and map its ports
+	--! Instantiate the Design Under Test (DUT) and map its ports
 	dut: dec
-	PORT MAP (
-		-- Mapping: component port (left) => this arch signal/port (right)
+	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
 		din  => din,
 		dout => dout
 	);
 
-	-- Stimulus process
+--! @brief process test all values to decoder 
+--! @details process test all values to decoder, with an assert statement to stop the simulation  
 	stim_proc: process
 	begin
-		-- PUT YOUR CODE HERE TO ASSIGN ALL POSSIBLE VALUES TO din
-		-- Remember to wait 100 ns before changing the value of din
+
 	loop2 : FOR i IN 0 to 2**TBWDITH-1 LOOP
 	din <= std_logic_vector(to_unsigned(i,TBWDITH));
 	WAIT FOR 20 ns;
 	END LOOP loop2;
-	
+--! an assert statement to stop the simulation
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "
 	  SEVERITY failure ;
 	WAIT FOR 10 ns;
-
-
-		for i in 0 to 2**TBWDITH-1 loop
-			din <= std_logic_vector(to_unsigned(i,TBWDITH));
-			wait for 20 ns;
-		end loop;
-		assert false report "Simulation finished (not a failure actually)" severity failure;
-		wait;   -- Input data exhausted. Simulation ended.
-	end process;
-
+	END PROCESS;
 END ARCHITECTURE behavior;

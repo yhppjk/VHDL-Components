@@ -1,8 +1,23 @@
-library ieee;
+----------------------------------------------------------
+--! @file
+--! @A cascadable_counter_pkg contains the component of start_stop
+-- Filename: cascadable_counter_pkg.vhd
+-- Description: A cascadable_counter_pkg contains the component of start_stop
+-- Author: YIN Haoping
+-- Date: March 13, 2023
+----------------------------------------------------------
+
+--! Use standard library
+LIBRARY ieee;
+--! Use logic elements
 use ieee.std_logic_1164.all;
+--! cascadable_counter_pkg package description
+
+--! Detailed description of this
+--! cascadable_counter_pkg design element.
 package cascadable_counter_pkg is
 
-    -- This is the declaration of the component we want to verify
+    --! This is the declaration of the component we want to verify
     component cascadable_counter is
     generic (max_count: positive := 10 );
     port (

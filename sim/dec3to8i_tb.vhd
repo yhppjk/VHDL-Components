@@ -1,59 +1,60 @@
---YIN Haoping
--- Testbench interface (no ports)
+----------------------------------------------------------
+--! @file
+--! @decoder 3 to 8 testbench
+-- Filename: dec3to8i_tb.vhd
+-- Description: decoder 3 to 8 integer testbench
+-- Author: YIN Haoping
+-- Date: March 13, 2023
+----------------------------------------------------------
+--! Use standard library
 LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+--! Use logic elements
+use ieee.std_logic_1164.all;
+
+--! dec3to8i_tb entity description
+--! Detailed description of this
+--! dec3to8i_tb design element.
 ENTITY dec3to8i_tb IS
 END ENTITY dec3to8i_tb;
 
 
--- Testbench implementation
+
+--! @brief Architecture definition of dec3to8i_tb, testbench implementation
+--! @details More details about this start_stop element
 ARCHITECTURE behavior OF dec3to8i_tb IS 
  
-    -- Component declaration for the Design Under Test (DUT)
-    COMPONENT dec3to8i
-    PORT(
-         din :  IN  integer range 0 to 7;
-         dout : OUT std_logic_vector(7 downto 0)
-        );
-    END COMPONENT dec3to8i;
 
-   --Inputs
-   signal din : integer range 0 to 7 := 0;
- 	--Outputs
-   signal dout : std_logic_vector(7 downto 0);
+    COMPONENT dec3to8i     --! Component declaration for the Design Under Test (DUT)
+    PORT(
+         din :  IN  integer range 0 to 7;	--! data input port 
+         dout : OUT std_logic_vector(7 downto 0)	--! data output port
+);
+    END COMPONENT dec3to8i;
+	
+   signal din : integer range 0 to 7 := 0;	--! data input signal
+   signal dout : std_logic_vector(7 downto 0);	--! data output signal
  
 BEGIN
  
-	-- Instantiate the Design Under Test (DUT) and map its ports
+	--! Instantiate the Design Under Test (DUT) and map its ports
 	dut: dec3to8i
-	PORT MAP (
-		-- Mapping: component port (left) => this arch signal/port (right)
+	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
 		din  => din,
 		dout => dout
 	);
 
-	-- Stimulus process
+--! @brief process test all values to decoder 
+--! @details process test all values to decoder, with an assert statement to stop the simulation  
 	stim_proc: process
 	begin
-
 	loop2 : FOR i IN 0 to 7 LOOP
 	din <= i;
 	WAIT FOR 20 ns;
 	END LOOP loop2;
-	
-	--! an assert statement to stop the simulation
+--! an assert statement to stop the simulation
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "
 	  SEVERITY failure ;
 	WAIT FOR 10 ns;
-
-
-		for i in 0 to 7 loop
-			din <= i;
-			wait for 20 ns;
-		end loop;
-		assert false report "Simulation finished (not a failure actually)" severity failure;
-		wait;   -- Input data exhausted. Simulation ended.
-	end process;
-
+	END PROCESS;
 END ARCHITECTURE behavior;
