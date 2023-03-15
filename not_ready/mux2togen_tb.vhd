@@ -1,7 +1,7 @@
 ----------------------------------------------------------
 --! @file
 --! @A a 2 to 1 mux testbench
--- Filename: mux2to1_tb.vhd
+-- Filename: mux2togen_tb.vhd
 -- Description: a 2 to 1 mux testbench
 -- Author: YIN Haoping
 -- Date: March 13, 2023
@@ -17,34 +17,37 @@ USE ieee.numeric_std.ALL;
 --! dec_tb entity description
 --! Detailed description of this
 --! dec_tb design element.
-ENTITY mux2to1_tb IS
-END ENTITY mux2to1_tb;
+ENTITY mux2togen_tb IS
+END ENTITY mux2togen_tb;
 
---! @brief Architecture definition of mux2to1_tb
+--! @brief Architecture definition of mux2togen_tb
 --! @details Testbench implementation
-ARCHITECTURE behavior OF mux2to1_tb IS 
+ARCHITECTURE behavior OF mux2togen_tb IS 
  
-
-   COMPONENT mux2to1
-   PORT (
-	din1 :  IN std_logic;		--! data input port
-	din2 : 	IN std_logic;
-	sel : IN std_logic;
-	dout : OUT std_logic	--! data output port
+   CONSTANT TBWDITH : POSITIVE := 4;	--! Component declaration for the Design Under Test (DUT
+   COMPONENT mux2togen
+   GENERIC	(
+	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
 );
-    END COMPONENT mux2to1;
+   PORT (
+	din1 :  IN std_logic_vector(width-1 downto 0);		--! data input port
+	din2 : 	IN std_logic_vector(width-1 downto 0);
+	sel : IN std_logic;
+	dout : OUT std_logic_vector(width-1 downto 0)	--! data output port
+);
+    END COMPONENT mux2togen;
     
    --Inputs
-   signal din1 : std_logic;	--! data input signal
-   signal din2 : std_logic;	--! data input signal
+   signal din1 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
+   signal din2 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
    signal sel  : std_logic :='0';
  	--Outputs
-   signal dout : std_logic;	--! data output signal
+   signal dout : std_logic_vector(TBWDITH-1 downto 0);	--! data output signal
  
 BEGIN
  
 	--! Instantiate the Design Under Test (DUT) and map its ports
-	dut: mux2to1
+	dut: mux2togen
 	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
 		din1  => din1,
 		din2  => din2,
@@ -61,8 +64,8 @@ BEGIN
 	stim_proc: process
 	begin
 
-	din1 <= '1';
-	din2 <= '0';
+	din1 <= "1100";
+	din2 <= "0011";
 	sel <= '0';
 	wait for 10 ns;
 
@@ -70,7 +73,7 @@ BEGIN
 	
 	wait for 10 ns;
 	
-	din2 <= '1';
+	din2 <= "1010";
 	sel <= '0';
 	wait for 10 ns;
 
