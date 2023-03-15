@@ -1,8 +1,8 @@
 ----------------------------------------------------------
 --! @file
---! @A flexible decoder testbench
--- Filename: dec_tb.vhd
--- Description: A flexible decoder testbench
+--! @A a 2 to 1 mux testbench
+-- Filename: mux2to1_tb.vhd
+-- Description: a 2 to 1 mux testbench
 -- Author: YIN Haoping
 -- Date: March 13, 2023
 ----------------------------------------------------------
@@ -42,7 +42,7 @@ ARCHITECTURE behavior OF mux2to1_tb IS
    signal din2 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
    signal sel  : std_logic :='0';
  	--Outputs
-   signal dout : std_logic_vector(TBWDITH-1 downto 0) ;	--! data output signal
+   signal dout : std_logic_vector(TBWDITH-1 downto 0);	--! data output signal
  
 BEGIN
  
@@ -54,27 +54,30 @@ BEGIN
 		sel => sel,
 		dout => dout
 	);
-
 	
+
+
+
+
 --! @brief process test all values to decoder 
 --! @details process test all values to decoder, with an assert statement to stop the simulation  
 	stim_proc: process
 	begin
 
+	din1 <= "1100";
+	din2 <= "0011";
+	sel <= '0';
+	wait for 10 ns;
+
+	sel <= '1';
 	
-	din1 <= std_logic_vector(to_unsigned(5,TBWDITH));
-	din2 <= std_logic_vector(to_unsigned(3,TBWDITH));
+	wait for 10 ns;
 	
-	loop2 : FOR i IN 0 to 30 LOOP
-	
-	sel <= not(sel);
-	if(sel = '0') then
-		dout <= din1;
-	else 
-		dout <= din2;
-	end if;
-	WAIT FOR 20 ns;
-	END LOOP loop2;
+	din2 <= "1010";
+	sel <= '0';
+	wait for 10 ns;
+
+	wait;
 --! an assert statement to stop the simulation
 	ASSERT false
 	  REPORT "Simulation ended ( not a failure actually ) "

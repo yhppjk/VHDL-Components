@@ -18,15 +18,15 @@ USE ieee.numeric_std.ALL;
 --! Detailed description of this
 --! decoder design element.
 ENTITY mux4to1 IS
-	GENERIC (width: INTEGER :=5),
+	GENERIC (width: INTEGER :=4);
    PORT (
-	din1 :  IN  std_logic_vector(width downto 0);	--! input 1 of mux
-	din2 :  IN	std_logic_vector(width downto 0);	--! input 2 of mux
-	din3 :  IN	std_logic_vector(width downto 0);	--! input 3 of mux
-	din4 :  IN	std_logic_vector(width downto 0);	--! input 4 of mux
+	din1 :  IN  std_logic_vector(width-1 downto 0);	--! input 1 of mux
+	din2 :  IN	std_logic_vector(width-1 downto 0);	--! input 2 of mux
+	din3 :  IN	std_logic_vector(width-1 downto 0);	--! input 3 of mux
+	din4 :  IN	std_logic_vector(width-1 downto 0);	--! input 4 of mux
 	sel1	:	IN std_logic;						--! selection 1 of mux
 	sel2	:	IN std_logic;						--! selection 2 of mux
-	dout : OUT std_logic_vector(width downto 0)		--! output of mux
+	dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
 );
 END ENTITY mux4to1;
 
