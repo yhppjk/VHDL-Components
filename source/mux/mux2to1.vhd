@@ -16,7 +16,7 @@ USE ieee.numeric_std.ALL;
 --! MUX 2 to 1 entity description
 
 --! Detailed description of this
---! decoder design element.	
+--! mux 2 to single design element.	
 ENTITY mux2to1 IS
    PORT (
 	din1 :  IN  std_logic;	--! input 1 of mux

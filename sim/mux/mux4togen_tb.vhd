@@ -14,9 +14,9 @@ use ieee.std_logic_1164.all;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! dec_tb entity description
+--! mux4togen_tb entity description
 --! Detailed description of this
---! dec_tb design element.
+--! mux4togen_tb design element.
 ENTITY mux4togen_tb IS
 END ENTITY mux4togen_tb;
 

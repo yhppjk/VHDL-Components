@@ -14,9 +14,9 @@ use ieee.std_logic_1164.all;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! dec_tb entity description
+--! mux2togen_tb entity description
 --! Detailed description of this
---! dec_tb design element.
+--! mux2togen_tb design element.
 ENTITY mux2togen_tb IS
 END ENTITY mux2togen_tb;
 
@@ -30,17 +30,17 @@ ARCHITECTURE behavior OF mux2togen_tb IS
 	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
 );
    PORT (
-	din1 :  IN std_logic_vector(width-1 downto 0);		--! data input port
-	din2 : 	IN std_logic_vector(width-1 downto 0);
-	sel : IN std_logic;
+	din1 :  IN std_logic_vector(width-1 downto 0);		--! data input port1
+	din2 : 	IN std_logic_vector(width-1 downto 0);		--! data input port2
+	sel : IN std_logic;									--! selection of mux
 	dout : OUT std_logic_vector(width-1 downto 0)	--! data output port
 );
     END COMPONENT mux2togen;
     
    --Inputs
-   signal din1 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
-   signal din2 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal
-   signal sel  : std_logic :='0';
+   signal din1 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal1
+   signal din2 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal2
+   signal sel  : std_logic :='0';						--! selection of mux
  	--Outputs
    signal dout : std_logic_vector(TBWDITH-1 downto 0);	--! data output signal
  

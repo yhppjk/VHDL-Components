@@ -14,9 +14,9 @@ use ieee.std_logic_1164.all;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! dec_tb entity description
+--! mux2to1_tb entity description
 --! Detailed description of this
---! dec_tb design element.
+--! mux2to1_tb design element.
 ENTITY mux2to1_tb IS
 END ENTITY mux2to1_tb;
 
@@ -27,9 +27,9 @@ ARCHITECTURE behavior OF mux2to1_tb IS
 
    COMPONENT mux2to1
    PORT (
-	din1 :  IN std_logic;		--! data input port
-	din2 : 	IN std_logic;
-	sel : IN std_logic;
+	din1 :  IN std_logic;		--! data input port1
+	din2 : 	IN std_logic;		--! data input port2
+	sel : IN std_logic;		--! selection of mux
 	dout : OUT std_logic	--! data output port
 );
     END COMPONENT mux2to1;
@@ -37,7 +37,7 @@ ARCHITECTURE behavior OF mux2to1_tb IS
    --Inputs
    signal din1 : std_logic;	--! data input signal
    signal din2 : std_logic;	--! data input signal
-   signal sel  : std_logic :='0';
+   signal sel  : std_logic :='0';	--! selection of mux
  	--Outputs
    signal dout : std_logic;	--! data output signal
  

@@ -1,8 +1,8 @@
 ----------------------------------------------------------
 --! @file
---! @mux 4 to single 
+--! @mux 8 to single 
 -- Filename: mux8to1.vhd
--- Description: mux 4 to single  
+-- Description: mux 8 to single  
 -- Author: YIN Haoping
 -- Date: March 13, 2023
 ----------------------------------------------------------
@@ -13,10 +13,10 @@ USE ieee.std_logic_1164.ALL;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! MUX 4 to 1 entity description
+--! MUX 8 to 1 entity description
 
 --! Detailed description of this
---! decoder design element.
+--! mux 8 to single design element.
 ENTITY mux8to1 IS
    PORT (
 	din1 :  IN  std_logic;	--! input 1 of mux

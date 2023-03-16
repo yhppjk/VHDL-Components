@@ -16,7 +16,7 @@ USE ieee.numeric_std.ALL;
 --! MUX 2 to 1 entity description
 
 --! Detailed description of this
---! decoder design element.
+--! mux 2 to generic design element.
 ENTITY mux2togen IS
 	GENERIC (width: INTEGER :=4);
    PORT (

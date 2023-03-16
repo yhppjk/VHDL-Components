@@ -1,8 +1,8 @@
 ----------------------------------------------------------
 --! @file
---! @mux 4 to single 
+--! @mux 4 to generic 
 -- Filename: mux4togen.vhd
--- Description: mux 4 to single  
+-- Description: mux 4 to generic  
 -- Author: YIN Haoping
 -- Date: March 13, 2023
 ----------------------------------------------------------
@@ -16,7 +16,7 @@ USE ieee.numeric_std.ALL;
 --! MUX 4 to 1 entity description
 
 --! Detailed description of this
---! decoder design element.
+--! mux 4 to generic design element.
 ENTITY mux4togen IS
 	GENERIC (width: INTEGER :=4);
    PORT (

@@ -25,7 +25,7 @@ ARCHITECTURE behavior OF tristategen_tb IS
 );
    PORT (
 	din :  IN  std_logic_vector(width-1 downto 0);	--! Tristate input port 
-	ena :  IN  std_logic; 	--! tristate enable
+	ena :  IN  std_logic; 							--! tristate enable
 	dout : OUT std_logic_vector(width-1 downto 0)	--! Tristate output port
 );
     END COMPONENT tristategen;

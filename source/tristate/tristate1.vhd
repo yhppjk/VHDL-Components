@@ -17,9 +17,9 @@ USE ieee.std_logic_1164.ALL;
 ENTITY tristate1 IS
 
    PORT (
-	din : IN std_logic;
-	ena :  IN  std_logic;		--! Tristate data input
-	dout : OUT std_logic	--! Tristate data output
+	din : IN std_logic;			--! Tristate data input
+	ena :  IN  std_logic;		--! Tristate enable input
+	dout : OUT std_logic		--! Tristate data output
 );
 END ENTITY tristate1;
 
