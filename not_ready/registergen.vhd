@@ -39,7 +39,7 @@ BEGIN
 	process(clk,rst) is
 	BEGIN
 	if rst ='1' then
-		reg_out <= "0000";
+		reg_out <= (others => '0');
 	elsif rising_edge(clk) then
 		if writ ='1' then 
 			reg_out <= reg_in;
