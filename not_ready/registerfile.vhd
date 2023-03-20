@@ -84,12 +84,12 @@ signal signal_readData2 : std_logic_vector (dataWidth-1 downto 0);
 BEGIN
 decoder_read_address1 : dec port map(	
 	din => readAddress1,
-	ena => readEna1,
+	--ena => readEna1,
 	dout => enableReadArray1	
 );
 decoder_read_address2 : dec port map(
 	din => readAddress2,
-	ena => readEna2,
+	--ena => readEna2,
 	dout => enableReadArray2	
 );
 

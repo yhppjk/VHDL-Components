@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux2to1
 --! @mux 2 to single 
 -- Filename: mux2to1.vhd
 -- Description: mux 2 to single  

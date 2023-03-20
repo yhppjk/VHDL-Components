@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux8to1
 --! @mux 8 to single 
 -- Filename: mux8to1.vhd
 -- Description: mux 8 to single  
@@ -19,6 +19,7 @@ USE ieee.numeric_std.ALL;
 --! mux 8 to single design element.
 ENTITY mux8to1 IS
    PORT (
+   	din0 :  IN	std_logic;	--! input 0 of mux
 	din1 :  IN  std_logic;	--! input 1 of mux
 	din2 :  IN	std_logic;	--! input 2 of mux
 	din3 :  IN	std_logic;	--! input 3 of mux
@@ -26,10 +27,7 @@ ENTITY mux8to1 IS
 	din5 :  IN  std_logic;	--! input 5 of mux
 	din6 :  IN	std_logic;	--! input 6 of mux
 	din7 :  IN	std_logic;	--! input 7 of mux
-	din8 :  IN	std_logic;	--! input 8 of mux
-	sel1	:	IN std_logic;						--! selection 1 of mux
-	sel2	:	IN std_logic;						--! selection 2 of mux
-	sel3	:	IN std_logic;						--! selection 3 of mux
+	sel	:	IN std_logic_vector(2 downto 0);		--! selection of mux
 	dout : OUT std_logic		--! output of mux
 );
 END ENTITY mux8to1;
@@ -39,25 +37,27 @@ END ENTITY mux8to1;
 ARCHITECTURE Behavioral OF mux8to1 IS
 BEGIN
 
-PROCESS(din1,din2,din3,din4,sel1,sel2) is
+PROCESS(din0,din1,din2,din3,din4,din5,din6,din7,sel) is
 BEGIN
-	if(sel1='0' and sel2='0' and sel3 = '0') then
-		dout <= din1;
-	elsif(sel1='1' and sel2='0' and sel3 = '0') then
-		dout <= din2;
-	elsif(sel1='0' and sel2='1' and sel3 = '0') then
-		dout <= din3;	
-	elsif(sel1='1' and sel2='1' and sel3 = '0') then
-		dout <= din4;	
-	elsif(sel1='0' and sel2='0' and sel3 = '1') then
-		dout <= din5;
-	elsif(sel1='1' and sel2='0' and sel3 = '1') then
-		dout <= din6;
-	elsif(sel1='0' and sel2='1' and sel3 = '1') then
-		dout <= din7;
-	elsif(sel1='1' and sel2='1' and sel3 = '1') then	
-		dout <= din8;
-	end if;
+BEGIN
+	case (sel) is
+		when "000" => 
+			dout <= din0;
+		when "001" => 
+			dout <= din1;
+		when "010" => 
+			dout <= din2;
+		when "011" => 
+			dout <= din3;
+		when "100" => 
+			dout <= din4;
+		when "101" => 
+			dout <= din5;
+		when "110" => 
+			dout <= din6;
+		when "111" => 
+			dout <= din7;
+	end case;
 	
 END PROCESS;	
 END ARCHITECTURE Behavioral;

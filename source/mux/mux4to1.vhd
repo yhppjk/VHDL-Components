@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux4to1
 --! @mux 4 to single 
 -- Filename: mux4to1.vhd
 -- Description: mux 4 to single  
@@ -23,8 +23,7 @@ ENTITY mux4to1 IS
 	din2 :  IN	std_logic;	--! input 2 of mux
 	din3 :  IN	std_logic;	--! input 3 of mux
 	din4 :  IN	std_logic;	--! input 4 of mux
-	sel1	:	IN std_logic;						--! selection 1 of mux
-	sel2	:	IN std_logic;						--! selection 2 of mux
+	sel	:	IN std_logic_vector(1 downto 0);		--! selection of mux
 	dout : OUT std_logic		--! output of mux
 );
 END ENTITY mux4to1;
@@ -34,17 +33,17 @@ END ENTITY mux4to1;
 ARCHITECTURE Behavioral OF mux4to1 IS
 BEGIN
 
-PROCESS(din1,din2,din3,din4,sel1,sel2) is
+PROCESS(din1,din2,din3,din4,sel) is
 BEGIN
-	if(sel1='0' and sel2='0') then
+	case(sel) is 
+	when "00" =>
+		dout <= din0;
+	when "01" =>
 		dout <= din1;
-	elsif(sel1='1' and sel2='0') then
+	when "10" =>
 		dout <= din2;
-	elsif(sel1='0' and sel2='1') then
-		dout <= din3;	
-	elsif(sel1='1' and sel2='1') then
-		dout <= din4;	
-	end if;
+	when "11" =>
+		dout <= din3;
 	
 END PROCESS;	
 END ARCHITECTURE Behavioral;

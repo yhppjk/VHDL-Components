@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux2togen
 --! @mux 2 to generic 
 -- Filename: mux2togen.vhd
 -- Description: mux 2 to generic  
