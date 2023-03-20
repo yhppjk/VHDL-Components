@@ -32,32 +32,33 @@ architecture behavior of register_file is
 
 --! a  type of register file 2d array
 	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
-	signal reg_file : reg_file_t := (0=>"00", 1=>"10", 2=>x"fe", others =>(others =>'0'));
+	signal reg_file : reg_file_t := (0=>x"00", 1=>x"10", 2=>x"fe", others =>(others =>'0'));
 	
 begin	
 --! reset & write_process
 	write_process : process(reset,clk)
 	begin
-	        if reset = '1' then
-	            for i in 0 to num_reg-1 loop
-	                reg_file(i) <= (others => '0');
-	            end loop;
+	    if reset = '1' then
+			for i in 0 to num_reg-1 loop
+				reg_file(i) <= (others => '0');
+			end loop;
 		elsif rising_edge(clk) then
 		    if(writeEna = '1') then
-			reg_file(to_integer(unsigned(writeAddress))) <= writeData;
+				reg_file(to_integer(unsigned(writeAddress))) <= writeData;
 		    end if;
 		end if;
 	end process;
 	
 	
 --generate read1 process
-read1_gen: if combination_read generate
+read1_gen1: if combination_read generate
 --! read1_process_comb
 	read1_process_comb: process (readAddress1, reg_file)
     begin
 		readData1 <= reg_file(to_integer(unsigned(readAddress1)));
     end process;
-else generate
+end generate;
+read1_gen2: if not(combination_read) generate
 --! read1_process_synch
 	read1_process_synch: process(clk)
     begin
@@ -68,13 +69,14 @@ else generate
 end generate;
 
 --generate read2 process
-read2_gen: if not(combination_read) generate
+read2_gen1: if combination_read generate
 --！ read2_process_comb
     read2_process_comb: process(readAddress2, reg_file)
     begin
 		readData2 <= reg_file(to_integer(unsigned(readAddress2)));
 	end process;
-else generate 
+end generate;
+read2_gen2:if not(combination_read) generate 
 --! read2_process_synch
 	read2_process_synch: process(clk)
     begin
@@ -82,7 +84,7 @@ else generate
 			readData2 <= reg_file(to_integer(unsigned(readAddress2)));
 	end if;
     end process;
-end generate;
+end generate read2_gen2;
 
 	
 end architecture behavior;

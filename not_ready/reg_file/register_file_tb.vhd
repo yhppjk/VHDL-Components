@@ -13,7 +13,7 @@ architecture sim of register_file_tb is
     constant num_reg : positive := 32;
 
     signal clk        : std_logic := '0';
-    signal reset      : std_logic := '1';
+    signal reset      : std_logic := '0';
     signal write_en   : std_logic := '0';
     signal write_addr : std_logic_vector(addressWidth-1 downto 0) := (others => '0');
     signal write_data : std_logic_vector(dataWidth-1 downto 0) := (others => '0');
@@ -55,12 +55,8 @@ BEGIN
     stimulus_process: process
     begin
 
+        wait for 20 ns;
 
-        -- Apply a reset
-        reset <= '1';
-        wait for 20 ns;
-        reset <= '0';
-        wait for 20 ns;
 	
 
         -- Write data to register 1
