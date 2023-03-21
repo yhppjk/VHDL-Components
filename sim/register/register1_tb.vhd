@@ -1,10 +1,10 @@
 ----------------------------------------------------------
---! @file
+--! @file register1_tb
 --! @A flexible decoder testbench
--- Filename: registergen_tb.vhd
+-- Filename: register1_tb.vhd
 -- Description: A flexible decoder testbench
 -- Author: YIN Haoping
--- Date: March 13, 2023
+-- Date: March 21, 2023
 ----------------------------------------------------------
 
 --! Use standard library
@@ -14,41 +14,36 @@ use ieee.std_logic_1164.all;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! registergen entity description
+--! register1 entity description
 --! Detailed description of this
---! registergen design element.
-ENTITY registergen_tb IS
-END ENTITY registergen_tb;
+--! register1 design element.
+ENTITY register1_tb IS
+END ENTITY register1_tb;
 
---! @brief Architecture definition of registergen
+--! @brief Architecture definition of register1
 --! @details Testbench implementation
 
-ARCHITECTURE behavior OF registergen_tb IS 
-	CONSTANT TBWDITH : POSITIVE := 4;
-   COMPONENT registergen
-   	GENERIC(
-		width : POSITIVE := TBWDITH
-	);
-	
+ARCHITECTURE behavior OF register1_tb IS 
+   COMPONENT register1
    PORT (
-	 reg_in : IN std_logic_vector (width-1 downto 0); 	--Register data input
+	 reg_in : IN std_logic_vector (1 downto 0); 	--Register data input
 	 writ : IN std_logic :='0';		--! Write signal input
 	 rst :  IN std_logic :='0';		--! Reset signal input
 	 clk :  IN std_logic :='0';		--! clock signal input
-	 reg_out : OUT std_logic_vector (width-1 downto 0)	--! Register data output
+	 reg_out : OUT std_logic_vector (1 downto 0)	--! Register data output
 );
-    END COMPONENT registergen;
+    END COMPONENT register1;
     
-	 signal reg_in :  std_logic_vector (TBWDITH-1 downto 0) :="0000"; 	--Register data input
+	 signal reg_in :  std_logic_vector (1 downto 0) :='0'; 	--Register data input
 	 signal writ :  std_logic;		--! Write signal input
 	 signal rst :   std_logic;		--! Reset signal input
 	 signal clk :   std_logic;		--! clock signal input
-	 signal reg_out :  std_logic_vector (TBWDITH-1 downto 0);	--! Register data output
+	 signal reg_out :  std_logic_vector (1 downto 0);	--! Register data output
  
 BEGIN
  
 	--! Instantiate the Design Under Test (DUT) and map its ports
-	dut: registergen
+	dut: register1
 	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
 		reg_in => reg_in,
 		writ => writ,
@@ -79,19 +74,19 @@ END PROCESS;
 
 	rst <= '0';
 	writ <= '1';
-	reg_in <= "1101";
+	reg_in <= '1';
 	WAIT FOR 20 ns;
 
 	writ <= '1';
-	reg_in <= "0001";
+	reg_in <= '1';
 	WAIT FOR 20 ns;
 
 	writ <= '0';
-	reg_in <= "0101";
+	reg_in <= '0';
 	WAIT FOR 20 ns;
 	
 	writ <= '1';
-	reg_in <= "1001";
+	reg_in <= '0';
 	WAIT FOR 20 ns;
 
 	rst <= '1';

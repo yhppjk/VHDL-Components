@@ -1,6 +1,6 @@
 
 ----------------------------------------------------------
---! @file
+--! @file tristate1_tb
 --! @Tristate 1
 -- Filename: tristate1_tb.vhd
 -- Description: Tristate 1 testbench

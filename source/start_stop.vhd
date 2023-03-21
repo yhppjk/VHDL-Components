@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file start_stop
 --! @A FSM contains 5 different stats
 -- Filename: start_stop.vhd
 -- Description: A FSM contains 5 different stats

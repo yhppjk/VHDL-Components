@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec3to8_tb
 --! @decoder 3 to 8 testbench
 -- Filename: dec3to8_tb.vhd
 -- Description: decoder 3 to 8 testbench

@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file start_stop_tb
 --! @ The testbench of FSM
 -- Filename: start_stop_tb.vhd
 -- Description: The testbench of FSM

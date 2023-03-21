@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file start_stop_pkg
 --! @A start_stop_pkg contains the component of start_stop
 -- Filename: start_stop_pkg.vhd
 -- Description: A start_stop_pkg contains the component of start_stop

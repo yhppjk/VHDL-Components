@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file cascadable_counter_pkg
 --! @A cascadable_counter_pkg contains the component of start_stop
 -- Filename: cascadable_counter_pkg.vhd
 -- Description: A cascadable_counter_pkg contains the component of start_stop

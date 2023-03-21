@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux4to1_tb
 --! @A 4 to 1 mux testbench
 -- Filename: mux4to1_tb.vhd
 -- Description: a 4 to 1 mux testbench

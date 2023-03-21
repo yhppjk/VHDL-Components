@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file registergen
 --! @A register single bit
 -- Filename: registergen.vhd
 -- Description: A register single bit

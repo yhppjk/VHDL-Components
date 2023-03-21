@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file tristategen
 --! @Tristate generic
 -- Filename: tristategen.vhd
 -- Description: Tristate generic

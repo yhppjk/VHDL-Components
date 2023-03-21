@@ -1,6 +1,6 @@
 
 ----------------------------------------------------------
---! @file
+--! @file tristategen_tb
 --! @Tristate generic
 -- Filename: tristategen_tb.vhd
 -- Description: Tristate generic testbench

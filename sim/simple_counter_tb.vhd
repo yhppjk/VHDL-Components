@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file simple_counter_tb
 --! @A testbench of the simple_counter
 -- Filename: simple_counter_tb.vhd
 -- Description: A testbench of the simple_counter

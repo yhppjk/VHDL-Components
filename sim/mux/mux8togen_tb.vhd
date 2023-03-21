@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux8togen_tb
 --! @A 8 to 1 mux testbench
 -- Filename: mux8togen_tb.vhd
 -- Description: a 8 to 1 mux testbench

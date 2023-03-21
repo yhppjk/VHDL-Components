@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file cascadable_counter
 --! @A cascadable_counter can combine multipal counter to count.
 -- Filename: cascadable_counter.vhd
 -- Description: A cascadable_counter can combine multipal counter to count.
@@ -13,7 +13,7 @@ use ieee.std_logic_1164.all;
 --! Use numeric elements
 USE ieee.numeric_std.ALL;
 
---! simple_counter entity description
+--! cascadable_counter entity description
 
 --! Detailed description of this
 --! cascadable_counter design element.

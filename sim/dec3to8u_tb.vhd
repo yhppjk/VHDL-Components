@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec3to8u_tb
 --! @A 3 to 8 unsigned decoder testbench
 -- Filename: dec3to8u_tb.vhd
 -- Description: A 3 to 8 unsigned decoder testbench

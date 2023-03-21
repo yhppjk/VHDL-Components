@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file simple_counter
 --! @A simple counter can count till a certain limit with reset
 -- Filename: simple_counter.vhd
 -- Description: A simple counter can count till a certain limit with reset

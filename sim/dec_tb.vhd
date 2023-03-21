@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec_tb
 --! @A flexible decoder testbench
 -- Filename: dec_tb.vhd
 -- Description: A flexible decoder testbench

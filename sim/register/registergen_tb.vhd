@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file registergen_tb
 --! @A flexible decoder testbench
 -- Filename: registergen_tb.vhd
 -- Description: A flexible decoder testbench

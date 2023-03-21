@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file mux2togen_tb
 --! @A a 2 to 1 mux testbench
 -- Filename: mux2togen_tb.vhd
 -- Description: a 2 to 1 mux testbench

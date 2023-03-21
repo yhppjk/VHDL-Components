@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file tristate1
 --! @Tristate 1
 -- Filename: tristate1.vhd
 -- Description: Tristate 1
