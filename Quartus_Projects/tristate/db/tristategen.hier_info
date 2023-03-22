@@ -1,0 +1,15 @@
+|tristategen
+din[0] => dout[0].DATAIN
+din[1] => dout[1].DATAIN
+din[2] => dout[2].DATAIN
+din[3] => dout[3].DATAIN
+ena => dout[0].OE
+ena => dout[1].OE
+ena => dout[2].OE
+ena => dout[3].OE
+dout[0] << dout[0].DB_MAX_OUTPUT_PORT_TYPE
+dout[1] << dout[1].DB_MAX_OUTPUT_PORT_TYPE
+dout[2] << dout[2].DB_MAX_OUTPUT_PORT_TYPE
+dout[3] << dout[3].DB_MAX_OUTPUT_PORT_TYPE
+
+

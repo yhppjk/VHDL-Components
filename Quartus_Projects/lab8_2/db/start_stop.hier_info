@@ -1,0 +1,17 @@
+|start_stop
+rst => current_state~8.DATAIN
+clk => current_state~6.DATAIN
+ena => current_state.OUTPUTSELECT
+ena => current_state.OUTPUTSELECT
+ena => current_state.OUTPUTSELECT
+ena => current_state.OUTPUTSELECT
+ena => current_state.OUTPUTSELECT
+pulse_in => Selector0.IN2
+pulse_in => Selector1.IN2
+pulse_in => Selector3.IN2
+pulse_in => Selector3.IN3
+pulse_in => Selector5.IN1
+start_stop << start_stop_output.DB_MAX_OUTPUT_PORT_TYPE
+stateMake << stateMake.DB_MAX_OUTPUT_PORT_TYPE
+
+

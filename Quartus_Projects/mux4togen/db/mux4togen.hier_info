@@ -1,0 +1,31 @@
+|mux4togen
+din0[0] => Mux3.IN0
+din0[1] => Mux2.IN0
+din0[2] => Mux1.IN0
+din0[3] => Mux0.IN0
+din1[0] => Mux3.IN1
+din1[1] => Mux2.IN1
+din1[2] => Mux1.IN1
+din1[3] => Mux0.IN1
+din2[0] => Mux3.IN2
+din2[1] => Mux2.IN2
+din2[2] => Mux1.IN2
+din2[3] => Mux0.IN2
+din3[0] => Mux3.IN3
+din3[1] => Mux2.IN3
+din3[2] => Mux1.IN3
+din3[3] => Mux0.IN3
+sel[0] => Mux0.IN5
+sel[0] => Mux1.IN5
+sel[0] => Mux2.IN5
+sel[0] => Mux3.IN5
+sel[1] => Mux0.IN4
+sel[1] => Mux1.IN4
+sel[1] => Mux2.IN4
+sel[1] => Mux3.IN4
+dout[0] << Mux3.DB_MAX_OUTPUT_PORT_TYPE
+dout[1] << Mux2.DB_MAX_OUTPUT_PORT_TYPE
+dout[2] << Mux1.DB_MAX_OUTPUT_PORT_TYPE
+dout[3] << Mux0.DB_MAX_OUTPUT_PORT_TYPE
+
+

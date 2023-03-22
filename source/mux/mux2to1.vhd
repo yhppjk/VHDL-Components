@@ -19,8 +19,8 @@ USE ieee.numeric_std.ALL;
 --! mux 2 to single design element.	
 ENTITY mux2to1 IS
    PORT (
-	din1 :  IN  std_logic;	--! input 1 of mux
-	din2 :  IN	std_logic;	--! input 2 of mux
+	din0 :  IN  std_logic;	--! input 0 of mux
+	din1 :  IN	std_logic;	--! input 1 of mux
 	sel	:	IN std_logic;							--! selection of mux
 	dout : OUT std_logic		--! output of mux
 );
@@ -30,5 +30,5 @@ END ENTITY mux2to1;
 --! @details More details about this multiplexer.
 ARCHITECTURE Behavioral OF mux2to1 IS
 BEGIN
-	dout <= din1 when (sel ='1') else din2;
+	dout <= din0 when (sel ='1') else din1;
 END ARCHITECTURE Behavioral;

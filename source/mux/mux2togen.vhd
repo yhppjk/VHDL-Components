@@ -20,8 +20,8 @@ USE ieee.numeric_std.ALL;
 ENTITY mux2togen IS
 	GENERIC (width: INTEGER :=4);
    PORT (
-	din1 :  IN  std_logic_vector(width-1 downto 0);	--! input 1 of mux
-	din2 :  IN	std_logic_vector(width-1 downto 0);	--! input 2 of mux
+	din0 :  IN  std_logic_vector(width-1 downto 0);	--! input 0 of mux
+	din1 :  IN	std_logic_vector(width-1 downto 0);	--! input 1 of mux
 	sel	:	IN std_logic;							--! selection of mux
 	dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
 );
@@ -31,5 +31,5 @@ END ENTITY mux2togen;
 --! @details More details about this multiplexer.
 ARCHITECTURE Behavioral OF mux2togen IS
 BEGIN
-	dout <= din1 when (sel ='1') else din2;
+	dout <= din0 when (sel ='1') else din1;
 END ARCHITECTURE Behavioral;

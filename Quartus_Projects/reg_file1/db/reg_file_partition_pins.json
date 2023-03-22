@@ -1,0 +1,93 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "readData1[0]",
+					"strict" : false
+				},
+				{
+					"name" : "readData1[1]",
+					"strict" : false
+				},
+				{
+					"name" : "readData1[2]",
+					"strict" : false
+				},
+				{
+					"name" : "readData1[3]",
+					"strict" : false
+				},
+				{
+					"name" : "readData2[0]",
+					"strict" : false
+				},
+				{
+					"name" : "readData2[1]",
+					"strict" : false
+				},
+				{
+					"name" : "readData2[2]",
+					"strict" : false
+				},
+				{
+					"name" : "readData2[3]",
+					"strict" : false
+				},
+				{
+					"name" : "readAddress1[0]",
+					"strict" : false
+				},
+				{
+					"name" : "readAddress1[1]",
+					"strict" : false
+				},
+				{
+					"name" : "clk",
+					"strict" : false
+				},
+				{
+					"name" : "readAddress2[0]",
+					"strict" : false
+				},
+				{
+					"name" : "readAddress2[1]",
+					"strict" : false
+				},
+				{
+					"name" : "writeData[0]",
+					"strict" : false
+				},
+				{
+					"name" : "reset",
+					"strict" : false
+				},
+				{
+					"name" : "writeAddress[1]",
+					"strict" : false
+				},
+				{
+					"name" : "writeEna",
+					"strict" : false
+				},
+				{
+					"name" : "writeAddress[0]",
+					"strict" : false
+				},
+				{
+					"name" : "writeData[1]",
+					"strict" : false
+				},
+				{
+					"name" : "writeData[2]",
+					"strict" : false
+				},
+				{
+					"name" : "writeData[3]",
+					"strict" : false
+				}
+			]
+		}
+	]
+}
