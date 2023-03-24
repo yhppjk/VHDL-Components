@@ -8,7 +8,6 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 USE ieee.std_logic_1164.ALL;
 --! Tristate entity description
 

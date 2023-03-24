@@ -9,9 +9,7 @@
 
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
---! cascadable_counter_pkg package description
 
 --! Detailed description of this
 --! cascadable_counter_pkg design element.

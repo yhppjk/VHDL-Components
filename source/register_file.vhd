@@ -4,13 +4,11 @@
 -- Filename: register_file.vhd
 -- Description: A register_file can combine multipal counter to count.
 -- Author: YIN Haoping
--- Date: March 21, 2023
+-- Date: March 24, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
 
 --! register_file entity description

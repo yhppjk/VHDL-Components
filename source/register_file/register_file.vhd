@@ -8,11 +8,8 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
-
 --! register_file entity description
 
 --! Detailed description of this
@@ -21,7 +18,7 @@ entity register_file is
     generic (
         dataWidth : positive := 32;			--! generic of datawidth
         addressWidth : positive := 5;		--! generic of address width
-        num_reg : positive := 32;			--! generic of size of register file
+        --num_reg : positive := 32;			--! generic of size of register file
 		combination_read : boolean := false	--! generic of Combination and sychrnonous selection
     );
     port (
@@ -40,9 +37,11 @@ end entity register_file;
 --! @brief Architecture definition of register_file
 --! @details More details about this register_file element.
 architecture behavior of register_file is
+
+	constant  num_reg : positive := 2**addressWidth;				--! generic of size of register file
 --! a  type of register file 2d array
 	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
-	signal reg_file : reg_file_t := (0=>x"00", 1=>x"10", 2=>x"fe", others =>(others =>'0'));
+	signal reg_file : reg_file_t := (others =>(others =>'0'));
 	
 begin	
 --! @brief reset & write_process

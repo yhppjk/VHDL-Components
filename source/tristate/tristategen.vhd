@@ -8,7 +8,6 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 USE ieee.std_logic_1164.ALL;
 --! Tristate entity description
 
@@ -16,7 +15,7 @@ USE ieee.std_logic_1164.ALL;
 --! Tristate design element.
 ENTITY tristategen IS
    GENERIC	(
-	width : POSITIVE := 3
+	width : POSITIVE := 3							--! generaic data width 
 );
    PORT (
 	din : IN std_logic_vector(width-1 downto 0);	--! Tristate data input

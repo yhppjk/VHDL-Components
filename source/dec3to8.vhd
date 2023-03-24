@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec3to8
 --! @decoder 3 to 8 
 -- Filename: dec3to8.vhd
 -- Description: decoder 3 to 8 
@@ -8,9 +8,7 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 USE ieee.std_logic_1164.ALL;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
 
 --! Decoder entity description

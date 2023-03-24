@@ -9,7 +9,6 @@
 
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
 
 --! Detailed description of this

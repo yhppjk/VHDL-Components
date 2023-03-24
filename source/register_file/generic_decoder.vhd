@@ -8,9 +8,7 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
 
 --! generic_decoder entity description

@@ -1,8 +1,0 @@
-
-State Machine - |start_stop|current_state
-Name current_state.brakeB current_state.brakeA current_state.makeB current_state.makeA current_state.start 
-current_state.start 0 0 0 0 0 
-current_state.makeA 0 0 0 1 1 
-current_state.makeB 0 0 1 0 1 
-current_state.brakeA 0 1 0 0 1 
-current_state.brakeB 1 0 0 0 1 

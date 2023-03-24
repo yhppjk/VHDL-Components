@@ -8,9 +8,7 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 USE ieee.std_logic_1164.ALL;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
 
 --! MUX 4 to 1 entity description

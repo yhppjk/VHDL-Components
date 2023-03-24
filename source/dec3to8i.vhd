@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec3to8i
 --! @decoder 3 to 8 interger
 -- Filename: dec3to8i.vhd
 -- Description: decoder 3 to 8 interger
@@ -9,7 +9,6 @@
 
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 USE ieee.std_logic_1164.ALL;
 
 --! Decoder entity description

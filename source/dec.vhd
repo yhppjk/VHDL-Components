@@ -1,5 +1,5 @@
 ----------------------------------------------------------
---! @file
+--! @file dec
 --! @decoder to any
 -- Filename: dec.vhd
 -- Description: decoder any
