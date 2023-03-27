@@ -2,7 +2,7 @@
 --! @file reg_file
 --! @A reg_file can combine multipal counter to count.
 -- Filename: reg_file.vhd
--- Description: A reg_file can combine multipal counter to count.
+-- Description: A reg_file can save some data in different address.
 -- Author: YIN Haoping
 -- Date: March 21, 2023
 ----------------------------------------------------------
@@ -18,24 +18,24 @@ USE ieee.numeric_std.ALL;
 entity reg_file is
     generic (
         dataWidth : positive := 4;			--! generic of datawidth
-        addressWidth : positive := 2;		--! generic of address width
---      num_reg : positive := 4;				--! generic of size of register file
-		  combination_read : boolean := false	--! generic of Combination and sychrnonous selection
-		  --sychronous reset
-		  --reset address 0 only
-		  --ignore write address 0
+		addressWidth : positive := 2;		--! generic of address width
+		sychro_reset : boolean := false; 	--! sychronous reset
+		reset_zero : boolean := false;		--! reset address 0 only
+		ignore_zero : boolean := false;		--! ignore write address 0
+		combination_read : boolean := false	--! generic of Combination and sychrnonous selection
+		--      num_reg : positive := 4;				--! generic of size of register file
     );
     port (
-        clk        	: in  std_logic;					--! the input port of clock
-        reset      	: in  std_logic := '1';			--! the input port of reset
-        writeEna   	: in  std_logic := '1';			--! the input port of write enable
+        clk        	: in  std_logic;				--! the input port of clock
+        reset      	: in  std_logic := '0';			--! the input port of reset
+        writeEna   	: in  std_logic := '0';			--! the input port of write enable
         writeAddress : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of wirte address
         writeData 	: in  std_logic_vector(dataWidth-1 downto 0);			--! the input port of write data
         readAddress1 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address1
         readAddress2 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address2
         readData1 	: out std_logic_vector(dataWidth-1 downto 0);			--! the output port of read data1
         readData2 	: out std_logic_vector(dataWidth-1 downto 0);				--! the output port of read data2
-		  full			: out std_logic := '0'					--! full save flag	
+	full		: out std_logic := '0'			--! full save flag	
     );
 end entity reg_file;
 
@@ -47,23 +47,76 @@ architecture behavior of reg_file is
 
 --! a  type of register file 2d array
 	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
-	signal reg_file : reg_file_t := (0=>x"0", 1=>x"1", 2=>x"e", others =>(others =>'0'));
-	
+	signal reg_file : reg_file_t := (0 =>"01010101",others =>(others =>'0'));
+	signal zeros : std_logic_vector(addressWidth-1 downto 0);
 begin	
+zeros <= (others => '0');
+
+write_original: if reset_zero = false and ignore_zero = false generate
 --! @brief reset & write_process
---! @details reset & write_process
-	write_process : process(reset, clk)
+--! @details reset & write_process without reset zero and ignore zero.
+	write_process1 : process(reset, clk)
 	begin
-	    if reset = '0' then
+	    if reset = '1' then
 			for i in 0 to num_reg-1 loop
 				reg_file(i) <= (others => '0');
 			end loop;
 		elsif rising_edge(clk) then
-		    if(writeEna = '0') then
+		    if(writeEna = '1') then
 				reg_file(to_integer(unsigned(writeAddress))) <= writeData;
 		    end if;
 		end if;
 	end process;
+end generate write_original;
+	
+--! @brief reset & write_process
+--! @details reset & write_process with reset zero without ignore zero
+write_reset_zero : if reset_zero = true and ignore_zero = false generate
+	write_process2 : process(reset, clk)
+	begin
+	    if reset = '1' then
+			reg_file(0) <= (others => '0');
+		elsif rising_edge(clk) then
+		    if(writeEna = '1') then
+				reg_file(to_integer(unsigned(writeAddress))) <= writeData;
+		    end if;
+		end if;
+	end process;
+end generate write_reset_zero;
+	
+write_ignore_zero: if reset_zero = false and ignore_zero = true generate
+--! @brief reset & write_process
+--! @details reset & write_process without reset zero, with ignore zero.
+	write_process3 : process(reset, clk)
+	begin
+	    if reset = '1' then
+			for i in 0 to num_reg-1 loop
+				reg_file(i) <= (others => '0');
+			end loop;
+		elsif rising_edge(clk) then
+		    if(writeEna = '1') and writeAddress /= zeros then
+			reg_file(to_integer(unsigned(writeAddress))) <= writeData;
+		    end if;
+		end if;
+	end process;
+end generate write_ignore_zero;
+	
+write_ignore_reset_zero: if reset_zero = true and ignore_zero = true generate
+--! @brief reset & write_process
+--! @details reset & write_process with reset zero and ignore zero.
+	write_process4 : process(reset, clk)
+	begin
+	    if reset = '1' then
+			reg_file(0) <= (others => '0');
+		elsif rising_edge(clk) then
+		    if(writeEna = '1') and writeAddress /= zeros then
+			reg_file(to_integer(unsigned(writeAddress))) <= writeData;
+		    end if;
+		end if;
+	end process;
+end generate write_ignore_reset_zero;
+
+
 	
 --! @brief generate read1 process
 --! @details generate read1 process

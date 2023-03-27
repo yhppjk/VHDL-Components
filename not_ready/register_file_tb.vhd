@@ -8,11 +8,8 @@
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
---! Use logic elements
 use ieee.std_logic_1164.all;
---! Use numeric elements
 USE ieee.numeric_std.ALL;
---! Use generic_register_pkg 
 use work.generic_register_pkg.all;
 
 --! register_file_tb entity description
