@@ -4,7 +4,7 @@
 -- Filename: reg_file.vhd
 -- Description: A reg_file can save some data in different address.
 -- Author: YIN Haoping
--- Date: March 21, 2023
+-- Date: March 27, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
@@ -48,9 +48,9 @@ architecture behavior of reg_file is
 --! a  type of register file 2d array
 	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
 	signal reg_file : reg_file_t := (0 =>"01010101",others =>(others =>'0'));
-	signal zeros : std_logic_vector(addressWidth-1 downto 0);
+	signal zeros : std_logic_vector(addressWidth-1 downto 0) := (others =>'0');
+	signal zeros_data : std_logic_vector(dataWidth-1 downto 0) := (others =>'0');
 begin	
-zeros <= (others => '0');
 
 write_original: if reset_zero = false and ignore_zero = false generate
 --! @brief reset & write_process
@@ -161,7 +161,7 @@ end generate read2_gen2;
 	begin
 	count :=0;
 	for i in 0 to num_reg-1 loop
-		if reg_file(i) /= x"0" then
+		if reg_file(i) /= zeros_data then
 			count := count +1;
 		end if;
 	end loop;

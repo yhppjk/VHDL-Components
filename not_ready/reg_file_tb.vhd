@@ -4,7 +4,7 @@
 -- Filename: reg_file_tb.vhd
 -- Description: A reg_file_tb can test the reaction of a register file.
 -- Author: YIN Haoping
--- Date: March 21, 2023
+-- Date: March 27, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
@@ -124,9 +124,6 @@ BEGIN
 	writeAddress <= address1;
 	WAIT FOR 20 ns;
 	
-
-
-
         --! Done
 	ASSERT false
 		REPORT "Simulation ended ( not a failure actually ) "

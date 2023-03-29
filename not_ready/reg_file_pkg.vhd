@@ -4,7 +4,7 @@
 -- Filename: reg_file_pkg.vhd
 -- Description: A reg_file_pkg contains the component of start_stop
 -- Author: YIN Haoping
--- Date: March 21, 2023
+-- Date: March 27, 2023
 ----------------------------------------------------------
 
 --! Use standard library
@@ -21,9 +21,6 @@ PACKAGE reg_file_pkg IS
 
 --! Detailed description of this
 --! reg_file_pkg design element.
-
---! component generic_register description
-
 
 --! component reg_file description
 COMPONENT reg_file IS
