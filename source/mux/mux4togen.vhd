@@ -17,13 +17,13 @@ USE ieee.numeric_std.ALL;
 --! mux 4 to generic design element.
 ENTITY mux4togen IS
 	GENERIC (width: INTEGER :=4);
-   PORT (
-   	din0 :  IN	std_logic_vector(width-1 downto 0);	--! input 0 of mux
-	din1 :  IN  std_logic_vector(width-1 downto 0);	--! input 1 of mux
-	din2 :  IN	std_logic_vector(width-1 downto 0);	--! input 2 of mux
-	din3 :  IN	std_logic_vector(width-1 downto 0);	--! input 3 of mux
-	sel	:	IN std_logic_vector(1 downto 0);		--! selection of mux
-	dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
+	PORT (
+		din0 :  IN	std_logic_vector(width-1 downto 0);	--! input 0 of mux
+		din1 :  IN  std_logic_vector(width-1 downto 0);	--! input 1 of mux
+		din2 :  IN	std_logic_vector(width-1 downto 0);	--! input 2 of mux
+		din3 :  IN	std_logic_vector(width-1 downto 0);	--! input 3 of mux
+		sel	:	IN std_logic_vector(1 downto 0);		--! selection of mux
+		dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
 );
 END ENTITY mux4togen;
 
@@ -32,17 +32,17 @@ END ENTITY mux4togen;
 ARCHITECTURE Behavioral OF mux4togen IS
 BEGIN
 
-PROCESS(din1,din2,din3,din0,sel) is
-BEGIN
-	case(sel) is 
-	when "00" =>
-		dout <= din0;
-	when "01" =>
-		dout <= din1;
-	when "10" =>
-		dout <= din2;
-	when "11" =>
-		dout <= din3;
-	end case;
-END PROCESS;	
+	PROCESS(din1,din2,din3,din0,sel) is
+	BEGIN
+		case(sel) is 
+		when "00" =>
+			dout <= din0;
+		when "01" =>
+			dout <= din1;
+		when "10" =>
+			dout <= din2;
+		when "11" =>
+			dout <= din3;
+		end case;
+	END PROCESS;	
 END ARCHITECTURE Behavioral;

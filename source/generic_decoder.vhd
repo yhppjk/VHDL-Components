@@ -19,7 +19,8 @@ USE ieee.numeric_std.ALL;
 --! generic_decoder design element.
 entity generic_decoder is
     generic (
-		addressWidth : positive := 5;		--! generic of address width    
+		addressWidth : positive := 5;		--! generic of address width  
+		prop_delay : time := 0 ns			--! prop delay
 		);
 	port (
 		address : in  std_logic_vector(addressWidth-1 downto 0);  	--！the input port of address
@@ -36,7 +37,11 @@ begin
 		begin
 		selects <= (others => '0');
 		if enable ='1' then
-			selects(to_integer(unsigned(address))) <= '1';
+			if prop_delay = 0 ns then
+				selects(to_integer(unsigned(address))) <= '1';
+			else	
+				selects(to_integer(unsigned(address))) <= '1' after prop_delay;	
+			end if;
 		end if;
 	end process;
 end architecture behavior;

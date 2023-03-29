@@ -30,6 +30,7 @@ architecture sim of reg_file_tb is
     constant combination_read : boolean := false;	--! Constant of Combination and sychrnonous selection
     constant reset_zero : boolean := false;			--! reset address 0 only
     constant ignore_zero : boolean := false;		--! ignore write address 0
+    constant read_delay : time := 1 ns;
 
     signal clk        : std_logic := '0';		--! the signal of clock
     signal reset      : std_logic := '0';		--! the signal of reset
@@ -40,13 +41,12 @@ architecture sim of reg_file_tb is
     signal readAddress2 : std_logic_vector(addressWidth-1 downto 0) := (others => '0');	--! the signal of read address2
     signal readData1 : std_logic_vector(dataWidth-1 downto 0) := (others => '0');		--! the signal of read data1
     signal readData2 : std_logic_vector(dataWidth-1 downto 0) := (others => '0');		--! the signal of read data2
-	signal full		: std_logic := '0';			--! full save flag	
 
 
-	signal address0: std_logic_vector(addressWidth-1 downto 0) := (others => '0');		--! signal of first address
-	signal address1: std_logic_vector(addressWidth-1 downto 0) := (others =>'1');		--! signal of last address
-	signal datazeros: std_logic_vector(dataWidth-1 downto 0) := (others => '0');		--! signal of data zeros
-	signal dataones: std_logic_vector(dataWidth-1 downto 0) := (others =>'1');			--! signal of data ones
+	constant address0: std_logic_vector(addressWidth-1 downto 0) := (others => '0');		--! signal of first address
+	constant address1: std_logic_vector(addressWidth-1 downto 0) := (others =>'1');		--! signal of last address
+	constant datazeros: std_logic_vector(dataWidth-1 downto 0) := (others => '0');		--! signal of data zeros
+	constant dataones: std_logic_vector(dataWidth-1 downto 0) := (others =>'1');			--! signal of data ones
 BEGIN
 
 	
@@ -55,9 +55,10 @@ BEGIN
         generic map (
             dataWidth => dataWidth,
             addressWidth => addressWidth,
-			combination_read => combination_read,
-			reset_zero => reset_zero,
-			ignore_zero => ignore_zero
+	    combination_read => combination_read,
+	    reset_zero => reset_zero,
+	    ignore_zero => ignore_zero,
+	    read_delay => read_delay	
         )
         port map (
             clk        => clk,
@@ -68,8 +69,7 @@ BEGIN
             readAddress1 => readAddress1,
             readAddress2 => readAddress2,
             readData1 => readData1,
-            readData2 => readData2,
-			full => full
+            readData2 => readData2
         );
 	
 --! @brief Clock generation process

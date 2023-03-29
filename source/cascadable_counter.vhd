@@ -51,13 +51,21 @@ BEGIN
 	IF rst = '1' THEN
 		count_sig <=0;
 	ELSIF rising_edge(clk) THEN
-	IF ena = '1' AND cin ='1' THEN
-		IF count_sig =MAX_COUNT THEN
-			count_sig <=0;
-		ELSE 
-			count_sig <= count_sig +1;
+		IF ena = '1' AND cin ='1' THEN
+			IF count_sig =MAX_COUNT THEN
+				if prop_delay = 0 ns then
+					count_sig <=0;
+				else 
+					count_sig <=0 after prop_delay;
+				end if;	
+			ELSE 
+				if prop_delay = 0 ns then
+					count_sig <= count_sig +1;
+				else 
+					count_sig <= count_sig +1 after prop_delay;
+				end if;
+			END IF;
 		END IF;
-	END IF;
 	END IF;
 END PROCESS;
 

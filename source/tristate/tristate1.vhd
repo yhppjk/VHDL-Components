@@ -14,11 +14,13 @@ USE ieee.std_logic_1164.ALL;
 --! Detailed description of this
 --! Tristate design element.
 ENTITY tristate1 IS
-
-   PORT (
-	din : IN std_logic;			--! Tristate data input
-	ena :  IN  std_logic;		--! Tristate enable input
-	dout : OUT std_logic		--! Tristate data output
+	GENERIC	(
+		prop_delay : time := 0 ns		--! prop delay
+);
+	PORT (
+		din : IN std_logic;			--! Tristate data input
+		ena :  IN  std_logic;		--! Tristate enable input
+		dout : OUT std_logic		--! Tristate data output
 );
 END ENTITY tristate1;
 
@@ -26,6 +28,21 @@ END ENTITY tristate1;
 --! @details More details about this Tristate element.
 ARCHITECTURE table OF tristate1 IS
 
-BEGIN
-	dout <= din when (ena = '0') else 'Z';
+BEGIN		
+    process(din)
+    Begin
+	if prop_delay = 0 ns then
+	    if ena = '0' then
+		dout <= din;
+	    else
+		dout <= 'Z';
+	    end if;
+	else 
+	    if ena='0' then
+		dout <= din after prop_delay;
+	    else
+		dout <= 'Z' after prop_delay;
+	    end if;
+	end if;		
+    end process;
 END ARCHITECTURE table;

@@ -15,7 +15,8 @@ use ieee.std_logic_1164.all;
 --! generic_register design element.
 entity generic_register is
     generic (
-        dataWidth : positive := 32		--! generic of datawidth
+        dataWidth : positive := 32;		--! generic of datawidth
+		prop_delay : time := 0 ns		--! prop delay
     );
 	    port (
         clk         : in  std_logic;	--! the input port of clock
@@ -39,7 +40,11 @@ begin
 			reg_out <= (others => '0');
 		elsif rising_edge(clk) then
 			if enable ='1' then
-				reg_out <= reg_in;
+				if prop_delay = 0 ns then
+					reg_out <= reg_in;
+				else 
+					reg_out <= reg_in after prop_delay;
+				end if;
 			end if;
 		end if;
     end process;

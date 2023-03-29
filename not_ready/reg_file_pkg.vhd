@@ -30,7 +30,8 @@ COMPONENT reg_file IS
         --num_reg : positive := 32;				--! generic of size of register file
 		reset_zero : boolean := false;		--! reset address 0 only
 		ignore_zero : boolean := false;		--! ignore write address 0
-		combination_read : boolean := false		--! generic of Combination and sychrnonous selection
+		combination_read : boolean := false;		--! generic of Combination and sychrnonous selection
+	read_delay : time := 0 ns
     );
     port (
         clk        : in  std_logic;		--! the input port of clock
@@ -41,8 +42,7 @@ COMPONENT reg_file IS
         readAddress1 : in  std_logic_vector(addressWidth-1 downto 0);	--! the input port of read address1
         readAddress2 : in  std_logic_vector(addressWidth-1 downto 0);	--! the input port of read address2
         readData1 : out std_logic_vector(dataWidth-1 downto 0);		--! the output port of read data1
-        readData2 : out std_logic_vector(dataWidth-1 downto 0);		--! the output port of read data2
-	full		: out std_logic := '0'				--! full save flag	    
+        readData2 : out std_logic_vector(dataWidth-1 downto 0)		--! the output port of read data2
 	);
 END COMPONENT reg_file;
 END PACKAGE reg_file_pkg;

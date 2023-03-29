@@ -15,7 +15,8 @@ USE ieee.std_logic_1164.ALL;
 --! Tristate design element.
 ENTITY tristategen IS
    GENERIC	(
-	width : POSITIVE := 3							--! generaic data width 
+	width : POSITIVE := 3;			--! generaic data width 
+	prop_delay : time := 0 ns		--! prop delay
 );
    PORT (
 	din : IN std_logic_vector(width-1 downto 0);	--! Tristate data input
@@ -27,7 +28,22 @@ END ENTITY tristategen;
 --! @brief Architecture definition of Tristate
 --! @details More details about this Tristate element.
 ARCHITECTURE table OF tristategen IS
-
-BEGIN
-	dout <= din when (ena = '0') else "ZZZZ";
+	constant stateZ : std_logic_vector(width-1 downto 0)  := (others => 'Z');
+BEGIN	
+    process(din)
+    Begin
+	if prop_delay = 0 ns then
+	    if ena = '0' then
+		dout <= din;
+	    else
+		dout <= stateZ;
+	    end if;
+	else 
+	    if ena='0' then
+		dout <= din after prop_delay;
+	    else
+		dout <= stateZ after prop_delay;
+	    end if;
+	end if;		
+    end process;
 END ARCHITECTURE table;

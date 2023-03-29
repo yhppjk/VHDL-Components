@@ -17,12 +17,12 @@ USE ieee.numeric_std.ALL;
 --! mux 2 to generic design element.
 ENTITY mux2togen IS
 	GENERIC (width: INTEGER :=4);
-   PORT (
-	din0 :  IN  std_logic_vector(width-1 downto 0);	--! input 0 of mux
-	din1 :  IN	std_logic_vector(width-1 downto 0);	--! input 1 of mux
-	sel	:	IN std_logic;							--! selection of mux
-	dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
-);
+	PORT (
+		din0 :  IN  std_logic_vector(width-1 downto 0);	--! input 0 of mux
+		din1 :  IN	std_logic_vector(width-1 downto 0);	--! input 1 of mux
+		sel	:	IN std_logic;							--! selection of mux
+		dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
+);	
 END ENTITY mux2togen;
 
 --! @brief Architecture definition of mux2togen

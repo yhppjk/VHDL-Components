@@ -42,7 +42,8 @@ COMPONENT register_file IS
         dataWidth : positive := 32;				--! generic of datawidth
         addressWidth : positive := 5;			--! generic of address width
         num_reg : positive := 32;				--! generic of size of register file
-		combination_read : boolean := false		--! generic of Combination and sychrnonous selection
+		combination_read : boolean := false;		--! generic of Combination and sychrnonous selection
+		prop_delay : time := 0 ns     			--! prop delay
     );
     port (
         clk        : in  std_logic;		--! the input port of clock

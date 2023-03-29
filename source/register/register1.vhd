@@ -34,7 +34,11 @@ BEGIN
 		reg_out <= '0';
 	elsif rising_edge(clk) then
 		if writ ='1' then 
-			reg_out <= reg_in;
+			if prop_delay = 0 ns then
+				reg_out <= reg_in;
+			else
+				reg_out <= reg_in after prop_delay;
+			end if;
 		end if;
 	end if;
 	end  process;

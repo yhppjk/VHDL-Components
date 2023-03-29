@@ -13,7 +13,8 @@ use ieee.std_logic_1164.all;
 
 ENTITY start_stop IS
 	GENERIC(
-	MAKE_LEVEL: std_logic :='0'
+	MAKE_LEVEL: std_logic :='0';
+	prop_delay : time := 0 ns
 );
 	PORT(
 	rst: IN  std_logic ;
@@ -42,7 +43,11 @@ BEGIN
 	current_state <= start;
 	ELSIF rising_edge(clk) THEN
 		IF ena='1' THEN
-		current_state <= next_state;
+			if prop_delay = 0 ns then
+				current_state <= next_state;
+			else
+				current_state <= next_state after prop_delay;
+			end if;
 		END IF;
 	END IF;	
 END PROCESS;
@@ -100,11 +105,5 @@ BEGIN
 	END CASE;
 
 END PROCESS;
-
---OUTPUT Value
---PROCESS(start_stop_output)
---BEGIN
-	--start_stop <= start_stop_output;
---END PROCESS;
 END ARCHITECTURE;
 	
