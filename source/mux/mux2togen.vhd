@@ -16,7 +16,10 @@ USE ieee.numeric_std.ALL;
 --! Detailed description of this
 --! mux 2 to generic design element.
 ENTITY mux2togen IS
-	GENERIC (width: INTEGER :=4);
+	GENERIC (
+		width: INTEGER :=4;
+		prop_delay : time := 0 ns		--! prop delay
+);
 	PORT (
 		din0 :  IN  std_logic_vector(width-1 downto 0);	--! input 0 of mux
 		din1 :  IN	std_logic_vector(width-1 downto 0);	--! input 1 of mux
@@ -29,5 +32,11 @@ END ENTITY mux2togen;
 --! @details More details about this multiplexer.
 ARCHITECTURE Behavioral OF mux2togen IS
 BEGIN
-	dout <= din0 when (sel ='1') else din1;
+	no_delay: if prop_delay = 0 ns generate
+	dout <= din0 when sel = '0' else din1;
+	end generate no_delay;
+
+	with_delay:	if prop_delay /= 0 ns generate
+	dout <= din0 after prop_delay when sel = '0' else din1 after prop_delay;
+	end generate with_delay;
 END ARCHITECTURE Behavioral;

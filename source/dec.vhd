@@ -19,8 +19,8 @@ USE ieee.numeric_std.ALL;
 --! decoder design element.
 ENTITY dec IS
 	GENERIC	(
-		width : POSITIVE := 3,			--! width of data
-		prop_delay : time := 0 ns;		--! prop delay
+		width : POSITIVE := 3;			--! width of data
+		prop_delay : time := 0 ns		--! prop delay
 );
 	PORT (
 		din :  IN  std_logic_vector(width-1 downto 0);		--! dec data input

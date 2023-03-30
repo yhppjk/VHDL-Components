@@ -55,10 +55,10 @@ BEGIN
         generic map (
             dataWidth => dataWidth,
             addressWidth => addressWidth,
-	    combination_read => combination_read,
-	    reset_zero => reset_zero,
-	    ignore_zero => ignore_zero,
-	    read_delay => read_delay	
+			combination_read => combination_read,
+			reset_zero => reset_zero,	
+			ignore_zero => ignore_zero,
+			read_delay => read_delay	
         )
         port map (
             clk        => clk,

@@ -19,7 +19,8 @@ USE ieee.numeric_std.ALL;
 --! cout and cin to send and receive a signal to run the other level counter.
 ENTITY cascadable_counter IS
 	GENERIC(
-		MAX_COUNT: POSITIVE :=10	--! generic limit of counter
+		MAX_COUNT: POSITIVE :=10;	--! generic limit of counter
+		prop_delay : time := 0 ns
 );
 	PORT(
 	rst: IN  std_logic ;		--! reset input port 

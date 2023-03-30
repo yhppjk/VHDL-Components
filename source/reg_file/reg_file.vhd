@@ -24,17 +24,6 @@ entity reg_file is
 		ignore_zero : boolean := false;		--! ignore write address 0
 		combination_read : boolean := false;	--! generic of Combination and sychrnonous selection
 		read_delay: time := 0 ns			--! generic of read delay time
-		--time values
-		--read delay(time) /= 0 then
-				-- if (read_delay /= 0 ns) then
-				--     ouput <= value; -- regular assignment
-				-- else
-				--     ouput <= value after read_delay; -- delayed assignment
-				-- end if;
-				--prop_delay to all the source
-		
-		
-		--      num_reg : positive := 4;				--! generic of size of register file
     );
     port (
         clk        	: in  std_logic;				--! the input port of clock
@@ -45,7 +34,7 @@ entity reg_file is
         readAddress1 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address1
         readAddress2 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address2
         readData1 	: out std_logic_vector(dataWidth-1 downto 0);			--! the output port of read data1
-        readData2 	: out std_logic_vector(dataWidth-1 downto 0)				--! the output port of read data2
+        readData2 	: out std_logic_vector(dataWidth-1 downto 0)			--! the output port of read data2
     );
 end entity reg_file;
 
@@ -53,15 +42,13 @@ end entity reg_file;
 --! @details More details about this reg_file element.
 architecture behavior of reg_file is
     constant  num_reg : positive := 2**addressWidth;				--! generic of size of register file
-
-
+	
 	--! a  type of register file 2d array
 	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
 	signal reg_file : reg_file_t := (0 =>"01010101",others =>(others =>'0'));
 	constant zeros_address : std_logic_vector(addressWidth-1 downto 0) := (others =>'0');
 	constant zeros_data : std_logic_vector(dataWidth-1 downto 0) := (others =>'0');
-	begin	
-
+begin	
 	write_original: if reset_zero = false and ignore_zero = false generate
 	--! @brief reset & write_process
 	--! @details reset & write_process without reset zero and ignore zero.

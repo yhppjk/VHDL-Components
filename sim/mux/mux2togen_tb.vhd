@@ -27,11 +27,12 @@ ARCHITECTURE behavior OF mux2togen_tb IS
    CONSTANT TBWDITH : POSITIVE := 4;	--! Component declaration for the Design Under Test (DUT
    COMPONENT mux2togen
    GENERIC	(
-	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
+	width : POSITIVE := TBWDITH; --! constant to describe the width of decoder
+	prop_delay : time := 1 ns		--! prop delay
 );
    PORT (
 	din1 :  IN std_logic_vector(width-1 downto 0);		--! data input port1
-	din2 : 	IN std_logic_vector(width-1 downto 0);		--! data input port2
+	din0 : 	IN std_logic_vector(width-1 downto 0);		--! data input port0
 	sel : IN std_logic;									--! selection of mux
 	dout : OUT std_logic_vector(width-1 downto 0)	--! data output port
 );
@@ -39,7 +40,7 @@ ARCHITECTURE behavior OF mux2togen_tb IS
     
    --Inputs
    signal din1 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal1
-   signal din2 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal2
+   signal din0 : std_logic_vector(TBWDITH-1 downto 0);	--! data input signal0
    signal sel  : std_logic :='0';						--! selection of mux
  	--Outputs
    signal dout : std_logic_vector(TBWDITH-1 downto 0);	--! data output signal
@@ -50,7 +51,7 @@ BEGIN
 	dut: mux2togen
 	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
 		din1  => din1,
-		din2  => din2,
+		din0  => din0,
 		sel => sel,
 		dout => dout
 	);
@@ -65,7 +66,7 @@ BEGIN
 	begin
 
 	din1 <= "1100";
-	din2 <= "0011";
+	din0 <= "0011";
 	sel <= '0';
 	wait for 10 ns;
 
@@ -73,7 +74,7 @@ BEGIN
 	
 	wait for 10 ns;
 	
-	din2 <= "1010";
+	din0 <= "1010";
 	sel <= '0';
 	wait for 10 ns;
 

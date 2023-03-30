@@ -17,7 +17,9 @@ package cascadable_counter_pkg is
 
     --! This is the declaration of the component we want to verify
     component cascadable_counter is
-    generic (max_count: positive := 10 );
+    generic (
+		max_count: positive := 10;
+		prop_delay : time := 0 ns);
     port (
 		clk:   in  std_logic;
 		rst:   in  std_logic := '0';

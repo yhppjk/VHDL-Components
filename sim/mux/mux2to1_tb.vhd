@@ -25,29 +25,32 @@ END ENTITY mux2to1_tb;
 ARCHITECTURE behavior OF mux2to1_tb IS 
  
 
-   COMPONENT mux2to1
-   PORT (
-	din1 :  IN std_logic;		--! data input port1
-	din2 : 	IN std_logic;		--! data input port2
-	sel : IN std_logic;		--! selection of mux
-	dout : OUT std_logic	--! data output port
+    COMPONENT mux2to1
+   	GENERIC	(
+		prop_delay : time := 1 ns		--! prop delay
+);
+    PORT (
+		din0 :  IN std_logic;		--! data input port0
+		din1 : 	IN std_logic;		--! data input port1
+		sel : IN std_logic;		--! selection of mux
+		dout : OUT std_logic	--! data output port
 );
     END COMPONENT mux2to1;
     
    --Inputs
-   signal din1 : std_logic;	--! data input signal
-   signal din2 : std_logic;	--! data input signal
-   signal sel  : std_logic :='0';	--! selection of mux
- 	--Outputs
-   signal dout : std_logic;	--! data output signal
- 
+	signal din0 : std_logic;	--! data input signal
+	signal din1 : std_logic;	--! data input signal
+	signal sel  : std_logic :='0';	--! selection of mux
+	--Outputs
+	signal dout : std_logic;	--! data output signal
+
 BEGIN
- 
+
 	--! Instantiate the Design Under Test (DUT) and map its ports
 	dut: mux2to1
 	PORT MAP ( --! Mapping: component port (left) => this arch signal/port (right)
+		din0  => din0,		
 		din1  => din1,
-		din2  => din2,
 		sel => sel,
 		dout => dout
 	);
@@ -62,7 +65,7 @@ BEGIN
 	begin
 
 	din1 <= '1';
-	din2 <= '0';
+	din0 <= '0';
 	sel <= '0';
 	wait for 10 ns;
 
@@ -70,7 +73,7 @@ BEGIN
 	
 	wait for 10 ns;
 	
-	din2 <= '1';
+	din0 <= '1';
 	sel <= '0';
 	wait for 10 ns;
 
