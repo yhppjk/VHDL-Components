@@ -20,8 +20,9 @@ END ENTITY tristategen_tb;
 ARCHITECTURE behavior OF tristategen_tb IS 
 	CONSTANT TBWDITH : POSITIVE := 4;
    COMPONENT tristategen
-   GENERIC (
-			width : POSITIVE := TBWDITH
+   GENERIC	(
+	width : POSITIVE := 4;			--! generaic data width 
+	prop_delay : time := 2 ns		--! prop delay
 );
    PORT (
 	din :  IN  std_logic_vector(width-1 downto 0);	--! Tristate input port 

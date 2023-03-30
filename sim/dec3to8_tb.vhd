@@ -26,14 +26,15 @@ ARCHITECTURE behavior OF dec3to8_tb IS
  
     
     COMPONENT dec3to8 --! Component declaration for the Design Under Test (DUT)
+	generic(	prop_delay : time := 2 ns);
     PORT(
          din :  IN  std_logic_vector(2 downto 0);	--! The input of decoder
          dout : OUT std_logic_vector(7 downto 0)	--! The output of decoder
         );
     END COMPONENT dec3to8;
 
-   signal din : std_logic_vector(2 downto 0);		--! The signal to transfer decoder input
-   signal dout : std_logic_vector(7 downto 0);		--! The signal to transfer decoder output
+    signal din : std_logic_vector(2 downto 0);		--! The signal to transfer decoder input
+    signal dout : std_logic_vector(7 downto 0);		--! The signal to transfer decoder output
  
 BEGIN
 

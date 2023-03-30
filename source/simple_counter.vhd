@@ -18,7 +18,8 @@ use ieee.numeric_std.all;
 --! simple_counter design element.
 entity simple_counter is
 	GENERIC(
-	MAX_COUNT : integer :=31
+	MAX_COUNT : integer :=31;
+	prop_delay : time := 0 ns
 );
   port (
     clk : in std_logic;
@@ -47,24 +48,19 @@ begin
 			count_sig <= 0;
 			mcount_sig <= '0';
 		elsif rising_edge(clk) then
-			if temp = 25000000 then 
-				temp := 0;
-				if count_sig = MAX_COUNT then
-					if prop_delay = 0 ns then
-						mcount_sig <= '1';
-					else 
-						mcount_sig <= '1' after prop_delay;
-					end if;		
-				else
-					if prop_delay = 0 ns then
-						count_sig <= count_sig + 1;
-					else 
-						count_sig <= count_sig + 1 after prop_delay;
-					end if;	
-					mcount_sig <= '0';
-				end if;
-			else 
-				temp := temp +1;	
+			if count_sig = MAX_COUNT then
+				if prop_delay = 0 ns then
+					mcount_sig <= '1';
+				else 
+					mcount_sig <= '1' after prop_delay;
+				end if;		
+			else
+				if prop_delay = 0 ns then
+					count_sig <= count_sig + 1;
+				else 
+					count_sig <= count_sig + 1 after prop_delay;
+				end if;	
+				mcount_sig <= '0';
 			end if;
 		end if;
 	
@@ -84,4 +80,5 @@ begin
 	end process;
 
 end architecture;
+
 

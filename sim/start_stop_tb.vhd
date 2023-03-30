@@ -26,6 +26,7 @@ END ENTITY start_stop_tb;
 ARCHITECTURE Behavioral OF start_stop_tb IS
 
 CONSTANT MAKE_LEVEL_CONST : std_logic := '0'; --! Constant of make_level
+CONSTANT prop_delay : time := 2 ns;
 SIGNAL clk : std_logic := '0';		--! the signal transfer clock
 SIGNAL rst : std_logic := '0';		--! the signal transfer reset
 SIGNAL ena : std_logic := '0';		--! the signal transfer enable

@@ -15,7 +15,7 @@ USE ieee.std_logic_1164.ALL;
 --! Tristate design element.
 ENTITY tristategen IS
    GENERIC	(
-	width : POSITIVE := 3;			--! generaic data width 
+	width : POSITIVE := 4;			--! generaic data width 
 	prop_delay : time := 0 ns		--! prop delay
 );
    PORT (

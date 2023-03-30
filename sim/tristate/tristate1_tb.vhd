@@ -19,19 +19,22 @@ END ENTITY tristate1_tb;
 --! @details Testbench implementation
 ARCHITECTURE behavior OF tristate1_tb IS 
  
-   COMPONENT tristate1
-   PORT (
-	din :  IN  std_logic;	--! Tristate input port 
-	ena :  IN  std_logic; 	--! tristate enable
-	dout : OUT std_logic	--! Tristate output port
+    COMPONENT tristate1
+	GENERIC	(
+	    prop_delay : time := 2 ns		--! prop delay
+);
+        PORT (
+	    din :  IN  std_logic;	--! Tristate input port 
+	    ena :  IN  std_logic; 	--! tristate enable
+	    dout : OUT std_logic	--! Tristate output port
 );
     END COMPONENT tristate1;
     
    --Inputs
-   signal din : std_logic;	--! data input signal
-   signal ena : std_logic;	--! enable input signal
+    signal din : std_logic;	--! data input signal
+    signal ena : std_logic;	--! enable input signal
  	--Outputs
-   signal dout : std_logic;	--! data output signal
+    signal dout : std_logic;	--! data output signal
  
 BEGIN
  

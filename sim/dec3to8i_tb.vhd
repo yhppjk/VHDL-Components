@@ -25,6 +25,7 @@ ARCHITECTURE behavior OF dec3to8i_tb IS
  
 
     COMPONENT dec3to8i     --! Component declaration for the Design Under Test (DUT)
+	generic(	prop_delay : time := 0 ns);
     PORT(
          din :  IN  integer range 0 to 7;	--! data input port 
          dout : OUT std_logic_vector(7 downto 0)	--! data output port

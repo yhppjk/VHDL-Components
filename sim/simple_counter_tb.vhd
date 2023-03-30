@@ -28,7 +28,8 @@ ARCHITECTURE behavior OF simple_counter_tb IS
 CONSTANT TB_MAX_COUNT : integer := 10;		
 COMPONENT simple_counter
 	GENERIC(
-		MAX_COUNT : integer :=TB_MAX_COUNT	--! limit of count
+		MAX_COUNT : integer :=TB_MAX_COUNT;	--! limit of count
+		prop_delay : time := 2 ns
 );
 	PORT(
 		rst: IN std_logic := '1';		--! the reset input

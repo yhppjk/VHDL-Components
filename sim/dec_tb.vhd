@@ -27,7 +27,8 @@ ARCHITECTURE behavior OF dec_tb IS
    CONSTANT TBWDITH : POSITIVE := 5;	--! Component declaration for the Design Under Test (DUT
    COMPONENT dec
    GENERIC	(
-	width : POSITIVE := TBWDITH --! constant to describe the width of decoder
+	width : POSITIVE := TBWDITH; --! constant to describe the width of decoder
+	prop_delay : time := 2 ns
 );
    PORT (
 	din :  IN  std_logic_vector(width-1 downto 0);		--! data input port 

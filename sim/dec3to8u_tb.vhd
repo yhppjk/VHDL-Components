@@ -25,6 +25,7 @@ END ENTITY dec3to8u_tb;
 ARCHITECTURE behavior OF dec3to8u_tb IS 
    
     COMPONENT dec3to8u --! Component declaration for the Design Under Test (DUT)
+	generic(	prop_delay : time := 0 ns);
     PORT(
          din :  IN  unsigned(2 downto 0);		--! The input of decoder
          dout : OUT std_logic_vector(7 downto 0)	--! The output of decoder

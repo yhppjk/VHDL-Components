@@ -18,7 +18,8 @@ use ieee.std_logic_1164.all;
 PACKAGE start_stop_pkg IS
 COMPONENT start_stop IS
 	GENERIC (
-	MAKE_LEVEL : std_logic := '0'		--! A condition to judge the output of the system
+	MAKE_LEVEL : std_logic := '0';		--! A condition to judge the output of the system
+	prop_delay : time := 0 ns
 );
 	PORT(
 		rst: IN std_logic;			--! the reset signal input
