@@ -1,0 +1,57 @@
+The riscV terminology
+
+--ISA		instruction-set architecture
+
+--EEI		execution environment interface
+
+--core
+
+--harts // thread
+
+--accelerator
+
+--coprocesser
+
+--XLEN		64 or 32
+
+
+--risc-v standard
+
+Base Integer Instruction Set
+M	multiple/divide
+A	atomic
+F	float
+D	double
+C	compressed, 16 bits
+
+
+
+
+--list of operations in calculation units
+Arithmetic operations:
+
+Add (ADD)
+Add immediate (ADDI)
+Subtract (SUB)
+Subtract immediate (SUBI)
+Multiply (MUL)
+Multiply unsigned (MULU)
+Divide (DIV)
+Divide unsigned (DIVU)
+Remainder (REM)
+Remainder unsigned (REMU)
+Logic operations:
+
+And (AND)
+Or (OR)
+Exclusive-OR (XOR)
+And immediate (ANDI)
+Or immediate (ORI)
+Exclusive-OR immediate (XORI)
+Shift left logical (SLL)
+Shift right logical (SRL)
+Shift right arithmetic (SRA)
+Set if less than (SLT)
+Set if less than unsigned (SLTU)
+
+

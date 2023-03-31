@@ -11,6 +11,15 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
+--read risc-V standard
+-- get a list of operations in calculation units
+--rv32I chapter 2
+
+
+
+
+
+
 --! cascadable_counter entity description
 
 --! Detailed description of this

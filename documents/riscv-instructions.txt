@@ -1,0 +1,71 @@
+
+RISC-V instructions: 
+ADDI, SLTI, SLTIU, ANDI, ORI, XORI, SLLI, SRLI, SRAI, LOAD, LUI, AUIPC,
+ADD, SLT, SLTU, AND, OR, XOR, SLL, SRL, SRA, SUB, JALR, STORE,
+JAL, BEQ, BNE, BLT, BGE, BLTU, BGEU
+
+* The position and width of all instruction fields (funct7, funct3, rs2/shamt, rs1, rd, opcode, imm) 
+are depicted in page 120, table at the top of the page. 
+Funct12 used for SYSTEM instructions ECALL and EBREAK is the same field as the imm[11:0] in the I-type.
+
+* All instructions share the same 7-bit opcode field in the lower bits.
+	- Lower 2 bits of opcode are 11b (binary) for all RV32I instructions.
+	- The higher 5 bits of opcode determine the major opcodes, see table 24.1
+	opcode LOAD = 		0000011
+	opcode MISC-MEM = 	0001111
+	opcode OP-IMM = 	0010011
+	opcode AUIPC = 		0010111
+	opcode STORE =		0100011
+	opcode OP = 		0110011
+	opcode LUI = 		0110111
+	opcode BRANCH =		1100011
+	opcode JALR = 		1100111
+	opcode JAL = 		1101111
+	opcode SYSTEM = 	1110011
+	The other opcodes are not part of RV32I
+
+List of RISC-V instructions and encodings by major opcode, see table "RV32I Base Instruction Set" on page 130
+
+ADDI. 	opcode OP-IMM, funct3 ADDI  = 000
+SLTI. 	opcode OP-IMM, funct3 SLTI  = 010
+SLTIU. 	opcode OP-IMM, funct3 SLTIU = 011
+ANDI. 	opcode OP-IMM, funct3 ANDI  = 111
+ORI. 	opcode OP-IMM, funct3 ORI   = 110
+XORI. 	opcode OP-IMM, funct3 XORI  = 100
+SLLI. 	opcode OP-IMM, funct3 SLLI  = 001, 
+SRLI. 	opcode OP-IMM, funct3 SRLI/SRAI = 101, funct7 = 0000000
+SRAI. 	opcode OP-IMM, funct3 SRLI/SRAI = 101, funct7 = 0100000
+LOAD instructions
+ LB (load byte). 				opcode LOAD, funct3 LB = 000
+ LH (load halfword). 			opcode LOAD, funct3 LH = 001
+ LW (load word). 				opcode LOAD, funct3 LW = 010
+ LBU (load byte unsigned). 		opcode LOAD, funct3 LB = 100
+ LHU (load halfword unsigned).	opcode LOAD, funct3 LH = 101
+LUI. 	opcode LUI
+AUIPC.	opcode AUIPC
+ADD.	opcode OP, funct3 ADD/SUB = 000, funct7 = 0000000
+SLT.	opcode OP, funct3 SLT = 010
+SLTU.	opcode OP, funct3 SLTU = 011
+AND.	opcode OP, funct3 AND = 111
+OR.		opcode OP, funct3 OR = 110
+XOR.	opcode OP, funct3 XOR = 100
+SLL.	opcode OP, funct3 SLL = 001
+SRL.	opcode OP, funct3 SRL/SRA = 101, funct7 = 0000000
+SRA.	opcode OP, funct3 SRL/SRA = 101, funct7 = 0100000
+SUB.	opcode OP, funct3 ADD/SUB = 000, funct7 = 0100000
+JALR.	opcode JALR
+JAL.	opcode JAL
+BEQ.	opcode BRANCH, funct3 BEQ = 000
+BNE.	opcode BRANCH, funct3 BNE = 001
+BLT.	opcode BRANCH, funct3 BLT = 100
+BGE.	opcode BRANCH, funct3 BGE = 101
+BLTU.	opcode BRANCH, funct3 BLTU = 110
+BGEU.	opcode BRANCH, funct3 BGEU = 111
+STORE instructions
+ SB (store byte).		opcode STORE, funct3 SB = 000
+ SH (store halfword).	opcode STORE, funct3 SH = 001
+ SW (store word).		opcode STORE, funct3 SW = 010
+FENCE.	opcode MISC-MEM, funct3 FENCE = 000
+ECALL.	opcode SYSTEM, funct3 000, funct12 = 000000000000
+EBREAK.	opcode SYSTEM, funct3 000, funct12 = 000000000001
+

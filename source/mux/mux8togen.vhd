@@ -18,7 +18,7 @@ USE ieee.numeric_std.ALL;
 ENTITY mux8togen IS
 	GENERIC (
 		width: INTEGER :=4;
-		prop_delay : time := 1 ns		--! prop delay
+		prop_delay : time := 0 ns		--! prop delay
 );
 	PORT (
 		din0 :  IN	std_logic_vector(width-1 downto 0);	--! input 0 of mux

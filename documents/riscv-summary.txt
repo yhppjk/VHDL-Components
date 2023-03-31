@@ -1,0 +1,1046 @@
+General notes
+
+* RV32I is a load-store architecture, where only load and store instructions access memory and arithmetic instructions only operate on CPU registers.
+* Writes to register 0 (x0/zero) must be ignored.
+* RV32I provides a 32-bit address space that is byte-addressed.
+* The behavior of a RISC-V program depends on the execution environment in which it runs.
+	- A RISC-V execution environment interface (EEI) defines the initial state of the program, 
+	the number and type of harts in the environment including the privilege modes supported by the harts, 
+	the accessibility and attributes of memory and I/O regions, 
+	the behavior of all legal instructions executed on each hart (i.e., the ISA is one component of the EEI), 
+	and the handling of any interrupts or exceptions raised during execution including environment calls.
+	- Examples of execution environment implementations include:
+		* "Bare metal" hardware platforms where harts are directly implemented by physical processor threads 
+		and instructions have full access to the physical address space. 
+		The hardware platform defines an execution environment that begins at power-on reset.
+
+* A "bare metal" implementation with a single, little-endian hart is the internship target.
+
+* A possible/easy enhancement: Implementation of the RV32E Instruction Set
+	- RV32E uses the same instruction-set encoding as RV32I, except that only registers x0–x15 are provided.
+	- Hardware changes from RV32I are minimal: register file address ports are reduced from 5 to 4 bits.
+	- This should be implemented using a VHDL generic / SystemC variable to switch from RV32I (the default) to RV32E.
+
+
+1. RISC-V Summary of formats (see Table 2.3)
+- R-type
+- I-type
+- S-type
+- B-type
+- U-type
+- J-type
+
+
+2. RISC-V Summary of immediate values to be extracted from the instruction register depending on the instruction type/format (see Table 2.4)
+- I-immediate from I-type instructions
+- S-immediate from S-type instructions
+- B-immediate from B-type instructions
+- U-immediate from U-type instructions
+- J-immediate from J-type instructions
+
+
+3. RISC-V Summary of instructions related to arithmetic operations
+
+3.1. I-type
+	operand1 = 32-bit (register rs1), operand2 = 32-bit (I-immediate), result = 32-bit (register rd/memory address)
+	shamt (shift amount) is the lower 5 bits of operand2, used for shifts (SLLI/SRLI/SRAI)
+
+3.1.1. ADDI: Add with immediate
+	opcode = OP-IMM, funct3 = ADDI
+	Result = operand1 + operand2
+
+3.1.2. SLTI: Set if less than with immediate
+	opcode = OP-IMM, funct3 = SLTI
+	Result = Result = (operand1 < operand2? 1 : 0), treating operands as signed numbers
+	Alternative: Result = (operand1 - operand2 ) < 0 (same arithmetic operation as SUB and checking the sign of the result).
+
+3.1.3  SLTIU: Set if less than unsigned with immediate
+	opcode = OP-IMM, funct3 = SLTIU
+	Result = Result = (operand1 < operand2? 1 : 0), treating operands as unsigned numbers
+	Alternative: substract and check the sign of the result.
+
+3.1.4. ANDI: 32-bit bitwise AND with immediate
+	opcode = OP-IMM, funct3 = ANDI
+	Result = operand1 & operand2
+
+3.1.5. ORI: 32-bit bitwise OR with immediate
+	opcode = OP-IMM, funct3 = ORI
+	Result = operand1 | operand2
+
+3.1.6. XORI: 32-bit bitwise XOR with immediate
+	opcode = OP-IMM, funct3 = XORI
+	Result = operand1 ^ operand2
+
+3.1.7. SLLI: Shift left logical with immediate
+	opcode = OP-IMM, funct3 = SLLI
+	Result = operand1 << shamt
+
+3.1.8. SRLI: Shift right logical with immediate
+	opcode = OP-IMM, funct3 = SRLI
+	Result = operand1 >> shamt
+
+3.1.9. SRAI: Shift right arithmetic with immediate
+	opcode = OP-IMM, funct3 = SRAI
+	Result = operand1 >>* shamt (>>* = >> but using arithmetic right shift to maintain sign, no C-style operator equivalent)
+
+3.1.10. LOAD: Load from memory
+	opcode = LOAD, funct3 = data width and sign (word/halfword sign extended/halfword zero extended/byte sign extended/byte zero extended)
+	Note: This instruction doesn't store the result of the arithmetic operation into rd.
+	Memory address = result = operand1 + operand2 (this operation is the same as ADDI)
+	Afterwards, data memory is read (and sign or zero extended if width != word) and stored into register rd
+
+
+3.2. U-type
+	operand1 = 32-bit (register PC), operand2 = 32-bit (U-immediate), result = 32-bit (register rd)
+
+3.2.1. LUI: Load upper immediate
+	opcode = LUI
+	Result = operand2 (operand1 unused)
+
+3.2.2. AUIPC: Add upper immediate to PC
+	opcode = AUIPC
+	Result = operand1 + operand2
+	Same ALU operation than ADDI
+
+
+3.3. R-type
+	operand1 = 32-bit (register rs1), operand2 = 32-bit (register rs2), result = 32-bit (register rd)
+	shamt (shift amount) is the lower 5 bits of operand2, used for shifts (SLL/SRL/SRA)
+
+3.3.1. ADD: Add
+	opcode = OP, funct3 = ADD
+	Result = operand1 + operand2
+	Same ALU operation than ADDI
+
+3.3.2. SLT: Set if less than
+	opcode = OP, funct3 = SLT
+	Result = Result = (operand1 < operand2? 1 : 0), treating operands as signed numbers
+	Alternative: substract and check the sign of the result.
+	Same ALU operation than SLTI
+
+3.3.3  SLTU: Set if less than unsigned
+	opcode = OP, funct3 = SLTU
+	Result = Result = (operand1 < operand2? 1 : 0), treating operands as unsigned numbers
+	Alternative: substract and check the sign of the result.
+	Same ALU operation than SLTIU
+
+3.3.4. AND: 32-bit bitwise AND
+	opcode = OP, funct3 = AND
+	Result = operand1 & operand2
+	Same ALU operation than ANDI
+
+3.3.5. OR: 32-bit bitwise OR
+	opcode = OP, funct3 = OR
+	Result = operand1 | operand2
+	Same ALU operation than ORI
+
+3.3.6. XOR: 32-bit bitwise XOR
+	opcode = OP, funct3 = XOR
+	Result = operand1 ^ operand2
+	Same ALU operation than XORI
+
+3.3.7. SLL: Shift left logical
+	opcode = OP, funct3 = SLL
+	Result = operand1 << shamt
+	Same ALU operation than SLLI
+
+3.3.8. SRL: Shift right logical
+	opcode = OP, funct3 = SRL
+	Result = operand1 >> shamt
+	Same ALU operation than SRLI
+
+3.3.9. SRA: Shift right arithmetic
+	opcode = OP, funct3 = SRA
+	Result = operand1 >>* shamt (>>* = >> but using arithmetic right shift to maintain sign, no C-style operator equivalent)
+	Same ALU operation than SRAI
+
+3.3.10. SUB: Sub
+	opcode = OP, funct3 = SUB
+	Result = operand1 - operand2
+
+
+3.4. JALR/JAL control transfer instructions
+	These instructions write (unconditionally) the contents of the PC register.
+
+3.4.1. JALR: Jump and link register, I-type
+	operand1 = 32-bit (register rs1), operand2 = 32-bit (register PC), operand3 = 32-bit (I-immediate), 
+	result = 32-bit (register rd), result2 = 32-bit (register PC)
+	opcode = JALR, funct3 = 0
+	Result = operand2
+	Result2 = operand1 +* operand3 (forcing the LSB of the result to 0)
+
+3.4.2. JAL: Jump and link,  J-type
+	operand1 = 32-bit (register PC), operand2 = 32-bit (J-immediate), result = 32-bit (register rd), result2 = 32-bit (register PC)
+	opcode = JAL
+	Result = operand1
+	Result2 (register PC) = operand1 + operand2
+
+
+3.5. Control transfer instructions using B-type (branches)
+	These instructions write (potentially, depending on the result of a comparison) the contents of the PC register.
+	operand1 = 32-bit (register rs1), operand2 = 32-bit (register rs2), result = 1 bit (internal flag)
+	operand3 = 32-bit (register PC), operand4 = 32-bit (B-immediate), result2 = 32-bit (register PC)
+
+3.5.1. BEQ: Branch if equal
+	opcode = BRANCH, funct3 = BEQ
+	Result = (operand1 == operand2? 1 : 0)
+	Alternative: Result = (operand1 - operand2 )== 0 (same arithmetic operation as SUB and comparing the result against zero).
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+3.5.2. BNE: Branch if not equal
+	opcode = BRANCH, funct3 = BNE
+	Result = (operand1 != operand2? 1 : 0) // inverse of BEQ result
+	Alternative: Result = !((operand1 - operand2 )== 0) (same arithmetic operation as SUB and comparing the result against zero).
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+3.5.3. BLT: Branch if less than
+	opcode = BRANCH, funct3 = BLT
+	Result = (operand1 < operand2? 1 : 0), treating operands as signed numbers
+	Alternative: Result = (operand1 - operand2 ) < 0 (same arithmetic operation as SUB and checking the sign of the result).
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+3.5.4. BGE: Branch if greater or equal than
+	opcode = BRANCH, funct3 = BGE
+	Result = (operand1 >= operand2? 1 : 0), treating operands as signed numbers // inverse of BLT result
+	Alternative: Result = !((operand1 - operand2 ) < 0) (same arithmetic operation as SUB and checking the sign of the result).
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+3.5.5. BLTU: Branch if less than unsigned
+	opcode = BRANCH, funct3 = BLTU
+	Result = (operand1 < operand2? 1 : 0), treating operands as unsigned numbers
+	Similar alternative operation to BLT
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+3.5.6. BGEU: Branch if greater or equal than unsigned
+	opcode = BRANCH, funct3 = BGEU
+	Result = (operand1 >= operand2? 1 : 0), treating operands as unsigned numbers // inverse of BLT result
+	Similar alternative operation to BGE
+	Afterwards, and only if result == 1 then result2 (register PC) = operand3 + operand4
+
+
+3.6. S-type
+	operand1 = 32-bit (register rs1), operand2 = 32-bit (S-immediate), operand3 = 32-bit (register rs2)
+
+3.6.1. STORE: Store to memory
+	opcode = STORE, funct3 = data width (word/halfword/byte)
+	Memory address = operand1 + operand2 (this operation is the same as ADDI)
+	Afterwards, operand3 is written into data memory
+
+
+4.  RISC-V Summary of instructions *not* related to arithmetic operations
+
+4.1. Special I-type
+	I-type instructions with rs1 = 0, rd = 0, and func12 field (higher 12 bits, the I-immediate before sign extension)
+
+4.1.1. FENCE
+	opcode = MISC-MEM, funct3 = FENCE, func12 = encoding of instructions to be ordered
+
+4.1.2. ECALL
+	opcode = SYSTEM, funct3 = PRIV, func12 = ECALL 
+
+4.1.3. EBREAK
+	opcode = SYSTEM, funct3 = PRIV, func12 = EBREAK
+
+4.2. HINT instructions
+	Integer arithmetic instructions with rd = x0/zero.
+	Implementations are always allowed to ignore the encoded hints ;)
+
+
+5. Design of arithmetic operations
+
+* Separate the arithmetic operations with PC register as destination (part of control functions); this implies 2nd operation of all control transfer instructions (JAL,JALR and branches).
+	- This block uses the current PC and immediate values B-immediate and J-immediate (not used by the ALU) to calculate the target destination (value to write into the PC to take the jump/branch).
+
+* Now that branch calculations are separated from the ALU, the ALU must provide a "flags" output for the branch instructions to know if the branch has to be taken (ie. calculate the target instruction address and write it into the PC) or not.
+
+* Instructions involving comparisons:
+	SLTI, SLTIU, SLT, SLTU, BEQ, BNE, BLT, BGE, BLTU, BGEU
+	That can be classified as:
+		a) SLTI, SLT, BLT
+			Comparison is op1 < op2, treating operands as signed numbers
+			Maybe implemented as a substraction and analyzing the result
+		b) SLTIU, SLTU, BLTU
+			Comparison is op1 < op2, treating operands as unsigned numbers
+			Maybe implemented as a substraction and analyzing the result? ...
+			Typically the substraction will be performed as 2's complement signed operation ... 
+			*BEWARE*: *must* think carefully if this is possible at all or not
+		c) BEQ
+			Comparison is op1 == op2
+			Maybe implemented as a substraction and analyzing the result
+		d) BNE
+			Comparison is op1 != op2
+			Maybe implemented as the inverse result of BEQ comparison
+		e) BGE
+			Comparison is op1 >= op2, treating operands as signed numbers
+			Maybe implemented as the inverse result of a SLTI/SLT/BLT comparison
+		f) BGEU
+			Comparison is op1 >= op2, treating operands as unsigned numbers
+			Maybe implemented as the inverse result of a SLTIU/SLTU/BLTU comparison
+	The difference between SLTxx instructions and Bxx instructions is that the former determine a 0 or 1 result and zero-extend it to 32 bits to produce the 32-bit result to write into register rd whereas the latter determine a 0 or 1 result and produce a single bit of the "flags" result.
+
+5.1. ALU design
+
+	Inputs:
+		"op1", 32-bit operand1
+		"op2", 32-bit operand2
+		"selop", X-bit operation selection, X to be determined by the implementation but most probably X=4 (up to 16 different operations are possible)
+	Outputs:
+		"res", 32-bit result
+		"flags" F-bit result of comparison for the branches, F to be determined by the implementation
+			Implementation example 1: Use 1 flag per branch (flags called BEQflag, BNEflag, BLTflag, BGEflag, BLTUflag, and BGEUflag), F = 6,
+				BEQ take the branch if BEQflag == 1, does nothing otherwise,
+				BNE take the branch if BNEflag == 1, does nothing otherwise,
+				BLT take the branch if BLTflag == 1, does nothing otherwise,
+				BGE take the branch if BGEflag == 1, does nothing otherwise,
+				BLTU take the branch if BLTUflag == 1, does nothing otherwise,
+				BGEU take the branch if BGEUflag == 1, does nothing otherwise.
+			Implementation example 2: Use 1 flag per comparison (flags called EQflag, LTflag, and LTUflag), F = 3,
+				BEQ take the branch if EQflag == 1, does nothing otherwise,
+				BNE take the branch if EQflag == 0, does nothing otherwise,
+				BLT take the branch if LTflag == 1, does nothing otherwise,
+				BGE take the branch if LTflag == 0, does nothing otherwise,
+				BLTU take the branch if LTUflag == 1, does nothing otherwise,
+				BGEU take the branch if LTUflag == 0, does nothing otherwise.
+				If this exaple 2 is the approach used, then 
+				a) The EQflag is typically called Z (for zero, an indication that the 32-bit arithmetic result is 0),
+				b) The LTflag is typically called N (for negative, an indication that the 32-bit arithmetic result is <0),
+				c) The LTUflag typically called C (for carry, last carry bit of the arithmetic operation).
+			
+	A 2:1 MUX "mux1ALU" selects between the values of rs1 from the register file and the PC register as the 32-bit ALU input operand1.
+		Selection "sel1ALU" is 1 bit: 0 (default) to select rs1, 1 to select PC
+			a) Select PC for AUIPC, JALR, JAL: instructions with opcodes AUIPC, JALR, or JAL
+			b) Select rs1 (default) for all other instructions: ADDI, SLTI, SLTIU, ANDI, ORI, XORI, SLLI, SRLI, SRAI, LOAD, LUI (operand1 unused), ADD, SLT, SLTU, AND, OR, XOR, SLL, SRL, SRA, SUB, STORE, BEQ, BNE, BLT, BGE, BLTU, BGEU
+
+	A 4:1 MUX "mux2ALU" selects between the values of rs2 from the register file, the I-immediate, the U-immediate, and the J-immediate as the 32-bit ALU input operand2.
+		Selection "sel2ALU" is 2 bits: 0 (default) to select rs2, 1 to select I-immediate, 2 to select J-immediate, and 3 to select U-immediate
+			a) Select I-immediate for ADDI, SLTI, SLTIU, ANDI, ORI, XORI, SLLI, SRLI, SRAI, and LOAD: instructions with opcodes OP-IMM or LOAD
+			b) Select U-immediate for AUIPC, LUI: instructions with opcodes AUIPC or LUI
+			c) Select S-immediate for STORE: instructions with opcode STORE
+			d) Select rs2 (default) for all other instructions: ADD, SLT, SLTU, AND, OR, XOR, SLL, SRL, SRA, SUB, JALR (operand2 unused), JAL (operand2 unused), BEQ, BNE, BLT, BGE, BLTU, BGEU
+		Immediate values B-immediate and J-immediate are not used by the ALU. 
+
+	The X-bit ALU input "selop" selects the operation to be performed. Many implementation alternatives are possible
+	Alternative 1:
+		+ 			used for ADDI, LOAD, AUIPC, ADD, STORE
+		<<			used for SLLI, SLLL
+		>>			used for SRLI, SRL
+		>>*			used for SRAI, SRA
+		&			used for ANDI, AND
+		|			used for ORI, OR
+		^			used for XORI, XOR
+		operand1	used for JAL, JALR
+		operand2	used for LUI
+		- (signed)	used for SUB, SLTI, SLTIU, BEQ, BNE, BLT, BGE, BLTU, BGEU, analyzing the result for all except SUB 
+							(assumnig we can extract conclusions about unsigned comparisons after a signed substraction)
+	Alternative 2:
+		+ 				used for ADDI, LOAD, AUIPC, ADD, STORE
+		<<				used for SLLI, SLLL
+		>>				used for SRLI, SRL
+		>>*				used for SRAI, SRA
+		&				used for ANDI, AND
+		|				used for ORI, OR
+		^				used for XORI, XOR
+		operand1		used for JAL
+		operand2		used for LUI, JALR
+		- (signed)		used for SUB, BEQ, BNE, SLTI, BLT, BGE
+		- (unsigned) 	used for SLTIU, BLTU, BGEU
+	Alternative 3:
+		+ 				used for ADDI, LOAD, AUIPC, ADD, STORE
+		<<				used for SLLI, SLLL
+		>>				used for SRLI, SRL
+		>>*				used for SRAI, SRA
+		&				used for ANDI, AND
+		|				used for ORI, OR
+		^				used for XORI, XOR
+		operand1		used for JAL
+		operand2		used for LUI, JALR
+		- (signed)		used for SUB, BEQ, BNE 
+		< (signed comparison)	used for SLTI, BLT, BGE
+		< (unsigned comparison)	used for SLTIU, BLTU, BGEU
+	Alternative 4:
+		+ 				used for ADDI, LOAD, AUIPC, ADD, STORE
+		<<				used for SLLI, SLLL
+		>>				used for SRLI, SRL
+		>>*				used for SRAI, SRA
+		&				used for ANDI, AND
+		|				used for ORI, OR
+		^				used for XORI, XOR
+		operand1		used for JAL
+		operand2		used for LUI, JALR
+		- (signed)		used for SUB, BEQ, BNE 
+		== (signed comparison)	used for BEQ, BNE
+		< (signed comparison)	used for SLTI, BLT, BGE
+		< (unsigned comparison)	used for SLTIU, BLTU, BGEU
+
+Must fill a table involving all arithmetic-related instructions to compile "muxop1", "muxop2", and "selop" input values, operation performed, flags calculated (if any) and "res" value. This will help us check everything is correct before starting the design of the ALU.
+Assuming alternative 2 is used for "selop" (see above), and the produced flags are Z, N, C (see above) the table is
+
+ Instruction	"mux1ALU"	"mux2ALU"	"selop"			"operation"		"res"					"flags"
+	ADDI		rs1			I-immediate	  +				op1+op2			same as operation		-
+	SLTI		rs1			I-immediate	  - (signed)	op1-op2			0 or 1 (32-bit)			-
+	SLTIU		rs1			I-immediate	  -	(unsigned)	op1-op2			0 or 1 (32-bit)			-
+	ANDI		rs1			I-immediate	  &				op1&op2			same as operation		-
+	ORI			rs1			I-immediate	  |				op1|op2			same as operation		-
+	XORI		rs1			I-immediate	  ^				op1^op2			same as operation		-
+	SLLI		rs1			I-immediate	  <<			op1<<op2[4:0]	same as operation		-
+	SRLI		rs1			I-immediate	  >>			op1>>op2[4:0]	same as operation		-
+	SRAI		rs1			I-immediate	  >>*			op1>>*op2[4:0]	same as operation		-
+	LOAD (all)	rs1			I-immediate	  +				op1+op2			same as operation		-
+	LUI			rs1			U-immediate	  operand2		copy op2		same as operation		-
+	AUIPC		PC			U-immediate	  +				op1+op2			same as operation		-
+	ADD			rs1			rs2			  +				op1+op2			same as operation		-
+	SLT			rs1			rs2			  - (signed)	op1-op2			0 or 1 (32-bit)			-
+	SLTU		rs1			rs2			  - (unsigned)	op1-op2			0 or 1 (32-bit)			-
+	AND			rs1			rs2			  &				op1&op2			same as operation		-
+	OR			rs1			rs2			  |				op1|op2			same as operation		-
+	XOR			rs1			rs2			  ^				op1^op2			same as operation		-
+	SLL			rs1			rs2			  <<			op1<<op2[4:0]	same as operation		-
+	SRL			rs1			rs2			  >>			op1>>op2[4:0]	same as operation		-
+	SRA			rs1			rs2			  >>*			op1>>*op2[4:0]	same as operation		-
+	SUB			rs1			rs2			  - (signed)	op1-op2			same as operation		-
+	JALR		PC			rs2			  operand1		copy op1		same as operation		-
+	JAL			PC			rs2			  operand1		copy op1		same as operation		-
+	BEQ			rs1			rs2			  - (signed)	op1-op2			-						Z = 0 or 1
+	BNE			rs1			rs2			  - (signed)	op1-op2			-						Z = 0 or 1
+	BLT			rs1			rs2			  - (signed)	op1-op2			-						N = 0 or 1
+	BGE			rs1			rs2			  - (signed)	op1-op2			-						N = 0 or 1
+	BLTU		rs1			rs2			  - (unsigned)	op1-op2			-						C = 0 or 1
+	BGEU		rs1			rs2			  - (unsigned)	op1-op2			-						C = 0 or 1
+	STORE (all)	rs1			S-immediate	  +				op1+op2			same as operation		-
+
+	where '-' means "irrelevant" except '- (signed)' and '- (unsigned)' which means subtraction.
+	
+
+5.2. Jump/branch target address design
+
+This circuit calculates the target address to jump/branch if the jump/branch is to be taken.
+All these relative, to either PC or rs1, so we need a 2:1 MUX to select operand1 between PC and rs1.
+
+	A 2:1 MUX "mux1PC" selects between the values of rs1 from the register file and the PC register as this circuit's input operand1.
+		Selection "sel1PC" is 1 bit: 0 (default) to select PC, 0 to select rs1 value
+			a) Select rs1 value for JALR: instructions with opcode JALR
+			b) Select PC (default) for all other jump/branch instructions: JAL, BEQ, BNE, BLT, BGE, BLTU, BGEU
+	A 2:1 MUX "mux2PC" selects between the values of B-immediate and J-immediate as this circuit's input operand2. 
+		Selection "sel2PC" is 1 bit: 0 (default) to select B-immediate, 1 to select J-immediate value
+			a) Select J-immediate value for JAL, JALR: instructions with opcode JALR or JAL
+			b) Select B-immediate (default) for all other jump/branch instructions: BEQ, BNE, BLT, BGE, BLTU, BGEU: instructions with opcode BRANCH
+	The operation is always +
+	The result is always stored into PC (unconditionally if JALR/JAL or if the branch is to be taken if BEQ/BNE/BLT/BGE/BLTU/BGEU) 
+	This circuit performs the address calculation as if the jump/branch is to be taken;
+	then a control signal wrPC ("write-to-PC") circuit will determine if the PC is effectively written depending on the value of the ALU flags and the instruction opcode.
+
+5.3. Write-to-PC design
+
+There are many ways to generate the wrPC signal. As the core of the design of the control unit is a memory block,
+the following control signals will be used:
+- JB: The instruction is a jump or branch, so the PC may be (potentially) written
+- XZ: Use nothing (unconditional jump), Z, or C to decide 
+- XN: Use nothing (unconditional jump), N, or C to decide
+- XF: The selected ALU flag must match this value to take the branch
+The following table shows all possible combinations
+					<----------- Inputs -------->   Output
+					Control signals		ALU flags	wPC
+	Instruction		JB	XZ	XN	XF		Z	N 	C
+		The following instructions always wPC (unconditional jumps)
+	JALR			1	0	0	-		-	-	-	1 (unconditional JALR jump)
+	JAL				1	0	0	-		-	-	-	1 (unconditional JAL jump)
+		These compare the Z flag from the ALU against the control signal XF to decide whether to take the branch or not
+	BEQ				1	1	0	1		0	-	-	0 (conditional branch BEQ, not taken)
+	BEQ				1	1	0	1		1	-	-	1 (conditional branch BEQ, taken)
+	BNE				1	1	0	0		0	-	-	1 (conditional branch BNE, taken)
+	BNE				1	1	0	0		1	-	-	0 (conditional branch BNE, not taken)
+		These compare the N flag from the ALU against the control signal XF to decide whether to take the branch or not
+	BLT				1	0	1	1		-	0	-	0 (conditional branch BLT, not taken)
+	BLT				1	0	1	1		-	1	-	1 (conditional branch BLT, taken)
+	BGE				1	0	1	0		-	0	-	1 (conditional branch BGE, taken)
+	BGE				1	0	1	0		-	1	-	0 (conditional branch BGE, not taken)
+		These compare the C flag from the ALU against the control signal XF to decide whether to take the branch or not
+	BLTU			1	1	1	1		-	-	0	0 (conditional branch BLTU, not taken)
+	BLTU			1	1	1	1		-	-	1	1 (conditional branch BLTU, taken)
+	BGEU			1	1	1	0		-	-	0	1 (conditional branch BGEU, taken)
+	BGEU			1	1	1	0		-	-	1	0 (conditional branch BGEU, not taken)
+		The rest of instructions don't set wPC
+	Other			0	-	-	-		-	-	-	0
+
+
+6. PC design
+
+The design of the PC register can be easily deducted as an up counter (+4 instead of +1) with a reset input 
+and the possibility to load its value (from the target PC calculation block).
+
+	
+6.1. Increment-PC design
+
+Independently of the write-to-PC circuit, a circuit to perform PC = PC + 4 must be implemented;
+this will be used for all instructions, as soon as the PC value is used to read the instruction from memory.
+This guarantees that, in absence of wPC, instructions are executed one after the other, in the order they're found in memory.
+The control signal for this circuit will be called iPC.
+
+7. Memory interface (with support for unaligned memory accesses)
+
+RV32I provides a 32-bit address space that is byte-addressed. Instructions are 32-bit, and data can be accessed as 32-bit (word), 16-bit (halword or half), and 8-bit (byte).
+So it seems natural to connect the CPU with the memory using a 32-bit wide data bus (4 bytes) to be able to retrieve an instruction/data word in a single memory operation,
+and 4 separate byte lanes enable to be able to reaqd/write less than 32-bits in a single memory operation
+(BE0 to enable byte lane 0, BE1 to enable byte lane 1, BE2 to enable byte lane 2, and BE3 to enable byte lane 3).
+From the complete 32-bit address the
+actual memory address will be a 30-bit numeric address (the "word address") and the 4-bit BE;
+the 4 BE bits will be extracted from the 2 lower bits of the 32-bit address (the complete address) as follows:
+
+To access a word with complete address ending in 00 binary (word aligned on word boundary), BE = "1111".
+	A single memory operation can fulfill the request.
+An access to a word with a complete address ending in a different combination of the two lower bits is an unaligned access.
+	Two memory operations are required to fulfill the request.
+To access a halfword with complete address ending in 00 binary (half aligned on the low part of a word boundary), BE = "0011".
+	A single memory operation can fulfill the request.
+To access a halfword with complete address ending in 01 binary, BE = "0110". This is an unaligned half access, but can be easily managed.
+	A single memory operation can fulfill the request.
+To access a halfword with complete address ending in 10 binary (half aligned on the high part of a word boundary), BE = "1100".
+	A single memory operation can fulfill the request.
+An access to a halfword with a complete address ending 11 binary (word aligned on word boundary) is an unaligned access.
+	Two memory operations are required to fulfill the request.
+To access a byte with complete address ending in 00 binary, BE = "0001".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 01 binary, BE = "0010".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 10 binary, BE = "0100".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 11 binary, BE = "1000".
+	A single memory operation can fulfill the request.
+
+
+
+7.1. Design decisions
+
+First design decision is whether the system is little-endian or big-endian.
+The decision is to design a little-endian system.
+Quoting pg. 42:
+	"In a little-endian configuration, multibyte stores write the least-significant register byte at
+	the lowest memory byte address, followed by the other register bytes in ascending order of their
+	significance. Loads similarly transfer the contents of the lesser memory byte addresses to the
+	less-significant register bytes."
+
+Advanced CPUs have separate instruction and data interfaces (Harvard architecture) connected to separate cache memories 
+to service instruction read requests (instruction cache) and data read/write requests (data cache) from the CPU; 
+being separate means the CPU may perform two memory requests simultaneously,
+as long as the two requests are directed to the different caches.
+
+Small systems, however, share the same memory interface for instructions and data (Von-Neumann architecture).
+This is our target, so the CPU will have a single, shared memory interface.
+This decision implies:
+	a) No separate control signals / address register / data registers for instructions and data
+	b) At any poin in time, the CPU can be either accessing the instruction memory or the data memory 
+	    (or none of them, if it is performing an ALU calculation or doing something else),
+		but can't issue two memory requests simultaneously.
+
+Some memories and peripherals are faster than others.
+In order to be as efficient as possible an intra-chip bus with wait states capability for slow slaves has to be implemented;
+fast slaves will respond inserting no wait states in the transaction, while lower ones will insert wait states in order
+to temporarily stall the transaction.
+AMBA APB is selected, as is one of the simplest intra-chip bus protocols, and it is standard 
+(meaning there are peripherals already designed to be connected to this bus).
+
+
+In the end, the bus interface will act as a bus master of the AMBA APB protocol and will offer a shared memory interface 
+(Von-Neumann architecture) to the CPU.
+
+7.2 Interface of the memory interface block
+
+Signals for the memory interface (MEMORY side, AMBA APB master):
+	PADDR:	Output. 32-bit address
+	PSTRB:	Output. 4-bit byte lane write strobe
+	PWDATA:	Output. 32-bit write data
+	PWRITE:	Output. 1-bit command; 0 means read, 1 means write
+	PENABLE Output. 1-bit signal used to signal the 2nd and subsequent cycles of an APB transfer (when 1)
+	PRDATA:	Input. 32-bit read data
+	PREADY:	Input. 1-bit handshake signal from the slave to insert wait states; a wait state is inserted if PENABLE = 1 and PREADY = 0
+
+Signals for the memory interface (CPU side):
+	"rd_i":			Input. 1-bit. CPU command to initiate a read operation (when 1).
+	"wr_i":			Input. 1-bit. CPU command to initiate a write operation (when 1).
+	"addr_i":		Input. CPU address for the memory operation.
+	"size_i":		Input. 2-bit code for the size of the request.
+		Example of size coding:
+			00       - byte
+			01       - halfword
+			10 or 11 - word
+	"unsigned_i":	Input. 1-bit code to indicate the signed/unsigned nature of the read request (irrelevant for words)
+		Example of signedness coding:
+			1 - unsigned
+			0 - signed
+		This is only relevant for reads of halfwords and bytes.
+	"wdata_i":	Input. 32-bit data to be written into memory.
+		For a halfword request, only the lower 2 bytes are relevant;
+		For a byte request, only the lower byte is relevant.
+	"rdata_o":	Output. 32-bit data read from memory.
+		For a halfword request, the value read from memory is in the lower 2 bytes and either sign-extended or zero-extended to 32 bits,
+			depending on the value of "unsigned_i" input;
+		For a byte request, the value read from memory is in the lower byte and either sign-extended or zero-extended to 32 bits,
+			depending on the value of "unsigned_i" input.
+	"busy_o":	Output. 1-bit used to indicate the CPU a memory operation is ongoing and that it must wait.
+		This signal will be 1 from a "rd_i" or "wr_i" coming from the CPU being asserted till the memory transaction is finished.
+		A memory transaction will translate into one or two memory operations, depending on whether the requested value
+		is correctly aligned or not.
+
+Signals for the memory interface (both sides):
+	clk:	Input. Clock, active on rising edges.
+	rst:	Input. Low-level asynchronous reset.
+
+7.3. Support for unaligned access and byte/halfword requests
+
+	As the connection with the memory is 32-bit wide, the natural size of the memory operation is 32-bit.
+	However, in order to be able to manage less than 32-bit in a memory operation (a halfword or a byte),
+	individual strobes for the different byte lanes will be used.
+	So the memory is organized as 32-bit positions (words, using word addresses) and byte strobes are used
+	to mark those bytes affected by the operation.
+	
+	Talking about a single memory operation, if the operation affects:
+	- Byte lane 0 then bytestrobe(0) must be 1, 0 otherwise,
+	- Byte lane 1 then bytestrobe(1) must be 1, 0 otherwise,
+	- Byte lane 2 then bytestrobe(2) must be 1, 0 otherwise,
+	- Byte lane 3 then bytestrobe(3) must be 1, 0 otherwise.
+	
+	This way, the possible byte strobe values are:
+	- For a 32-bit transaction, "1111",
+	- For a 16-bit transaction affecting the low 16 bit bits of the 32-bits position, "0011",
+	- For a 16-bit transaction affecting the middle 16 bit bits of the 32-bits position, "0110",
+	- For a 16-bit transaction affecting the high 16 bit bits of the 32-bits position, "1100",
+	- For an 8-bit transaction affecting the low 8 bits of the 32-bits position, "0001",
+	- For an 8-bit transaction affecting the middle-low 8 bits of the 32-bits position, "0010",
+	- For an 8-bit transaction affecting the middle-high 8 bits of the 32-bits position, "0100",
+	- For an 8-bit transaction affecting the high 8 bits of the 32-bits position, "1000".
+	
+	In this arrangement, from the 32-bits byte address used by the CPU, 
+	the memory receives a 30-bits word address and the corresponding byte strobes, which are extracted from
+	the size of the operation (word / halfword / byte) and the 2 lower bits of the 32-bits CPU address.
+	
+	The memory request is aligned when the data requested is aligned on a natural boundary of its size;
+	that is, a word request is aligned when the 32-bits CPU address is multiple of four (binary XXXX00),
+	a half is aligned when the 32-bits CPU address is multiple of two (binary XXXXX0),
+	and bytes are always aligned, as the 32-bits CPU address is always multiple of 1.
+	
+	An aligned request can be serviced by a single memory operation and the adequate byte strobes.
+	An unaligned request is a request that doesn't conform with the above restrictions about data size
+	and CPU address being multiple of 4 or 2, and it typically requires two memory operations.
+
+	Most unaligned memory requests from the CPU can only be serviced performing two memory accesses;
+	for example, a word to the 32-bit address 0x00000003 will require:
+		1) A first memory operation on the 30-bit word address 0x00000000 with bytestrobes "1000";
+			assume this read produces the result 0x1234ABCD (only the byte 0x12 is relevant).
+		2) A second memory operation on the 30-bit word address 0x00000001 with bytestrobes "0111";
+			assume this read produces the result 0x56789EF0 (only the bytes 0x78, 0x9E, and 0xF0 are relevant).
+		3) Combining bytes from the two memory operations to obtain a word of data;
+			0x12 from the first memory operation is the lowest byte of the word in a little-endian system,
+			0xF0 is the next byte, 0x9E is the next one, and 0x78 is the highest, 
+			so in the end the word is 0x789EF012.
+		
+	We need a Finite State Machine (FSM) inside the memory interface block to deal with wait states from APB slaves
+	and the need to perform a second memory request in case of an unaligned access request from the CPU;
+	while the memory operation (or operations, in case of unaligned requests) are ongoing, the "busy_o" ouput indicate
+	the CPU's control unit to stall the execution of instructions.
+
+	Dealing with unaligned requests:
+	
+	- The main idea is to 'imagine' we have a 64-bit connection with the memory and then split this into two 32-bit requests.
+		This requires 8 bits for byte lane strobes and 64 bits of data.
+		Any 32-bit request in this imaginary 64-bit memory connection can be serviced with a single 64-bit transfer.
+		The high half of these 8-bit strobes and 64-bit data will be used only if required (ie. unaligned access).
+		
+	- Let's call WORDADDR to the high 30-bit part of the incoming 32-bit address "addr_i".
+	- Let's call ALIGNMENT to the low 2-bit part of "addr_i".
+	
+	- Let's call SIZESTRB to the 8-bit encoding of byte strobes in a word, zero extending the byte strobes calculated
+		from the "size_i" input value assuming the request is aligned and, if a byte or halfword is requested, 
+		the value lies in the low part of the word memory position.
+		From the "size_i" input, SIZESTRB binary values are:
+			0000_0001 for bytes, 
+			0000_0011 for halfwords, 
+			and 0000_1111 for words.
+		Using '_' here to help visually separate the high and low halfs of the binary value.
+	- Let's call BYTESTRB to the 8-bit left-shifted value of SIZESTRB, to accommodate ALIGNMENT:
+			ALIGNMENT	BYTESTRB			Value for byte	Value for half	Value for word
+			00			SIZESTRB << 0		0000_0001		0000_0011		0000_1111
+			01			SIZESTRB << 1		0000_0010		0000_0110		0001_1110*
+			10			SIZESTRB << 2		0000_0100		0000_1100		0011_1100*
+			11			SIZESTRB << 3		0000_1000		0001_1000*		0111_1000*
+	- The first memory operation will use the lower half of BYTESTRB as PSTRB, the second (if neccessary) will use the high half.
+	- A second memory operation is required (marked with * above) only if the high half of BYTESTRB has any 1 in it:
+			SECOND_OP_REQUIRED = BYTESTRB(7) or BYTESTRB(6) or BYTESTRB(5) or BYTESTRB(4)
+	- If a second memory operation is required, the memory word address is WORDADDR+1.
+			
+	- Let's call WDATA64 to the 64-bit zero-extension then left-shifted value from the 32-bit "wdata_i" value coming from the CPU 
+		to perform a write;
+		left-shift is performed to accommodate ALIGNMENT (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as 0x00):
+			ALIGNMENT	WDATA64			Relevant bytes (byte)	Relevant bytes (half)	Relevant bytes (word)
+			00			wdata_i << 0	0x00000000_000000RR		0x00000000_0000RRRR		0x00000000_RRRRRRRR
+			01			wdata_i << 8	0x00000000_0000RR00		0x00000000_00RRRR00		0x000000RR_RRRRRR00*
+			10			wdata_i << 16	0x00000000_00RR0000		0x00000000_RRRR0000		0x0000RRRR_RRRR0000*
+			11			wdata_i << 24	0x00000000_RR000000		0x000000RR_RR000000*	0x00RRRRRR_RR000000*
+	- The first memory operation will use the lower half of WDATA64 as PWDATA, 
+		the second (if neccessary, marked with * above) will use the high half.
+	
+	- Let's call RDATA64 to the 64-bit obtained from one or two read operations performed to fulfill a single CPU read request.
+		- If a single read operation is performed, let's call the incoming 32-bit value PRDATA0;
+		- If two read operations are required, let's call PRDATA0 to the 32-bit value of the first read, PRDATA1 to the 32-bit value of the second one.
+		- If a single read operation is performed, RDATA64 = 0x00000000_PRDATA0
+		- If two read operations are required (marked with *), RDATA64 = 0xPRDATA1_PRDATA0 (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as 0x00):
+			ALIGNMENT	RDATA64											Relevant bytes (byte)	Relevant bytes (half)	Relevant bytes (word)
+			00			0x00000000_PRDATA0								0x00000000_000000RR		0x00000000_0000RRRR		0x00000000_RRRRRRRR
+			01			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_0000RR00		0x00000000_00RRRR00		0x000000RR_RRRRRR00*
+			10			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_00RR0000		0x00000000_RRRR0000		0x0000RRRR_RRRR0000*
+			11			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_RR000000		0x000000RR_RR000000*	0x00RRRRRR_RR000000*
+		
+	- Let's call RDATA64ALIGNED to RDATA64 right-shifted to accommodate ALIGNMENT (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as either 0x00 or 0xUU, this last value used for unknown, irrelevant bytes; a byte is unknown and irrelevant if
+		it comes from a read operation but not used as part of the rdata_o value sent to the CPU):
+			ALIGNMENT	RDATA64ALIGNED		Relevant bytes (byte)						Relevant bytes (half)						Relevant bytes (word)
+										RDATA64				RDATA64ALIGNED			RDATA64				RDATA64ALIGNED			RDATA64				RDATA64ALIGNED
+			00			RDATA64 >> 0	0x00000000_UUUUUURR	0x00000000_UUUUUURR		0x00000000_UUUURRRR	0x00000000_UUUURRRR		0x00000000_RRRRRRRR	0x00000000_RRRRRRRR
+			01			RDATA64 >> 8	0x00000000_UUUURRUU	0x00000000_00UUUURR		0x00000000_UURRRRUU	0x00000000_00UURRRR		0xUUUUUURR_RRRRRR00	0x00000000_RRRRRRRR*
+			10			RDATA64 >> 16	0x00000000_UURRUUUU	0x00000000_0000UURR		0x00000000_RRRRUUUU	0x00000000_0000RRRR		0xUUUURRRR_RRRR0000	0x00000000_RRRRRRRR*
+			11			RDATA64 >> 24	0x00000000_RRUUUUUU	0x00000000_000000RR		0xUUUUUURR_RRUUUUUU	0x00000000_UUUURRRR*	0xUURRRRRR_RR000000	0x00000000_RRRRRRRR*
+		As can be observed from the above table, RDATA64ALIGNED always have the relevant bytes right-aligned, 
+		so only zero/sign extension is missing (and only for halfs and bytes).
+		
+	- The rdata_o 32-bit value for the CPU is calculated from the low half of RDATA64ALIGNED as follows (zero/sign extension operation):
+																								unsigned_i				
+		 size_i									0 (signed extension)												1 (zero extension)	
+		00 (byte)		rdata_o(31: 8) = RDATA64ALIGNED( 7), rdata_o( 7:0) = RDATA64ALIGNED( 7:0)		rdata_o(31: 8) = 0, rdata_o( 7:0) = RDATA64ALIGNED( 7:0)
+		01 (half)		rdata_o(31:16) = RDATA64ALIGNED(15), rdata_o(15:0) = RDATA64ALIGNED(15:0)		rdata_o(31:16) = 0, rdata_o(15:0) = RDATA64ALIGNED(15:0)
+		10/11 (word)					rdata_o(31:0) = RDATA64ALIGNED(31:0)								rdata_o(31:0) = RDATA64ALIGNED(31:0)
+
+	  
+7.4 Write-to-memory requests
+
+In the following discussion the Memory Interface is referred as "MI" and its internal FSM simply as "the FSM".
+
+This is how a memory write request works (single memory access):
+
+0) While idle the MI's FSM is in the idle/first cycle/op1A state
+	FSM sets the internal signal first_cycle = 1
+1) At the beginning of cycle T0 the CPU sets: wr_i, addr_i, size_i, wdata_i
+2) MI's combinational calculations for internal signals
+	- trigger = rd_i or wr_i = 1
+	- busy_o = trigger = 1
+	- strobes, wdata aligned, ...
+3) In the same T0 cycle the memory interface forwards the request to the memory: PREQ, PADDR, PSTRB, PWDATA, PWRITE, PENABLE (0)
+4) At the end of T0 the FSM registers the request internally and moves to state op1B for cycles T1, T2, etc.
+5a) While T1, T2, etc. with FSM state = op1B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0
+	- PENABLE = 1
+	- busy_o = not(PREADY) = 1
+	At the end of such cycle the FSM remains at state op1B
+5b) While T1, T2, etc. with FSM state = op1B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tk.
+	- busy_o = not(PREADY) = 0, indicating the CPU the transfer will end at the end of this cycle
+	At the end of such cycle the FSM returns to state op1A
+
+This is how a memory write request works (two memory accesses):
+
+0) While idle the MI's FSM is in the idle/first cycle/op1A state
+	FSM sets the internal signal first_cycle = 1
+1) At the beginning of cycle T0 the CPU sets: wr_i, addr_i, size_i, wdata_i
+2) MI's combinational calculations for internal signals
+	- trigger = rd_i or wr_i = 1
+	- busy_o = trigger = 1
+	- strobes, wdata aligned, ...
+3) In the same T0 cycle the memory interface forwards the request to the memory: PREQ, PADDR, PSTRB, PWDATA, PWRITE, PENABLE (0)
+4) At the end of T0 the FSM registers the request internally and moves to state op1B for cycles T1, T2, etc.
+5a) While T1, T2, etc. with FSM state = op1B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0
+	- PENABLE = 1
+	- busy_o = 1 (as we know for sure there is a second memory access)
+	At the end of such cycle the FSM remains at state op1B
+5b) While T1, T2, etc. with FSM state = op1B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tk.
+	- busy_o = 1 (as we know for sure there is a second memory access)
+	At the end of such cycle the FSM moves to state op2A.
+6) At T(k+1) the second memory access starts using 
+	- WORDADDR+1 as the address, the upper half of BYTESTRB and WDATA64.
+	- busy_o = 1
+	- PENABLE = 0
+7) At the end of T(k+1) the FSM moves to op2B
+8a) While T(k+2), T(k+3), etc. with FSM state = op2B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0, op2 = 1
+	- PENABLE = 1
+	- busy_o = not(PREADY) = 1
+	At the end of such cycle the FSM remains at state op2B
+8b) While T(k+2), T(k+3), etc. with FSM state = op2B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tw.
+	- busy_o = not(PREADY) = 0, indicating the CPU the transfer will end at the end of this cycle.
+	At the end of such cycle the FSM returns to state op1A.
+
+					
+7.5. Internal blocks
+
+	* 1-bit combinational signal TRIGGER = rd_i or wr_i
+	* 30-bit register ADDR.
+		No reset, load = first_cycle
+	* 2-bit register ALIGNMENT (register output ALIGNMENT_REG).
+		No reset, load = first_cycle
+	* 8-bit register BE.
+		No reset, load = first_cycle
+	* 1-bit register UNALIGNED; this is stored from the OR of the high 4-bit part of the left-shifted value stored into BE.
+		No reset, load = first_cycle
+	* 64-bit register WDATA.
+		No reset, load = first_cycle
+	* 64-bit register RDATA with independent write enables for the low 32-bit part and 32-bit high part;
+	    the low part is written when the single/first-of-two values come from memory, 
+	    the high part is written when the second-of-two values come from memory. 	  
+		No reset, load of low part = wRDATAL (internal signal from FSM), load of high part = wRDATAH (internal signal from FSM). 
+	* A combinational block to left-shift an 8-bit input by 0, 1, 2, or 3 and produce an 8-bit output; this is used to left-shift K positions before storing into BE.
+	* A combinational block to left-shift a 64-bit input by 0, 8, 16, or 24 and produce a 64-bit output; this is used to left-shift 8K positions before storing into WDATA.
+	* A combinational block to right-shift a 64-bit input by 0, 8, 16, or 24 and produce a 32-bit output (high 32-bit part can be discarded after right-shift); 
+	  this is used to right-shift RDATA 8K positions before zero/sign-extension.
+	* A combinational block to zero/sign-extend a 32-bit value given a 2-bit size input (byte, halfword, or word) and a 1-bit signed input;
+	this is used to zero/extend the 32-bit lower part of right-shifted RDATA in order to produce "rdata_o" to the CPU.
+	* A Finite State Machine (FSM) to control the memory operations.
+
+7.6. FSM
+
+The FSM problem is best solved with a Moore design in order to make the FSM easier to debug.
+Ideally, using a fast, no-wait-states APB memory, an aligned access should cost 2 clock cycles.
+
+7.6.1. FSM interface
+
+All signals are 1-bit
+	Inputs:
+		clk, 
+		rst, 
+		busy_i, 
+		rd_i, 
+		wr_i
+	Outputs:
+		busy_o (default 0),
+		wRDATAL (default 0),
+		wRDATAH (default 0)
+		
+7.6.2. FSM states
+
+List of states and FSM outputs:
+
+* 
+
+Transitions:
+
+* From xxx to xxx if xxx
+
+
+8. Control Unit
+
+The design of the control unit is not optimized but based on a ROM table with plenty of empty space.
+This design uses a lot more resources than needed
+; this is done to ease the exploration of new instructions without the need of large re-designs of the system.
+
+8.1. Introduction
+
+From the bits that differentiate one instruction from other (opcode, funct3, funct7, funct12) a combinational block InstructionNumber 
+generates an "instruction number", an 8-bit value unique to each instruction that requires specific control signals.
+
+This 10-bit INUM is used to load an up counter called the address counter.
+The output of the address counter (an 8-bit called uCYCLE) is connected to 
+a set of bypass MUXes and finally to uADDR, the address input of a ROM table containing the control unit signals,
+both the internal ones and the ones for the CPU's datapath.
+ 
+The first ROM positions (uADDR values 0x00, 0x01, ...) are reserved for the cycles required to fetch the instruction bits 
+into the IR (Instruction Register);
+this fetch phase is common to the execution of all instructions so it is reasonable not to repeat these cycles for each instruction.
+
+Let's assume the fetch phase requires no more than 4 cycles; this translates into ROM positions 0x00 to 0x03.
+The first INUM value generated by the instruction number will be, in this case, 0x04.
+
+At the end of the fetch phase an internal signal EOF (End-Of-Fetch) also coming from the ROM table will force a "jump"
+in the ROM table to the position in memory containing the values of all control signals for the first clock cycle after fetch
+for the particular instruction loaded from memory during the fetch.
+This "jump" is achieved simply loading the address counter with INUM (INUM+1 to be precise).
+
+At the end cycle of the executio of each instruction an internal signal EOI (End-Of-Instruction), coming from the ROM table,
+will force a restart of the address counter, effectively "jumping" to ROM position 0x00 
+where the table will contain the values of all control signals for the first clock cycle of the fetch phase.
+
+Those clock cycles in which neither EOF nor EOI are 1 the address counter simply counts up one unit (uCYCLE = uCYCLE+1),
+advancing in the ROM table and so applying a new set of values for the datapath control signals.
+
+
+8.2. Interface
+
+Input signals for the control unit:
+	clk:			Input. Clock, active on rising edges.
+	rst:			Input. Low-level asynchronous reset.
+	instruction:	Input. 32-bit instruction from memory.
+	membusy:		Input. 1-bit used to indicate a memory operation is ongoing and that execution can't proceed
+Output signals for the control unit:
+	sel1PC, sel2PC, etc. :	All control signals required by the datapath and memory interface
+
+
+8.3. Intruction number
+
+From the 7-bit instruction opcode, as the lower 2 bits are always 11 binary, they are discarded. Call opcode_6_2 = opcode(6:2).
+The 3-bits funct3 field, when used, is used in full.
+From the funct7 field, when used, only its bit 5 is used. Call funct7_5 to this bit.
+From the funct12 field, when used, only its bit 0 is used. Call funct12_0 to this bit.
+
+Let's assume the fetch phase requires no more than 4 cycles; this translates into ROM positions 0x00 to 0x03.
+The first INUM value generated by the instruction number will be, in this case, 0x04.
+Let's also assume that no instruction will require (after the fetch phase) more than 4 cycles to execute;
+INUM values will consecutive values multiple of 4. 
+This is not a requirement, just a simplification; if required, an instruction with an INUM = 4k may use up to 8 cycles 
+after the fetch phase simply by not assigning 4(k+1) as the INUM of any other instruction.
+
+opcode_6_2	funct3	funct7_5	funct12_0	INUM 	Instruction/opcode	Comments
+
+00011		000		x			x			0x04	FENCE				Execute as a NOP
+
+00000		xxx		x			x			0x08	LOAD				All loads are a single instruction from CU's point of view.
+																		Differences in size, alignment, or zero/sign-extension for bytes and halfs are handled by the memory interface block.
+																		Size is funct3(1:0), unsigned = funct3(2).
+
+01000		xxx		x			x			0x0C	STORE				All loads are a single instruction from CU's point of view.
+																		Differences in size, alignment, or zero/sign-extension for bytes and halfs are handled by the memory interface block.
+																		Size is funct3(1:0), unsigned = funct3(2) (same bits as from LOAD).
+
+00101		xxx		x			x			0x10	AUIPC				AUIPC
+
+01101		xxx		x			x			0x14	LUI					LUI
+												
+11001		xxx		x			x			0x18	JALR				JALR
+												
+11011		xxx		x			x			0x1C	JAL 				JAL 
+
+11000		000		x 			x			0x20	BRANCH(BEQ)			( a == b? branch : continue )
+11000		001		x 			x			0x24	BRANCH(BNE)			( a != b? branch : continue )
+11000		100		x 			x			0x28	BRANCH(BLT)			( a < b? branch : continue )
+11000		101		x 			x			0x2C	BRANCH(BGE)			( a >= b? branch : continue )
+11000		110		x 			x			0x30	BRANCH(BLTU)		( (unsigned)a < (unsigned)b? branch : continue )
+11000		111		x 			x			0x34	BRANCH(BGEU)		( (unsigned)a >= (unsigned)b? branch : continue )
+
+11100		000		x 			0			0x38	SYSTEM(ECALL)		ECALL
+11100		000		x 			1			0x3C	SYSTEM(EBREAK)		EBREAK
+
+00100		000		x			x			0x40	OP-IMM (ADDI)		a + b with I-immediate
+00100		001		x			x			0x44	OP-IMM (SLLI)		a << b with I-immediate
+00100		010		x			x			0x48	OP-IMM (SLTI)		( a < b? 1: 0 ) with I-immediate
+00100		011		x			x			0x4C	OP-IMM (SLTIU)		( (unsigned)a < (unsigned)b? 1: 0 ) with I-immediate
+00100		100		x			x			0x50	OP-IMM (XORI)		a ^ b with I-immediate
+00100		101		0			x			0x54	OP-IMM (SRLI)		a >> b with I-immediate
+00100		101		1			x			0x58	OP-IMM (SRAI)		a >>* b with I-immediate
+00100		110		x			x			0x5C	OP-IMM (ORI)		a | b with I-immediate
+00100		111		x			x			0x60	OP-IMM (ANDI)		a & b with I-immediate
+
+01100		000		0			x			0x64	OP (ADD)			a + b
+01100		000		1			x			0x68	OP (SUB)			a - b
+01100		001		x			x			0x6C	OP (SLL)			a << b
+01100		010		x			x			0x70	OP (SLT)			( a < b? 1: 0 )
+01100		011		x			x			0x74	OP (SLTU)			( (unsigned)a < (unsigned)b? 1: 0 )
+01100		100		x			x			0x78	OP (XOR)			a ^ b
+01100		101		0			x			0x7C	OP (SRL)			a >> b
+01100		101		1			x			0x80	OP (SRA)			a >>* b
+01100		110		x			x			0x84	OP (OR)				a | b
+01100		111		x			x			0x88	OP (AND)			a & b
+
+00010		000		x			x			0x90	CUSTOM-0 (000)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		001		x			x			0x94	CUSTOM-0 (001)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		010		x			x			0x98	CUSTOM-0 (010)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		011		x			x			0x9C	CUSTOM-0 (011)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		100		x			x			0xA0	CUSTOM-0 (100)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		101		x			x			0xA4	CUSTOM-0 (101)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		110		x			x			0xA8	CUSTOM-0 (110)		Custom instruction (room for expansion) - R/I/S/B-type
+00010		111		x			x			0xAC	CUSTOM-0 (111)		Custom instruction (room for expansion) - R/I/S/B-type
+
+01010		xxx		x			x			0xB0	CUSTOM-1			Custom instruction (room for expansion) - U/J-type
+10110		xxx		x			x			0xC0	CUSTOM-2			Custom instruction (room for expansion) - U/J-type
+11110		xxx		x			x			0xD0	CUSTOM-3			Custom instruction (room for expansion) - U/J-type
+
+
+8.4. Address counter
+
+Taking into account the ROM table is synchronous, MUXes are required to bypass the address counter and feed
+the ROM table address in the same clock cycle the address counter is synchronously reset/loaded.
+	Example 1:
+		- In a given clock cycle t: EOI = 1 from the ROM table at position k; address counter = k+1 (will synch reset to 0x01 on next clock edge), ROM address = 0x00 (MUX bypass).
+		- In the next clock cycle, t+1: the ROM table outputs content from address 0x00; address counter = 1, ROM address = address_counter = 0x01.
+		- In the next clock cycle, t+2: the ROM table outputs content from address 0x01; address counter = 2, ROM address = address_counter = 0x02.
+		- ...
+	Example 2:
+		- In a given clock cycle t: EOF = 1 from the ROM table at position k; address counter = k+1 (will load INUM+1 on next clock edge), ROM address = INUM (MUX bypass).
+		- In the next clock cycle, t+1: the ROM table outputs content from address INUM; address counter = INUM+1, ROM address = address_counter = INUM+1.
+		- In the next clock cycle, t+2: the ROM table outputs content from address INUM+1; address counter = INUM+2, ROM address = address_counter = INUM+2.
+
+This CAN'T WORK if the control unit is waiting for a memory operation in the same clock cycle the ROM outputs EOF or EOI
+UNLESS the ROM operation can be stalled with an enable input.
+The reasoning is this: 
+	If the control unit is stalled waiting for the completion of a memory operation but the ROM isn't, 
+	then the following scenario is possible:
+		- In a given clock cycle t: 
+			i) EOF = 1 from the ROM table at position k,
+			ii) Address counter = k+1 (will load INUM+1 of the awaited instruction on next clock edge), 
+			iii) ROM address = INUM (MUX bypass); BEWARE!: INUM doesn't correspond to the new, awaited instruction! 
+			iv) WaitMem = 1 (waiting for the instruction to arrive from memory)
+			v) BusyMem = 1 (memory operation ongoing, not finished)
+		- In the next clock cycle t+1:
+			i) Control signals from the ROM table at position INUM (of the wrong instruction!) because the ROM has performed a read operation
+			but the instruction hasn't arrived yet, and
+			ii) Chaos: an unknown instruction begins execution while waiting the the correct instruction that, 
+			most probably, won't be stored and hence won't be executed :(
+
+To avoid the above scenario it is of utmost importance that the address counter and the ROM table work in unison,
+both either operate or stall, under the same conditions.
+
+The use of the bypass MUXes is the reason behind the address counter to synch reset to value 0x01 (not 0x00)
+and to load the value INUM+1 (not INUM).
+
+Operation of the address counter:
+
+1) The address counter resets asynchronously to 0x00 (binary) with reset; otherwise,
+2) If the counter is enabled, then on the rising edge of the clock:
+	2a) If EOI = 1 then the address counter resets synchronously to the value 0x01; otherwise,
+	2b) If EOF = 1 then the address counter loads INUM+1; otherwise,
+	2c) If none of the above, the address counter counts up.
+
+The address counter is enabled if:
+	- There is no ongoing memory operation (waitMEM = 0), or
+	- There is an ongoing memory operation (waitMEM = 1) and the memory interface has signaled this is the last cycle of the operation (membusy = 0).
+
+8.5. ROM table
+
+The ROM table contains the values for the control signals of the CPU datapath, the memory interface and the internal
+signals of the control unit itself.
+One position of the ROM table corresponds to one clock cycle in the instruction execution.
+
+bit positions	31  30  29 <--> 22   21     20   19 18 17 16 15   14    13 <---> 12  11 <-----> 8   7    6    5   4  3  2    1     0
+control signal	EOI EOF 00 0000 00 sel1PC sel2PC JB XN XZ XF  0 sel1ALU sel2ALU(1:0) selopALU(3:0) wRD selRD iPC wIR WR RD IDMEM waitMEM
+
+If we assume the memory interface registers any memory request (ie. there is no need to maintain the requested
+address, rd/wr, size, wdata, etc. while waiting for the operation to complete), the content of the ROM table follows: 
+
+ROM table						contents (binary)																					  32-bit		Comment
+address		EOI EOF 00 0000 00 sel1PC sel2PC JB XN XZ XF  0 sel1ALU sel2ALU(1:0) selopALU(3:0) wRD selRD iPC wIR WR RD IDMEM waitMEM hexadecimal	
+(Fetch:)
+0x00		 0   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  1    1    0	0x00000006		Start reading from IMEM[PC]
+0x01		 0   1  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   1   0  0    0    1	0x40000011		Wait for instruction from IMEM[PC], write it into IR, and jump into ROM table using INUM (EOF)
+0x02		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+0x03		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+
+(FENCE:)
+0x04		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing (NOP, No Operation) and finish (EOI)
+0x05		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+0x06		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+0x07		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+
+(LOAD:)
+0x08		 0   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x00000000		Do nothing, wait operands from regfile
+0x09		 0   0  00 0000 00   0      0     0  0  0  0  0   0 (rs1)  0 1 (I-imm) 0 0 0 0 (+)  0    0    0   0   0  1    0    0	0x00001004		mem address = rs1+I-immediate, start reading from DMEM[rs1+I-immediate]
+0x0A		 0   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    1	0x00000001		Wait for read operation to complete
+0x0B		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      1    1    0   0   0  0    0    0	0x800000C0		rd = DMEM[rs1+I-immediate], finish (EOI)
+
+(STORE:)
+0x0C		 0   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x00000000		Do nothing, wait operands from regfile
+0x0D		 0   0  00 0000 00   0      0     0  0  0  0  0   0        1 1 (S-imm) 0 0 0 0 (+)  0    0    0   0   1  0    0    0	0x00003008		mem address = rs1+S-immediate, start writing rs2 into DMEM[rs1+S-immediate]
+0x0E		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    1	0x80000001		Wait for write operation to complete, finish (EOI)
+0x0F		 1   0  00 0000 00   0      0     0  0  0  0  0   0        0 0         0 0 0 0      0    0    0   0   0  0    0    0	0x80000000		Do nothing and finish (EOI) - unused
+
+(AUIPC:)
+0x10		 ...
+... complete the ROM table contents ...
+
