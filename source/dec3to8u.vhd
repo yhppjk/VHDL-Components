@@ -32,9 +32,9 @@ END ENTITY dec3to8u;
 --! @details More details about this decoder element.
 ARCHITECTURE table OF dec3to8u IS
 BEGIN
-    List: PROCESS (din) IS --! inside the brackets is the sensitivity list
+	List: PROCESS (din) IS --! inside the brackets is the sensitivity list
 	VARIABLE i: NATURAL :=0;
-    BEGIN
+	BEGIN
 		loop1 : FOR i IN 0 to 7 LOOP
 			dout(i) <= '0';
 		END LOOP loop1;

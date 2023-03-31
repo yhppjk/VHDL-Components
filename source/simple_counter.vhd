@@ -65,20 +65,9 @@ begin
 		end if;
 	
 	end process;
-
-	--! @brief transfer mcount process
-	--! @details transfer the mcount signal to output
-	process(mcount_sig)
-	begin
-		mcount <= mcount_sig;
-	end process;
-	--! @brief transfer count process
-	--! @details transfer the count signal to output
-	process(count_sig)
-	begin
-		count <= count_sig;
-	end process;
-
+	
+	mcount <= mcount_sig;
+	count <= count_sig;
 end architecture;
 
 
