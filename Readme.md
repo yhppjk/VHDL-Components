@@ -13,4 +13,8 @@
 				--     ouput <= value after read_delay; -- delayed assignment
 				-- end if;
 				--prop_delay to all the source
-		--      num_reg : positive := 4;				--! generic of size of register file
+
+#### 31/03/2023
+	-- read risc-V standard
+	-- get a list of operations in calculation units
+	-- rv32I chapter 2
