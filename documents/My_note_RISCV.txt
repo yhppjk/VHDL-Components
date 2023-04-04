@@ -54,4 +54,28 @@ Shift right arithmetic (SRA)
 Set if less than (SLT)
 Set if less than unsigned (SLTU)
 
+operations of calculation units:
+1-
+
+2-
+
+3-
+
+4-
+
+5-
+
+6-
+
+7-
+
+8-
+
+9-
+
+
+Notes:
+
+
+S-type not very clear
 
