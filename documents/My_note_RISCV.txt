@@ -29,7 +29,6 @@ C	compressed, 16 bits
 
 --list of operations in calculation units
 Arithmetic operations:
-
 Add (ADD)
 Add immediate (ADDI)
 Subtract (SUB)
@@ -40,12 +39,12 @@ Divide (DIV)
 Divide unsigned (DIVU)
 Remainder (REM)
 Remainder unsigned (REMU)
-Logic operations:
 
+Logic operations:
 And (AND)
 Or (OR)
 Exclusive-OR (XOR)
-And immediate (ANDI)
+And immediate (ANDI)	
 Or immediate (ORI)
 Exclusive-OR immediate (XORI)
 Shift left logical (SLL)
@@ -55,27 +54,178 @@ Set if less than (SLT)
 Set if less than unsigned (SLTU)
 
 operations of calculation units:
-1-
+1-ADD/SLT/SLTU
+AND/OR/XOR
+SLL/SRL
+SUB/SRA
 
 2-
+ADDI/SLTI[U]
+ANDI/ORI/XORI
 
-3-
+3- SLLI
+SRLI
+SRAI
 
-4-
+The operations need ALU 
 
-5-
+R-TYPE
 
-6-
+||funct7  |	rs2	 |	rs1	|	funct3	|  rd	|opcode||
 
-7-
+1. ADD
+	rs1 + rs2, save result in rd 	(addition)
 
-8-
+2. SLT
+	if(rs1 <s rs2) then rd <= 1; else rd <= 0;	(comparition with signed)
 
-9-
+3. SLTU	
+	if(rs1 <u rs2) then rd <= 1; else rd <= 0;	(comparition with unsigned)
+
+4. AND
+	rs1 & rs2, save result in rd	(Bitwise operation)
+
+5. OR
+	rs1 | rs2, save result in rd	(Bitwise operation)
+	
+6. XOR
+	rs1 ^ rs2, save result in rd	(Bitwise operation)
+
+7. SLL 
+	rs1 << rs2, save result in rd	(Bitwise operation)
+
+8. SRL
+	rs1 >> rs2, save result in rd	(Bitwise operation)
+
+9. SUB
+	rs1 - rs2, save result in rd	(subtraction)
+
+10. SRA
+	rs1 >>s rs2, right shift by the lower 5 bits of rs2, and save result in rd	(Bitwise operation)
+	
+I-TYPE
+1. ADDI
+	rs1 + immediate, save result in rd	(addition)
+
+2. SLTI
+	if(rs1 <s immediate) then rs = 1, else rs = 0 	(comparition with signed)
+
+3. SLTIU
+	if(rs1 <u immediate) then rs = 1, else rs = 0 	(comparition with unsigned)
+	
+4. ANDI
+	rs1 & immediate, save result in rd	(Bitwise operation)
+	
+5. ORI
+	rs1 | immediate, save result in rd 	(Bitwise operation)
+
+6. XORI
+	rs1 ^ immediate, save result in rd 	(Bitwise operation)
+
+7. SLLI
+	rs1 << immediate, save result in rd	(Bitwise operation)
+
+8. SLRI
+	rs1 >> immediate, save result in rd	(Bitwise operation)
+
+9.SRAI
+	rs1 >>s immediate, save result in rd	(Bitwise operation)
+	
+10.LB(U)
+
+11.LH(U)
+
+12.LW
+	
+S-TYPE
+1.SB
+
+2.SH
+
+3.SW
 
 
-Notes:
+B-TYPE
+1.BEQ
+
+2.BNE
+
+3.BLT
+
+4.BGE
+
+5.BLTU
+
+6.BGEU
+	
+U-TYPE
+1.LUI
 
 
-S-type not very clear
+2.AUIPC
 
+
+J-TYPE
+1.JAL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+notes about john's video
+
+1.1 register x0 hardwired to 0,
+	
+	x1 -x31 general purpose registers 
+	program counter (pc): to remember memory address where the program instruction are located.
+	number of bits in each register is defined  by ISA (instruction set architecture)
+	
+	a hardware thread is a hart. In RISC-V CPU, a hart refers to the collection of 32 registers, instruction excution unit and ALU.
+1.2 ISA
+	RISC-V ISA is a set of modules.
+
+RV Base modules
+	RV32I(integer, 32-bit general purpose),RV32E(embedded, 16 registers), RV64I, RV128I
+Extension Modules
+	M(math) ,A(atomic) ,F(32-bit float point), D(64-bit fp) ,Q(128-bit fp),C(compressed size instruction), etc
+	Extension G combined IMAFD, a common combination
+	
+1.3	How CPU execute a program
+
+	process of executing a program is continuous repeats of a series of instruction cycles
+	Fetch, Decode, Execute. 3 phases
+	
+2 RV32I
+2.1 ADD,AND,ADDI,ANDI
+
+	BRANCH: BE, BGE, BGEU, BLT, BLTU, BNE
+	pc <= pc + ((rs1==rs2) ? imm_b : 4 )  signed imm_b is pcrel_13
+	
+2.2 Jump and Link (JAL) : rd <= pc+4, pc <= pc+imm_j
+				  (JALR): rd <= pc+4, pc <= (rs1 + imm_i)&~1  (multipal of 4)
+				
+2.3	Load
+	
+	Load Byte, Load Byte Unsigned
+	Load half word
+	Load upper immediate
+	Load word
+	
+
+
+
+
+
+			
+	
