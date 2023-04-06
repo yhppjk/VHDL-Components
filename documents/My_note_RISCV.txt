@@ -70,7 +70,6 @@ SRAI
 The operations need ALU 
 
 R-TYPE
-
 ||funct7  |	rs2	 |	rs1	|	funct3	|  rd	|opcode||
 
 1. ADD
@@ -104,6 +103,8 @@ R-TYPE
 	rs1 >>s rs2, right shift by the lower 5 bits of rs2, and save result in rd	(Bitwise operation)
 	
 I-TYPE
+||		imm[11:0]	 	|	rs1	 |	funct3	|  rd	|opcode||
+
 1. ADDI
 	rs1 + immediate, save result in rd	(addition)
 
@@ -132,41 +133,64 @@ I-TYPE
 	rs1 >>s immediate, save result in rd	(Bitwise operation)
 	
 10.LB(U)
-
+	rd  <= sext ( M[rs1 + sext(immediate)] [7:0]]		(address calculation)
+	
 11.LH(U)
+	rd  <= sext ( M[rs1 + sext(immediate)] [15:0]]		(address calculation)
 
 12.LW
+	rd  <= sext ( M[rs1 + sext(immediate)] [31:0]]		(address calculation)
+	
+13.JALR
+	t = pc+4; pc = (rs1 + sext(immediate)) & ~1; rd = t			(pc addition, Bitwise operation)
 	
 S-TYPE
-1.SB
+||	imm[11:5] 	|rs2	|	rs1	 |	funct3	|  imm[4:0]	|opcode||
 
-2.SH
+1.SB
+	M[rs1] + sext(immediate) => rs2[7:0]		(address calculation)
+
+2.SH	
+	M[rs1] + sext(immediate) => rs2[15:0]		(address calculation)
 
 3.SW
-
+	M[rs1] + sext(immediate) => rs2[31:0]		(address calculation)
 
 B-TYPE
+||	imm[12]		|	imm[10:5]	| rs2 |	rs1	 |	funct3	|  imm[4:1]	|	imm[11]	|opcode||
+
 1.BEQ
+	if(rs1 == rs2) then pc += sext(immediate)			(comparition, pc addition)
 
 2.BNE
+	if(rs1 != rs2) then pc += sext(immediate)			(comparition, pc addition)
 
 3.BLT
-
+	if(rs1 <s rs2) then pc += sext(immediate)			(comparition, pc addition)
+	
 4.BGE
+	if(rs1 >=s rs2) then pc += sext(immediate)			(comparition, pc addition)
 
 5.BLTU
+	if(rs1 <u rs2) then pc += sext(immediate)			(comparition, pc addition)
 
 6.BGEU
+	if(rs1 >=u rs2) then pc += sext(immediate)			(comparition, pc addition)
 	
 U-TYPE
-1.LUI
+||	imm[31:12]	|	rd	|	opcode	||
 
+1.LUI
+	rd = sext(immediate[31:12]<<12)						(NO NEED)
 
 2.AUIPC
-
+	rd = pc + sext(immediate[31:12]<<12)				(pc addition)
 
 J-TYPE
+||	imm[20]	|	imm[10:1]	|	imm[11]		|	imm[19:12]	|	rd	|	opcode	||
+
 1.JAL
+	rd = pc + 4; pc += sext(immediate) 					(address calculation)
 
 
 
