@@ -25,8 +25,6 @@ D	double
 C	compressed, 16 bits
 
 
-
-
 --list of operations in calculation units
 Arithmetic operations:
 Add (ADD)
@@ -52,6 +50,7 @@ Shift right logical (SRL)
 Shift right arithmetic (SRA)
 Set if less than (SLT)
 Set if less than unsigned (SLTU)
+
 
 operations of calculation units:
 1-ADD/SLT/SLTU
@@ -181,7 +180,7 @@ U-TYPE
 ||	imm[31:12]	|	rd	|	opcode	||
 
 1.LUI
-	rd = sext(immediate[31:12]<<12)						(NO NEED)
+	rd = sext(immediate[31:12]<<12)						(lower 12bits zeros)
 
 2.AUIPC
 	rd = pc + sext(immediate[31:12]<<12)				(pc addition)
@@ -191,61 +190,34 @@ J-TYPE
 
 1.JAL
 	rd = pc + 4; pc += sext(immediate) 					(address calculation)
+2.JALR
+	rd = pc + 4; pc = (rs1 + immediate) & ~1; rd = t	(address calculation)
 
 
+ALU NO NEED 
 
+1. Special I-TYPE
 
-
-
-
-
-
-
-
-
-
-
-
-
-notes about john's video
-
-1.1 register x0 hardwired to 0,
+	FENCE
 	
-	x1 -x31 general purpose registers 
-	program counter (pc): to remember memory address where the program instruction are located.
-	number of bits in each register is defined  by ISA (instruction set architecture)
+	ECALL
 	
-	a hardware thread is a hart. In RISC-V CPU, a hart refers to the collection of 32 registers, instruction excution unit and ALU.
-1.2 ISA
-	RISC-V ISA is a set of modules.
+	EBREAK
+	
+2. HINT instructions
 
-RV Base modules
-	RV32I(integer, 32-bit general purpose),RV32E(embedded, 16 registers), RV64I, RV128I
-Extension Modules
-	M(math) ,A(atomic) ,F(32-bit float point), D(64-bit fp) ,Q(128-bit fp),C(compressed size instruction), etc
-	Extension G combined IMAFD, a common combination
-	
-1.3	How CPU execute a program
 
-	process of executing a program is continuous repeats of a series of instruction cycles
-	Fetch, Decode, Execute. 3 phases
-	
-2 RV32I
-2.1 ADD,AND,ADDI,ANDI
 
-	BRANCH: BE, BGE, BGEU, BLT, BLTU, BNE
-	pc <= pc + ((rs1==rs2) ? imm_b : 4 )  signed imm_b is pcrel_13
-	
-2.2 Jump and Link (JAL) : rd <= pc+4, pc <= pc+imm_j
-				  (JALR): rd <= pc+4, pc <= (rs1 + imm_i)&~1  (multipal of 4)
-				
-2.3	Load
-	
-	Load Byte, Load Byte Unsigned
-	Load half word
-	Load upper immediate
-	Load word
-	
+
+
+
+
+
+
+
+
+
+
 
 
 
