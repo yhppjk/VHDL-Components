@@ -17,8 +17,8 @@ USE ieee.numeric_std.ALL;
 --! reg_file design element.
 entity reg_file is
     generic (
-        dataWidth : positive := 4;			--! generic of datawidth
-		addressWidth : positive := 2;		--! generic of address width
+        dataWidth : positive := 32;			--! generic of datawidth
+		addressWidth : positive := 5;		--! generic of address width
 		sychro_reset : boolean := false; 	--! sychronous reset
 		reset_zero : boolean := false;		--! reset address 0 only
 		ignore_zero : boolean := false;		--! ignore write address 0
