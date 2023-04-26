@@ -55,4 +55,7 @@ end component;
 component mux1alu is
 end component;
 
+component mux2alu is
+end component;
+
 END PACKAGE alu_pkg;

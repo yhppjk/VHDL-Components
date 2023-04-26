@@ -24,7 +24,7 @@ ARCHITECTURE behavior OF decoder_tb IS
          selop : OUT  std_logic_vector(3 downto 0);
          mux1 : OUT  std_logic;
          mux2 : OUT  std_logic_vector(1 downto 0);
-         immediate : OUT  std_logic_vector(31 downto 0);
+         outputs : OUT  std_logic_vector(31 downto 0);
          ena_write : OUT  std_logic
         );
     END COMPONENT;
@@ -38,7 +38,7 @@ ARCHITECTURE behavior OF decoder_tb IS
     SIGNAL tb_selop : std_logic_vector(3 downto 0) := (others =>'0');
     SIGNAL tb_mux1 : std_logic:= '0';
     SIGNAL tb_mux2 : std_logic_vector(1 downto 0):= (others =>'0');
-    SIGNAL tb_immediate : std_logic_vector(31 downto 0):= (others =>'0');
+    SIGNAL tb_outputs : std_logic_vector(31 downto 0):= (others =>'0');
     SIGNAL tb_ena_write : std_logic := '1';
 
     -- Clock period
@@ -54,7 +54,7 @@ BEGIN
             selop => tb_selop,
             mux1 => tb_mux1,
             mux2 => tb_mux2,
-            immediate => tb_immediate,
+            outputs => tb_outputs,
             ena_write => tb_ena_write
         );
 
@@ -72,14 +72,14 @@ BEGIN
 
 	
 		tb_commande <= x"0000_00_00";
-		wait for 30 ns;
+		wait for 100 ns;
 
         -- Test case: ADDI instruction
         tb_commande <= x"0020_83_93";
-        WAIT FOR 40 ns;
+        WAIT FOR 100 ns;
         
         tb_commande <= x"4bca_aa_93";
-        WAIT FOR 40 ns;
+        WAIT FOR 100 ns;
         
         -- Test case: SLTIU instruction
         -- Add your test cases here
