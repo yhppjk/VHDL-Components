@@ -41,8 +41,6 @@ ARCHITECTURE behavior OF decoder_tb IS
     SIGNAL tb_outputs : std_logic_vector(31 downto 0):= (others =>'0');
     SIGNAL tb_ena_write : std_logic := '1';
 
-    -- Clock period
-    constant clk_period : time := 10 ns;
 
 BEGIN
     -- Instantiate the decoder
@@ -62,7 +60,7 @@ BEGIN
     clk_process: process
     begin
         clk <= not clk;
-        wait for 10 ns;
+        wait for 5 ns;
 
     END PROCESS clk_process;	
 
@@ -72,15 +70,29 @@ BEGIN
 
 	
 		tb_commande <= x"0000_00_00";
-		wait for 100 ns;
+		wait for 40 ns;
 
         -- Test case: ADDI instruction
         tb_commande <= x"0020_83_93";
-        WAIT FOR 100 ns;
+        WAIT FOR 40 ns;
         
         tb_commande <= x"4bca_aa_93";
-        WAIT FOR 100 ns;
+        WAIT FOR 40 ns;
         
+		tb_commande <= x"0000_00_00";
+		wait for 40 ns;
+
+        -- Test case: ADDI instruction
+
+		
+		--0100 1011 1100 1010 1010 1010 1001 0011
+		tb_commande <= x"4bca_aa_93";
+        WAIT FOR 40 ns;
+		
+		--0000 0000 0010 0000 1000 0011 1001 0011
+        tb_commande <= x"0020_83_93";
+        WAIT FOR 40 ns;
+		
         -- Test case: SLTIU instruction
         -- Add your test cases here
 

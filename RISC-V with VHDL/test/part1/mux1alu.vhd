@@ -41,10 +41,10 @@ ARCHITECTURE Behavioral OF mux2togen IS
 
 BEGIN
 	no_delay: if prop_delay = 0 ns generate
-	dout <= din0 when sel = '0' else din1;
+	dout <= din0 when sel = MUX1_rs1 else din1;
 	end generate no_delay;
 
 	with_delay:	if prop_delay /= 0 ns generate
-	dout <= din0 after prop_delay when sel = '0' else din1 after prop_delay;
+	dout <= din0 after prop_delay when sel = MUX1_rs1 else din1 after prop_delay;
 	end generate with_delay;
 END ARCHITECTURE Behavioral;

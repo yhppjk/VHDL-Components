@@ -36,9 +36,6 @@ entity decoder is
 	
 	outputs : out std_logic_vector(31 downto 0);	--! immediate output
 	ena_write : out std_logic								--! write enable
-	
-	--op1 : out std_logic_vector(31 downto 0);
-	--op2 : out std_logic_vector(31 downto 0);
 	);
 
 end entity decoder;
@@ -85,6 +82,12 @@ architecture behavioral of decoder is
 	constant funct3_SRLI : std_logic_vector(2 downto 0) := "101";
 	constant funct3_SRAI : std_logic_vector(2 downto 0) := "101";
 	---
+	constant funct3_LB : std_logic_vector(2 downto 0) := "000";
+	constant funct3_LH : std_logic_vector(2 downto 0) := "001";
+	constant funct3_LW : std_logic_vector(2 downto 0) := "010";
+	constant funct3_LBU : std_logic_vector(2 downto 0) := "100";
+	constant funct3_LHU : std_logic_vector(2 downto 0) := "101";
+	---
 	constant funct3_ADD : std_logic_vector(2 downto 0) := "000";
 	constant funct3_SLT : std_logic_vector(2 downto 0) := "010";
 	constant funct3_SLTU : std_logic_vector(2 downto 0) := "011";
@@ -94,8 +97,27 @@ architecture behavioral of decoder is
 	constant funct3_SLL : std_logic_vector(2 downto 0) := "001";
 	constant funct3_SRL : std_logic_vector(2 downto 0) := "101";
 	constant funct3_SRA : std_logic_vector(2 downto 0) := "101";
+	---
+	constant funct3_SB : std_logic_vector(2 downto 0) := "000";
+	constant funct3_SH : std_logic_vector(2 downto 0) := "001";
+	constant funct3_SW : std_logic_vector(2 downto 0) := "010";
+	constant funct3_FENCE : std_logic_vector(2 downto 0) := "000";
+	constant funct3_SYSTEM : std_logic_vector(2 downto 0) := "000";
 	
---selop
+--funct7
+	constant funct7_ADD : std_logic_vector(6 downto 0) := "0000000";
+	---
+	constant funct7_SRL : std_logic_vector(6 downto 0) := "0000000";
+	constant funct7_SRA : std_logic_vector(6 downto 0) := "0100000";
+	constant funct7_SUB : std_logic_vector(6 downto 0) := "0100000";
+	constant funct7_SRLI : std_logic_vector(6 downto 0) := "0000000";
+	constant funct7_SRAI : std_logic_vector(6 downto 0) := "0100000";
+	
+--funct12
+	constant funct12_ECALL : std_logic_vector(11 downto 0) := "000000000000";
+	constant funct12_EBREAK : std_logic_vector(11 downto 0) := "000000000001";
+	
+--selop alternative 4
 	constant ALU_ADD : std_logic_vector(selopbits-1 downto 0) := "0000";
 	constant ALU_SUB : std_logic_vector(selopbits-1 downto 0) := "0001";
 	constant ALU_SLL : std_logic_vector(selopbits-1 downto 0) := "0010";
@@ -107,11 +129,11 @@ architecture behavioral of decoder is
 	constant ALU_BEQ : std_logic_vector(selopbits-1 downto 0) := "1000";
 	constant ALU_BLT : std_logic_vector(selopbits-1 downto 0) := "1001";
 	constant ALU_BLTU : std_logic_vector(selopbits-1 downto 0) := "1010";
-	constant ALU_SLT: std_logic_vector(selopbits-1 downto 0) := "1011";
-	constant ALU_SLTU : std_logic_vector(selopbits-1 downto 0) :="1100";
-	constant ALU_LOAD : std_logic_vector(selopbits-1 downto 0) := "1101";
-	constant ALU_STORE : std_logic_vector(selopbits-1 downto 0) := "1110";
-	constant ALU_JAL : std_logic_vector(selopbits-1 downto 0) :="1111";
+	constant ALU_LOAD: std_logic_vector(selopbits-1 downto 0) := "1011";
+	constant ALU_STORE : std_logic_vector(selopbits-1 downto 0) :="1100";
+	constant ALU_JAL : std_logic_vector(selopbits-1 downto 0) := "1101";
+	constant ALU_LUI : std_logic_vector(selopbits-1 downto 0) := "1110";
+	--constant ALU_JAL : std_logic_vector(selopbits-1 downto 0) :="1111";
 	
 
 begin
@@ -129,8 +151,8 @@ begin
 			funct7<= (others =>'0');
 			opcode <= commande(6 downto 0);		
 			case opcode is
-				--I-type instruction
-				when "0010011" =>
+				--Immediate-Register instruction
+				when OPCODE_OP_IMM =>
 					rd <= commande(11 downto 7);
 					rs1 <= commande(19 downto 15);
 					funct3 <= commande(14 downto 12);
@@ -139,9 +161,9 @@ begin
 					--ADDI
 					case funct3 is
 						when funct3_ADDI =>
-							mux1 <= MUX1_rs1;
+							mux1 <= MUX1_rs1;	
 							mux2 <= MUX2_I;
-							outputs <= immediate ;
+							outputs <= immediate;
 							selop <= ALU_ADD;
 							ena_write <= '1';
 					--SLTI	
@@ -149,14 +171,14 @@ begin
 							mux1 <= MUX1_rs1;
 							mux2 <= MUX2_I;
 							outputs <= immediate ;
-							selop <= ALU_SLT;
+							selop <= ALU_BLT;
 							ena_write <= '1';
 					--SLTIU
 						when funct3_SLTIU =>	
 							mux1 <= MUX1_rs1;
 							mux2 <= MUX2_I;
 							outputs <= immediate ;
-							selop <= ALU_SLTU;
+							selop <= ALU_BLTU;
 							ena_write <= '1';
 					--XORI
 						when funct3_XORI =>
@@ -191,7 +213,7 @@ begin
 							mux1 <= MUX1_rs1;
 							mux2 <= MUX2_rs2;
 							outputs <= immediate ;
-							if(funct7 = "0100000") then 
+							if(funct7 = funct7_SRAI) then 
 								selop <= ALU_SRA;
 							else	
 								selop <= ALU_SRL;
@@ -200,47 +222,84 @@ begin
 						when others =>	
 					end case;	
 					
-				--R-type instructions
-				when "0110011" =>
+				--Upper immediate instructions
+				when OPCODE_AUIPC =>
+					
+				when OPCODE_LUI =>
+
+				--Register-Register instructions
+				when OPCODE_OP =>
 					rd <= commande(11 downto 7);
 					rs1 <= commande(19 downto 15);
 					funct3 <= commande(14 downto 12);
 					funct7 <= commande(31 downto 25);
 					rs2 <= commande(24 downto 20);
-					outputs(4 downto 0)<= rs2;
 					case funct3 is
 					--ADD & SUB
 						when funct3_ADD =>
-							if funct7 ="0000000" then
+							if funct7 = funct7_ADD then
 							mux1 <= MUX1_rs1;
 							mux2 <= MUX2_rs2;
-							outputs <= immediate ;
-							selop <= "0110";
+							outputs <= rs2 ;
+							selop <= ALU_ADD;
 							ena_write <= '1';
-							elsif funct7 = "0100000" then
+							elsif funct7 = funct7_SUB then
 							mux1 <= MUX1_rs1;
 							mux2 <= MUX2_rs2;
-							outputs <= immediate ;
-							selop <= "0110";
+							outputs <= rs2 ;
+							selop <= ALU_SUB;
 							ena_write <= '1';
 							end if;
-						when "001" =>
-					--
-						when "010" =>
+						when funct3_SLT =>
 						
-						when "011" =>
+						when funct3_SLTU =>
 						
-						when "100" =>
+						when funct3_AND =>
 						
-						when "101" =>
+						when funct3_OR =>
 						
-						when "110" =>
+						when funct3_XOR =>
 						
-						when "111" =>
+						when funct3_SLL =>
+						
+					--SRL & SRA	
+						when funct3_SRL =>
 						
 						when others =>
-				--J-type instructions
+				
 					end case;
+				
+				--Unconditional Jump instructions
+				when OPCODE_JAL =>
+				
+				when OPCODE_JALR =>
+				
+				
+				--Conditional Branches instructions
+				
+				when  OPCODE_BRANCH =>
+				
+				--Load and Store instructions
+				
+				when OPCODE_LOAD =>
+				
+				when  OPCODE_STORE =>
+				
+				--Memory Ordering instructions
+								
+				when  OPCODE_MISC_MEM =>
+				
+				--Environment Call and Breakpoints instructions
+								
+				when  OPCODE_SYSTEM =>				
+				
+				-- Initialization
+				when "0000000" =>
+					outputs <= (others => '0');
+					mux1 <= '0';
+					mux2 <= "00";
+					selop <= "0000";
+					ena_write <= '0';
 				when others =>	
 				
 			end case;
