@@ -27,3 +27,11 @@
 	--jump (pc+4), how to know it? 
 	--FENCE instruction
 	--Maybe write a list like Paco's by reading the PDF.
+#### 27/04/2023
+	-- create a test bench for alu first
+	-- the test bench should use record and array to verify the result of alu
+	-- it will be many differents situations
+	-- computer can calculate the result
+	-- comparer the result with alu result 
+	-- the test bench will run automatically and reply a error or a message of finish.	
+
