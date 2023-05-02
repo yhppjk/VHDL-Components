@@ -82,6 +82,7 @@ begin
 		when ALU_BLT =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) < 0 then
 				flags(1) <='1';
+				--res <= std_logic_vector(signed(op1)-signed(op2));
 			end if;
 		when ALU_BLTU =>
 			if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then

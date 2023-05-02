@@ -43,7 +43,7 @@ begin
 
 			assert res = vectors(i).exp_res report "res error, test failed, check "&INTEGER'image(i) &" loop " severity warning;
 			assert flags = vectors(i).exp_flags report "flags error, test failed, check "&INTEGER'image(i) &" loop " severity warning;
-
+			
 		end loop;
 
 		report "Test finished";
