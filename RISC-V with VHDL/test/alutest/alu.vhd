@@ -69,11 +69,12 @@ begin
 		when ALU_SRL =>
 			res <= std_logic_vector(shift_right(unsigned(op1), to_integer(unsigned(op2(4 downto 0)))));
 		when ALU_SRA =>
-			res <= std_logic_vector(shift_right(signed(op1), to_integer(unsigned(op2(4 downto 0)))));		when ALU_AND =>
-			res <= op1 and op2;
+			res <= std_logic_vector(shift_right(signed(op1), to_integer(unsigned(op2(4 downto 0)))));		
+		when ALU_AND =>
+			res <= op1 and op2; 
 		when ALU_OR =>
 			res <= op1 or op2;
-		when ALU_XOR =>
+		when ALU_XOR =>	
 			res <= op1 xor op2;
 		when ALU_BEQ =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) = 0 then
@@ -82,7 +83,6 @@ begin
 		when ALU_BLT =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) < 0 then
 				flags(1) <='1';
-				--res <= std_logic_vector(signed(op1)-signed(op2));
 			end if;
 		when ALU_BLTU =>
 			if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then
