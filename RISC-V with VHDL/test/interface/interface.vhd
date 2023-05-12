@@ -55,10 +55,15 @@ architecture behavioral of memory_interface  is
 	signal RDATA64 : std_logic_vector(63 downto 0);		--
 	signal PRDATA0 : std_logic_vector(31 downto 0);		--
 	signal PRDATA1 : std_logic_vector(31 downto 0);		--
-	
 	signal RDATA64ALIGNED : std_logic_vector(63 downto 0);
 	
+	signal first_cycle : std_logic := '1';
+	signal trigger : std_logic := '0';
+	
+	
 	constant zeros8 : std_logic_vector(7 downto 0) := (others => '0');
+	constant zeros16 : std_logic_vector(15 downto 0) := (others => '0');
+	constant zeros32: std_logic_vector(31 downto 0) := (others => '0');
 	
 	TYPE state_type is(idle, setup_transfer, release_enable, return_data);
 	signal current_state, next_state : state_type := idle;
@@ -105,40 +110,138 @@ BEGIN
 					SECOND_OP <= '0';
 				end if;
 				
+				--!!problem here!!
 				case ALIGNMENT is
 					when "00" =>
-						WDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & wdata_i ;
-						RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros16 & zeros8 & wdata_i ;
+								RDATA64 <= zeros32 & zeros16 & zeros8 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "01" =>
+								WDATA64 <= zeros32 & zeros16 & wdata_i ;
+								RDATA64 <= zeros32 & zeros16 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "11" =>
+								WDATA64 <= zeros32 & wdata_i ;
+								RDATA64 <= zeros32 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "10" =>
+								WDATA64 <= zeros32 & wdata_i ;
+								RDATA64 <= zeros32 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+						end case;
+					
+						--WDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & wdata_i ;
+						--RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
 					when "01" =>
-						WDATA64 <= zeros8 & zeros8 & zeros8 & wdata_i & zeros8 ;
-						if size_i = "00" then
-							RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
-						elsif size_i = "01" then 
-							RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ;
-						else 
-							RDATA64 <= PRDATA1 & PRDATA0 ;
-						end if; 
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros16 & wdata_i & zeros8 ;
+								RDATA64 <= zeros32 & zeros16 & PRDATA0 & zeros8 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "01" =>
+								WDATA64 <= zeros32 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "11" =>
+								WDATA64 <= zeros16 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "10" =>
+								WDATA64 <= zeros16 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros16 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+						end case;
+						
 					when "10" =>
-						WDATA64 <= zeros8 & zeros8 & wdata_i & zeros8 & zeros8 ;
-						if size_i = "00" then
-							RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
-						elsif size_i = "01" then 
-							RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ;
-						else 
-							RDATA64 <= PRDATA1 & PRDATA0 ;
-						end if; 
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros8 & wdata_i & zeros16 ;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros16 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "01" =>
+								WDATA64 <= zeros32 & wdata_i & zeros16;
+								RDATA64 <= zeros32 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "11" =>
+								WDATA64 <= zeros16 & wdata_i & zeros16;
+								RDATA64 <= zeros16 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "10" =>
+								WDATA64 <= zeros16 & wdata_i & zeros16;
+								RDATA64 <= zeros16 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+						end case;
+						
 					when "11" =>
-						WDATA64 <= zeros8 & wdata_i & zeros8 & zeros8 & zeros8 ;
-						if size_i = "00" then
-							RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
-						elsif size_i = "01" then 
-							RDATA64 <= PRDATA1 & PRDATA0 ;
-							RDATA64ALIGNED <=  shift_right(RDATA64, 24);
-						else 
-							RDATA64 <= PRDATA1 & PRDATA0 ;
-							RDATA64ALIGNED <=  shift_right(RDATA64, 24);
-						end if; 
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & wdata_i & zeros16 & zeros8  ;
+								RDATA64 <= zeros32 & PRDATA0 & zeros16 & zeros8  ;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+								
+								rdata_o <= 
+							when "01" =>
+								WDATA64 <= zeros8 & zeros16 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & zeros16 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+							when "11" =>
+								WDATA64 <= zeros8 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+							when "10" =>
+								WDATA64 <= zeros8 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+						end case;
+						
 				end case;	
+				
+				case size_i is 
+					when "00" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 8) <= (others => RDATA64ALIGNED(7));
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						else
+							rdata_o(31 downto 8) <= (others => '0');
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						end if;
+					when "01" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 16) <= (others => RDATA64ALIGNED(15));
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						else
+							rdata_o(31 downto 16) <= (others => '0');
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						end if;
+						
+					when "10" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						else
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						end if;
+					when "11" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						else
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						end if;
+				end case;
+				
+				first_cycle <= '1';
+				trigger = rd_i or wr_i;
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				
 				PWRITE <= '0';
 				PENABLE <= '0';
