@@ -40,7 +40,7 @@ BEGIN
 
     END PROCESS clk_process;
 
-
+				
 
 
 END ARCHITECTURE behavior;

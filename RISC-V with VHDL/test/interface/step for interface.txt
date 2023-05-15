@@ -1,0 +1,169 @@
+ports:
+	PADDR:	Output. 32-bit address
+	PSTRB:	Output. 4-bit byte lane write strobe
+	PWDATA:	Output. 32-bit write data
+	PWRITE:	Output. 1-bit command; 0 means read, 1 means write
+	PENABLE Output. 1-bit signal used to signal the 2nd and subsequent cycles of an APB transfer (when 1)
+	PRDATA:	Input. 32-bit read data
+	PREADY:	Input. 1-bit handshake signal from the slave to insert wait states; a wait state is inserted if PENABLE = 1 and PREADY = 0
+	
+	"rd_i":			Input. 1-bit. CPU command to initiate a read operation (when 1).
+	"wr_i":			Input. 1-bit. CPU command to initiate a write operation (when 1).
+	"addr_i":		Input. CPU address for the memory operation.
+	"size_i":		Input. 2-bit code for the size of the request.
+	"unsigned_i":	Input. 1-bit code to indicate the signed/unsigned nature of the read request (irrelevant for words)
+	"wdata_i":	Input. 32-bit data to be written into memory.
+	"rdata_o":	Output. 32-bit data read from memory.
+	"busy_o":	Output. 1-bit used to indicate the CPU a memory operation is ongoing and that it must wait.
+	
+	clk:	Input. Clock, active on rising edges.
+	rst:	Input. Low-level asynchronous reset.
+internal signals:
+
+
+	WORDADDR
+	ALIGNMENT
+	SIZESTRB
+	BYTESTRB
+	WDATA64
+	RDATA64
+	RDATA64ALIGNED
+
+process:
+
+1. clk and rst
+
+2. fsm
+
+3. others 
+	
+steps:
+
+1. 
+
+
+
+
+
+code:
+
+
+
+				case ALIGNMENT is
+					when "00" =>
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros16 & zeros8 & wdata_i ;
+								RDATA64 <= zeros32 & zeros16 & zeros8 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "01" =>
+								WDATA64 <= zeros32 & zeros16 & wdata_i ;
+								RDATA64 <= zeros32 & zeros16 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "11" =>
+								WDATA64 <= zeros32 & wdata_i ;
+								RDATA64 <= zeros32 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+							when "10" =>
+								WDATA64 <= zeros32 & wdata_i ;
+								RDATA64 <= zeros32 & PRDATA0 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,0);
+						end case;
+					
+						--WDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & wdata_i ;
+						--RDATA64 <= zeros8 & zeros8 & zeros8 & zeros8 & PRDATA0 ; 
+					when "01" =>
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros16 & wdata_i & zeros8 ;
+								RDATA64 <= zeros32 & zeros16 & PRDATA0 & zeros8 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "01" =>
+								WDATA64 <= zeros32 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "11" =>
+								WDATA64 <= zeros16 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+							when "10" =>
+								WDATA64 <= zeros16 & zeros8 & wdata_i & zeros8;
+								RDATA64 <= zeros16 & zeros8 & PRDATA0 & zeros8;
+								RDATA64ALIGNED <= shift_right(RDATA64,8);
+						end case;
+						
+					when "10" =>
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & zeros8 & wdata_i & zeros16 ;
+								RDATA64 <= zeros32 & zeros8 & PRDATA0 & zeros16 ;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "01" =>
+								WDATA64 <= zeros32 & wdata_i & zeros16;
+								RDATA64 <= zeros32 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "11" =>
+								WDATA64 <= zeros16 & wdata_i & zeros16;
+								RDATA64 <= zeros16 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+							when "10" =>
+								WDATA64 <= zeros16 & wdata_i & zeros16;
+								RDATA64 <= zeros16 & PRDATA0 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,16);
+						end case;
+						
+					when "11" =>
+						case size_i is 
+							when "00" =>
+								WDATA64 <= zeros32 & wdata_i & zeros16 & zeros8  ;
+								RDATA64 <= zeros32 & PRDATA0 & zeros16 & zeros8  ;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+								
+								rdata_o <= 
+							when "01" =>
+								WDATA64 <= zeros8 & zeros16 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & zeros16 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+							when "11" =>
+								WDATA64 <= zeros8 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+							when "10" =>
+								WDATA64 <= zeros8 & wdata_i & zeros8 & zeros16;
+								RDATA64 <= zeros8 & PRDATA0 & zeros8 & zeros16;
+								RDATA64ALIGNED <= shift_right(RDATA64,24);
+						end case;
+						
+				end case;	
+				
+				case size_i is 
+					when "00" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 8) <= (others => RDATA64ALIGNED(7));
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						else
+							rdata_o(31 downto 8) <= (others => '0');
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						end if;
+					when "01" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 16) <= (others => RDATA64ALIGNED(15));
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						else
+							rdata_o(31 downto 16) <= (others => '0');
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						end if;
+						
+					when "10" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						else
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						end if;
+					when "11" =>
+						if unsigned_i = '0' then
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						else
+							rdata_o(31 downto 0) <= RDATA64ALIGNED(31 downto 0);
+						end if;
+				end case;
