@@ -222,8 +222,10 @@ BEGIN
 	
 	end process;
 
+
 	readprocess : process(PRDATA, rd_i, size_i, addr_i, ) 
 	begin
+	
 		case ALIGNMENT is
 			when "00" =>
 				case size_i is 

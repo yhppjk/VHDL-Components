@@ -1,0 +1,349 @@
+7. Memory interface (with support for unaligned memory accesses) -------
+
+RV32I provides a 32-bit address space that is byte-addressed. Instructions are 32-bit, and data can be accessed as 32-bit (word), 16-bit (halword or half), and 8-bit (byte).
+So it seems natural to connect the CPU with the memory using a 32-bit wide data bus (4 bytes) to be able to retrieve an instruction/data word in a single memory operation,
+and 4 separate byte lanes enable to be able to reaqd/write less than 32-bits in a single memory operation
+(BE0 to enable byte lane 0, BE1 to enable byte lane 1, BE2 to enable byte lane 2, and BE3 to enable byte lane 3).
+From the complete 32-bit address the
+actual memory address will be a 30-bit numeric address (the "word address") and the 4-bit BE;
+the 4 BE bits will be extracted from the 2 lower bits of the 32-bit address (the complete address) as follows:
+
+To access a word with complete address ending in 00 binary (word aligned on word boundary), BE = "1111".
+	A single memory operation can fulfill the request.
+An access to a word with a complete address ending in a different combination of the two lower bits is an unaligned access.
+	Two memory operations are required to fulfill the request.
+To access a halfword with complete address ending in 00 binary (half aligned on the low part of a word boundary), BE = "0011".
+	A single memory operation can fulfill the request.
+To access a halfword with complete address ending in 01 binary, BE = "0110". This is an unaligned half access, but can be easily managed.
+	A single memory operation can fulfill the request.
+To access a halfword with complete address ending in 10 binary (half aligned on the high part of a word boundary), BE = "1100".
+	A single memory operation can fulfill the request.
+An access to a halfword with a complete address ending 11 binary (word aligned on word boundary) is an unaligned access.
+	Two memory operations are required to fulfill the request.
+To access a byte with complete address ending in 00 binary, BE = "0001".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 01 binary, BE = "0010".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 10 binary, BE = "0100".
+	A single memory operation can fulfill the request.
+To access a byte with complete address ending in 11 binary, BE = "1000".
+	A single memory operation can fulfill the request.
+
+
+
+7.1. Design decisions
+
+First design decision is whether the system is little-endian or big-endian.
+The decision is to design a little-endian system.
+Quoting pg. 42:
+	"In a little-endian configuration, multibyte stores write the least-significant register byte at
+	the lowest memory byte address, followed by the other register bytes in ascending order of their
+	significance. Loads similarly transfer the contents of the lesser memory byte addresses to the
+	less-significant register bytes."
+
+Advanced CPUs have separate instruction and data interfaces (Harvard architecture) connected to separate cache memories 
+to service instruction read requests (instruction cache) and data read/write requests (data cache) from the CPU; 
+being separate means the CPU may perform two memory requests simultaneously,
+as long as the two requests are directed to the different caches.
+
+Small systems, however, share the same memory interface for instructions and data (Von-Neumann architecture).
+This is our target, so the CPU will have a single, shared memory interface.
+This decision implies:
+	a) No separate control signals / address register / data registers for instructions and data
+	b) At any poin in time, the CPU can be either accessing the instruction memory or the data memory 
+	    (or none of them, if it is performing an ALU calculation or doing something else),
+		but can't issue two memory requests simultaneously.
+
+Some memories and peripherals are faster than others.
+In order to be as efficient as possible an intra-chip bus with wait states capability for slow slaves has to be implemented;
+fast slaves will respond inserting no wait states in the transaction, while lower ones will insert wait states in order
+to temporarily stall the transaction.
+AMBA APB is selected, as is one of the simplest intra-chip bus protocols, and it is standard 
+(meaning there are peripherals already designed to be connected to this bus).
+
+
+In the end, the bus interface will act as a bus master of the AMBA APB protocol and will offer a shared memory interface 
+(Von-Neumann architecture) to the CPU.
+
+7.2 Interface of the memory interface block		---------DONE
+
+Signals for the memory interface (MEMORY side, AMBA APB master):
+	PADDR:	Output. 32-bit address
+	PSTRB:	Output. 4-bit byte lane write strobe
+	PWDATA:	Output. 32-bit write data
+	PWRITE:	Output. 1-bit command; 0 means read, 1 means write
+	PENABLE Output. 1-bit signal used to signal the 2nd and subsequent cycles of an APB transfer (when 1)
+	PRDATA:	Input. 32-bit read data
+	PREADY:	Input. 1-bit handshake signal from the slave to insert wait states; a wait state is inserted if PENABLE = 1 and PREADY = 0
+
+Signals for the memory interface (CPU side):
+	"rd_i":			Input. 1-bit. CPU command to initiate a read operation (when 1).
+	"wr_i":			Input. 1-bit. CPU command to initiate a write operation (when 1).
+	"addr_i":		Input. CPU address for the memory operation.
+	"size_i":		Input. 2-bit code for the size of the request.
+		Example of size coding:
+			00       - byte
+			01       - halfword
+			10 or 11 - word
+	"unsigned_i":	Input. 1-bit code to indicate the signed/unsigned nature of the read request (irrelevant for words)
+		Example of signedness coding:
+			1 - unsigned
+			0 - signed
+		This is only relevant for reads of halfwords and bytes.
+	"wdata_i":	Input. 32-bit data to be written into memory.
+		For a halfword request, only the lower 2 bytes are relevant;
+		For a byte request, only the lower byte is relevant.
+	"rdata_o":	Output. 32-bit data read from memory.
+		For a halfword request, the value read from memory is in the lower 2 bytes and either sign-extended or zero-extended to 32 bits,
+			depending on the value of "unsigned_i" input;
+		For a byte request, the value read from memory is in the lower byte and either sign-extended or zero-extended to 32 bits,
+			depending on the value of "unsigned_i" input.
+	"busy_o":	Output. 1-bit used to indicate the CPU a memory operation is ongoing and that it must wait.
+		This signal will be 1 from a "rd_i" or "wr_i" coming from the CPU being asserted till the memory transaction is finished.
+		A memory transaction will translate into one or two memory operations, depending on whether the requested value
+		is correctly aligned or not.
+
+Signals for the memory interface (both sides):
+	clk:	Input. Clock, active on rising edges.
+	rst:	Input. Low-level asynchronous reset.
+
+7.3. Support for unaligned access and byte/halfword requests
+
+	As the connection with the memory is 32-bit wide, the natural size of the memory operation is 32-bit.
+	However, in order to be able to manage less than 32-bit in a memory operation (a halfword or a byte),
+	individual strobes for the different byte lanes will be used.
+	So the memory is organized as 32-bit positions (words, using word addresses) and byte strobes are used
+	to mark those bytes affected by the operation.
+	
+	Talking about a single memory operation, if the operation affects:
+	- Byte lane 0 then bytestrobe(0) must be 1, 0 otherwise,
+	- Byte lane 1 then bytestrobe(1) must be 1, 0 otherwise,
+	- Byte lane 2 then bytestrobe(2) must be 1, 0 otherwise,
+	- Byte lane 3 then bytestrobe(3) must be 1, 0 otherwise.
+	
+	This way, the possible byte strobe values are:
+	- For a 32-bit transaction, "1111",
+	- For a 16-bit transaction affecting the low 16 bit bits of the 32-bits position, "0011",
+	- For a 16-bit transaction affecting the middle 16 bit bits of the 32-bits position, "0110",
+	- For a 16-bit transaction affecting the high 16 bit bits of the 32-bits position, "1100",
+	- For an 8-bit transaction affecting the low 8 bits of the 32-bits position, "0001",
+	- For an 8-bit transaction affecting the middle-low 8 bits of the 32-bits position, "0010",
+	- For an 8-bit transaction affecting the middle-high 8 bits of the 32-bits position, "0100",
+	- For an 8-bit transaction affecting the high 8 bits of the 32-bits position, "1000".
+	
+	In this arrangement, from the 32-bits byte address used by the CPU, 
+	the memory receives a 30-bits word address and the corresponding byte strobes, which are extracted from
+	the size of the operation (word / halfword / byte) and the 2 lower bits of the 32-bits CPU address.
+	
+	The memory request is aligned when the data requested is aligned on a natural boundary of its size;
+	that is, a word request is aligned when the 32-bits CPU address is multiple of four (binary XXXX00),
+	a half is aligned when the 32-bits CPU address is multiple of two (binary XXXXX0),
+	and bytes are always aligned, as the 32-bits CPU address is always multiple of 1.
+	
+	An aligned request can be serviced by a single memory operation and the adequate byte strobes.
+	An unaligned request is a request that doesn't conform with the above restrictions about data size
+	and CPU address being multiple of 4 or 2, and it typically requires two memory operations.
+
+	Most unaligned memory requests from the CPU can only be serviced performing two memory accesses;
+	for example, a word to the 32-bit address 0x00000003 will require:
+		1) A first memory operation on the 30-bit word address 0x00000000 with bytestrobes "1000";
+			assume this read produces the result 0x1234ABCD (only the byte 0x12 is relevant).
+		2) A second memory operation on the 30-bit word address 0x00000001 with bytestrobes "0111";
+			assume this read produces the result 0x56789EF0 (only the bytes 0x78, 0x9E, and 0xF0 are relevant).
+		3) Combining bytes from the two memory operations to obtain a word of data;
+			0x12 from the first memory operation is the lowest byte of the word in a little-endian system,
+			0xF0 is the next byte, 0x9E is the next one, and 0x78 is the highest, 
+			so in the end the word is 0x789EF012.
+		
+	We need a Finite State Machine (FSM) inside the memory interface block to deal with wait states from APB slaves
+	and the need to perform a second memory request in case of an unaligned access request from the CPU;
+	while the memory operation (or operations, in case of unaligned requests) are ongoing, the "busy_o" ouput indicate
+	the CPU's control unit to stall the execution of instructions.
+
+	Dealing with unaligned requests:
+	
+	- The main idea is to 'imagine' we have a 64-bit connection with the memory and then split this into two 32-bit requests.
+		This requires 8 bits for byte lane strobes and 64 bits of data.
+		Any 32-bit request in this imaginary 64-bit memory connection can be serviced with a single 64-bit transfer.
+		The high half of these 8-bit strobes and 64-bit data will be used only if required (ie. unaligned access).
+		
+	- Let's call WORDADDR to the high 30-bit part of the incoming 32-bit address "addr_i".
+	- Let's call ALIGNMENT to the low 2-bit part of "addr_i".
+	
+	- Let's call SIZESTRB to the 8-bit encoding of byte strobes in a word, zero extending the byte strobes calculated
+		from the "size_i" input value assuming the request is aligned and, if a byte or halfword is requested, 
+		the value lies in the low part of the word memory position.
+		From the "size_i" input, SIZESTRB binary values are:
+			0000_0001 for bytes, 
+			0000_0011 for halfwords, 
+			and 0000_1111 for words.
+		Using '_' here to help visually separate the high and low halfs of the binary value.
+	- Let's call BYTESTRB to the 8-bit left-shifted value of SIZESTRB, to accommodate ALIGNMENT:
+			ALIGNMENT	BYTESTRB			Value for byte	Value for half	Value for word
+			00			SIZESTRB << 0		0000_0001		0000_0011		0000_1111
+			01			SIZESTRB << 1		0000_0010		0000_0110		0001_1110*
+			10			SIZESTRB << 2		0000_0100		0000_1100		0011_1100*
+			11			SIZESTRB << 3		0000_1000		0001_1000*		0111_1000*
+	- The first memory operation will use the lower half of BYTESTRB as PSTRB, the second (if neccessary) will use the high half.
+	- A second memory operation is required (marked with * above) only if the high half of BYTESTRB has any 1 in it:
+			SECOND_OP_REQUIRED = BYTESTRB(7) or BYTESTRB(6) or BYTESTRB(5) or BYTESTRB(4)
+	- If a second memory operation is required, the memory word address is WORDADDR+1.
+			
+	- Let's call WDATA64 to the 64-bit zero-extension then left-shifted value from the 32-bit "wdata_i" value coming from the CPU 
+		to perform a write;
+		left-shift is performed to accommodate ALIGNMENT (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as 0x00):
+			ALIGNMENT	WDATA64			Relevant bytes (byte)	Relevant bytes (half)	Relevant bytes (word)
+			00			wdata_i << 0	0x00000000_000000RR		0x00000000_0000RRRR		0x00000000_RRRRRRRR
+			01			wdata_i << 8	0x00000000_0000RR00		0x00000000_00RRRR00		0x000000RR_RRRRRR00*
+			10			wdata_i << 16	0x00000000_00RR0000		0x00000000_RRRR0000		0x0000RRRR_RRRR0000*
+			11			wdata_i << 24	0x00000000_RR000000		0x000000RR_RR000000*	0x00RRRRRR_RR000000*
+	- The first memory operation will use the lower half of WDATA64 as PWDATA, 
+		the second (if neccessary, marked with * above) will use the high half.
+	
+	- Let's call RDATA64 to the 64-bit obtained from one or two read operations performed to fulfill a single CPU read request.
+		- If a single read operation is performed, let's call the incoming 32-bit value PRDATA0;
+		- If two read operations are required, let's call PRDATA0 to the 32-bit value of the first read, PRDATA1 to the 32-bit value of the second one.
+		- If a single read operation is performed, RDATA64 = 0x00000000_PRDATA0
+		- If two read operations are required (marked with *), RDATA64 = 0xPRDATA1_PRDATA0 (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as 0x00):
+			ALIGNMENT	RDATA64											Relevant bytes (byte)	Relevant bytes (half)	Relevant bytes (word)
+			00			0x00000000_PRDATA0								0x00000000_000000RR		0x00000000_0000RRRR		0x00000000_RRRRRRRR
+			01			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_0000RR00		0x00000000_00RRRR00		0x000000RR_RRRRRR00*
+			10			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_00RR0000		0x00000000_RRRR0000		0x0000RRRR_RRRR0000*
+			11			0x00000000_PRDATA0 / 0xPRDATA1_PRDATA0(if *)	0x00000000_RR000000		0x000000RR_RR000000*	0x00RRRRRR_RR000000*
+		
+	- Let's call RDATA64ALIGNED to RDATA64 right-shifted to accommodate ALIGNMENT (relevant bytes are marked as 0xRR in the value columns,
+		irrelevant ones as either 0x00 or 0xUU, this last value used for unknown, irrelevant bytes; a byte is unknown and irrelevant if
+		it comes from a read operation but not used as part of the rdata_o value sent to the CPU):
+			ALIGNMENT	RDATA64ALIGNED		Relevant bytes (byte)						Relevant bytes (half)						Relevant bytes (word)
+										RDATA64				RDATA64ALIGNED			RDATA64				RDATA64ALIGNED			RDATA64				RDATA64ALIGNED
+			00			RDATA64 >> 0	0x00000000_UUUUUURR	0x00000000_UUUUUURR		0x00000000_UUUURRRR	0x00000000_UUUURRRR		0x00000000_RRRRRRRR	0x00000000_RRRRRRRR
+			01			RDATA64 >> 8	0x00000000_UUUURRUU	0x00000000_00UUUURR		0x00000000_UURRRRUU	0x00000000_00UURRRR		0xUUUUUURR_RRRRRR00	0x00000000_RRRRRRRR*
+			10			RDATA64 >> 16	0x00000000_UURRUUUU	0x00000000_0000UURR		0x00000000_RRRRUUUU	0x00000000_0000RRRR		0xUUUURRRR_RRRR0000	0x00000000_RRRRRRRR*
+			11			RDATA64 >> 24	0x00000000_RRUUUUUU	0x00000000_000000RR		0xUUUUUURR_RRUUUUUU	0x00000000_UUUURRRR*	0xUURRRRRR_RR000000	0x00000000_RRRRRRRR*
+		As can be observed from the above table, RDATA64ALIGNED always have the relevant bytes right-aligned, 
+		so only zero/sign extension is missing (and only for halfs and bytes).
+		
+	- The rdata_o 32-bit value for the CPU is calculated from the low half of RDATA64ALIGNED as follows (zero/sign extension operation):
+																								unsigned_i				
+		 size_i									0 (signed extension)												1 (zero extension)	
+		00 (byte)		rdata_o(31: 8) = RDATA64ALIGNED( 7), rdata_o( 7:0) = RDATA64ALIGNED( 7:0)		rdata_o(31: 8) = 0, rdata_o( 7:0) = RDATA64ALIGNED( 7:0)
+		01 (half)		rdata_o(31:16) = RDATA64ALIGNED(15), rdata_o(15:0) = RDATA64ALIGNED(15:0)		rdata_o(31:16) = 0, rdata_o(15:0) = RDATA64ALIGNED(15:0)
+		10/11 (word)					rdata_o(31:0) = RDATA64ALIGNED(31:0)								rdata_o(31:0) = RDATA64ALIGNED(31:0)
+
+	  
+7.4 Write-to-memory requests
+
+In the following discussion the Memory Interface is referred as "MI" and its internal FSM simply as "the FSM".
+
+This is how a memory write request works (single memory access):
+
+0) While idle the MI's FSM is in the idle/first cycle/op1A state
+	FSM sets the internal signal first_cycle = 1
+1) At the beginning of cycle T0 the CPU sets: wr_i, addr_i, size_i, wdata_i
+2) MI's combinational calculations for internal signals
+	- trigger = rd_i or wr_i = 1
+	- busy_o = trigger = 1
+	- strobes, wdata aligned, ...
+3) In the same T0 cycle the memory interface forwards the request to the memory: PREQ, PADDR, PSTRB, PWDATA, PWRITE, PENABLE (0)
+4) At the end of T0 the FSM registers the request internally and moves to state op1B for cycles T1, T2, etc.
+5a) While T1, T2, etc. with FSM state = op1B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0
+	- PENABLE = 1
+	- busy_o = not(PREADY) = 1
+	At the end of such cycle the FSM remains at state op1B
+5b) While T1, T2, etc. with FSM state = op1B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tk.
+	- busy_o = not(PREADY) = 0, indicating the CPU the transfer will end at the end of this cycle
+	At the end of such cycle the FSM returns to state op1A
+
+This is how a memory write request works (two memory accesses):
+
+0) While idle the MI's FSM is in the idle/first cycle/op1A state
+	FSM sets the internal signal first_cycle = 1
+1) At the beginning of cycle T0 the CPU sets: wr_i, addr_i, size_i, wdata_i
+2) MI's combinational calculations for internal signals
+	- trigger = rd_i or wr_i = 1
+	- busy_o = trigger = 1
+	- strobes, wdata aligned, ...
+3) In the same T0 cycle the memory interface forwards the request to the memory: PREQ, PADDR, PSTRB, PWDATA, PWRITE, PENABLE (0)
+4) At the end of T0 the FSM registers the request internally and moves to state op1B for cycles T1, T2, etc.
+5a) While T1, T2, etc. with FSM state = op1B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0
+	- PENABLE = 1
+	- busy_o = 1 (as we know for sure there is a second memory access)
+	At the end of such cycle the FSM remains at state op1B
+5b) While T1, T2, etc. with FSM state = op1B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tk.
+	- busy_o = 1 (as we know for sure there is a second memory access)
+	At the end of such cycle the FSM moves to state op2A.
+6) At T(k+1) the second memory access starts using 
+	- WORDADDR+1 as the address, the upper half of BYTESTRB and WDATA64.
+	- busy_o = 1
+	- PENABLE = 0
+7) At the end of T(k+1) the FSM moves to op2B
+8a) While T(k+2), T(k+3), etc. with FSM state = op2B and during the inserted wait states the request to the memory is maintained
+	- FSM sets the internal signal first_cycle = 0, op2 = 1
+	- PENABLE = 1
+	- busy_o = not(PREADY) = 1
+	At the end of such cycle the FSM remains at state op2B
+8b) While T(k+2), T(k+3), etc. with FSM state = op2B, during the last cycle of the transfer (PREADY=1) the request to the memory is still maintained.
+	Let's call this cycle Tw.
+	- busy_o = not(PREADY) = 0, indicating the CPU the transfer will end at the end of this cycle.
+	At the end of such cycle the FSM returns to state op1A.
+
+					
+7.5. Internal blocks
+
+	* 1-bit combinational signal TRIGGER = rd_i or wr_i
+	* 30-bit register ADDR.
+		No reset, load = first_cycle
+	* 2-bit register ALIGNMENT (register output ALIGNMENT_REG).
+		No reset, load = first_cycle
+	* 8-bit register BE.
+		No reset, load = first_cycle
+	* 1-bit register UNALIGNED; this is stored from the OR of the high 4-bit part of the left-shifted value stored into BE.
+		No reset, load = first_cycle
+	* 64-bit register WDATA.
+		No reset, load = first_cycle
+	* 64-bit register RDATA with independent write enables for the low 32-bit part and 32-bit high part;
+	    the low part is written when the single/first-of-two values come from memory, 
+	    the high part is written when the second-of-two values come from memory. 	  
+		No reset, load of low part = wRDATAL (internal signal from FSM), load of high part = wRDATAH (internal signal from FSM). 
+	* A combinational block to left-shift an 8-bit input by 0, 1, 2, or 3 and produce an 8-bit output; this is used to left-shift K positions before storing into BE.
+	* A combinational block to left-shift a 64-bit input by 0, 8, 16, or 24 and produce a 64-bit output; this is used to left-shift 8K positions before storing into WDATA.
+	* A combinational block to right-shift a 64-bit input by 0, 8, 16, or 24 and produce a 32-bit output (high 32-bit part can be discarded after right-shift); 
+	  this is used to right-shift RDATA 8K positions before zero/sign-extension.
+	* A combinational block to zero/sign-extend a 32-bit value given a 2-bit size input (byte, halfword, or word) and a 1-bit signed input;
+	this is used to zero/extend the 32-bit lower part of right-shifted RDATA in order to produce "rdata_o" to the CPU.
+	* A Finite State Machine (FSM) to control the memory operations.
+
+7.6. FSM
+
+The FSM problem is best solved with a Moore design in order to make the FSM easier to debug.
+Ideally, using a fast, no-wait-states APB memory, an aligned access should cost 2 clock cycles.
+
+7.6.1. FSM interface
+
+All signals are 1-bit
+	Inputs:
+		clk, 
+		rst, 
+		busy_i, 
+		rd_i, 
+		wr_i
+	Outputs:
+		busy_o (default 0),
+		wRDATAL (default 0),
+		wRDATAH (default 0)
+		
+7.6.2. FSM states
+
+List of states and FSM outputs:
+
+* 
+
+Transitions:
+
+* From xxx to xxx if xxx
