@@ -1,8 +1,8 @@
 ----------------------------------------------------------
---! @file memory_interface2 
---! @A memory_interface2  for calculation 
--- Filename: memory_interface2 .vhd
--- Description: A memory_interface2  
+--! @file memory_interface3 
+--! @A memory_interface3  for calculation 
+-- Filename: memory_interface3 .vhd
+-- Description: A memory_interface3  
 -- Author: YIN Haoping
 -- Date: April 19, 2023
 ----------------------------------------------------------
@@ -12,11 +12,11 @@ use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
 
 
---! memory_interface2  entity description
+--! memory_interface3  entity description
 
 --! Detailed description of this
---! memory_interface2  design element.
-entity memory_interface22  is
+--! memory_interface3  design element.
+entity memory_interface3  is
     generic (
         dataWidth : positive := 32;			--! generic of datawidth
 		addressWidth : positive := 5;		--! generic of address width
@@ -51,7 +51,7 @@ entity memory_interface22  is
 
 end entity;
 
-architecture behavioral of memory_interface2  is
+architecture behavioral of memory_interface3  is
 	signal WORDADDR : std_logic_vector(29 downto 0);	--high 30 bits of addr_i
 	signal ALIGNMENT : std_logic_vector(1 downto 0);	--low 2 bits of addr_i
 	signal SIZESTRB : std_logic_vector(7 downto 0);		--8 bits encoding of byte strobes in a word
@@ -77,66 +77,14 @@ architecture behavioral of memory_interface2  is
 	signal current_state, next_state : state_type := idle;
 	
 	
-	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
-	signal reg_file : reg_file_t := (0 =>"01010101",others =>(others =>'0'));
-	
-	
-	-- Function to perform left shift on a 64-bit std_logic_vector
-	function left_shift(input_vector : std_logic_vector; shift_amt : integer) return std_logic_vector is
-		variable result_vector : std_logic_vector(input_vector'range);
-	begin
-		result_vector := (input_vector(input_vector'high-shift_amt downto 0) & (others => '0'));
-		return result_vector;
-	end function left_shift;
 
-	-- Function to perform right shift on a 64-bit std_logic_vector
-	function right_shift(input_vector : std_logic_vector; shift_amt : integer) return std_logic_vector is
-		variable result_vector : std_logic_vector(input_vector'range);
-	begin
-		result_vector := ((others => '0') & input_vector(input_vector'high downto shift_amt));
-		return result_vector;
-	end function right_shift;
+
 	
 	
 BEGIN
 	--logical blocks
 	
 	--first_cycle process
-	first_cycle : process(rd_i, wr_i, PREADY, addr_i, size_i) 
-	begin
-		if first_cycle ='1' then 
-			trigger <= rd_i or wr_i;
-			busy_o <= not PREADY and trigger;
-
-			WORDADDR <= addr_i(31 downto 2);
-			ALIGNMENT <= addr_i(1 downto 0);
-			PSTRB <="0001" when size_i = "00" and addr_i(1 downto 0) = "00" else  -- byte at position 0
-				"0010" when size_i = "00" and addr_i(1 downto 0) = "01" else  -- byte at position 1
-				"0100" when size_i = "00" and addr_i(1 downto 0) = "10" else  -- byte at position 2
-				"1000" when size_i = "00" and addr_i(1 downto 0) = "11" else  -- byte at position 3
-				"0011" when size_i = "01" and addr_i(1 downto 0) = "00" else  -- halfword at position 0
-				"0110" when size_i = "01" and addr_i(1 downto 0) = "01" else  -- halfword at position 1
-				"1100" when size_i = "01" and addr_i(1 downto 0) = "10" else  -- halfword at position 2
-				"1111" when size_i >= "10" else  -- word
-				(others => '0');  -- default case
-				
-			SIZESTRB <= "00000001" when size_i = "00" else
-						"00000011" when size_i = "01" else
-						"00001111" ;
-			BYTESTRB <= left_shift(WORDADDR, unsigned(ALIGNMENT));
-			SECOND_OP <= '1' when BYTESTRB(7) or BYTESTRB(6) or BYTESTRB(5) or BYTESTRB(4) ='1' else
-						'0';
-						
-			-- 1 bit combinational signal TRIGGER	√			
-			-- 30 bit ADDR	√
-			-- 2 bit ALIGNMENT	√
-			-- 8 bit register BE	Is it BYTESTRB?
-			-- 1 bit register UNALIGNMENT	
-			-- 64 bit register WDATA
-
-				
-			first_cycle <= '0';
-	end process;
 			
 			--64 bit register RDATA
 			--A combinational block to left-shift an 8 bit input by 0,1,2,3
@@ -151,33 +99,96 @@ BEGIN
 
 
 
-
+	
+	
 	--! clock and reset
-	clock : process(clk, rst)
+	clock_and_reset : process(clk, rst)
 	begin
 		if rst = '1' then
 			current_state <= idle;
 			first_cycle <= '1';
 		elsif rising_edge(clk) then
+			if first_cycle ='1' then 
+				trigger <= rd_i or wr_i;
+				busy_o <= not PREADY and trigger;
+
+				WORDADDR <= addr_i(31 downto 2);
+				ALIGNMENT <= addr_i(1 downto 0);
+				
+				case size_i is
+					when "00" =>
+						case addr_i(1 downto 0) is
+							when "00" =>
+								PSTRB <= "0001";
+							when "01" =>
+								PSTRB <= "0010";
+							when "10" =>
+								PSTRB <= "0100";
+							when "11" =>
+								PSTRB <= "1000";
+							when others =>
+								PSTRB <= "0000";
+						end case;
+						SIZESTRB <= "00000001";
+					when "01" =>
+						case addr_i(1 downto 0) is
+							when "00" =>
+								PSTRB <= "0011";
+							when "01" =>
+								PSTRB <= "0110";
+							when "10" =>
+								PSTRB <= "1100";
+							when others =>
+								PSTRB <= "0000";
+						end case;
+						SIZESTRB <= "00000011";
+					when "10" =>
+						PSTRB <= "1111";
+						SIZESTRB <= "00001111";
+					when "11" =>
+						PSTRB <= "1111";
+						SIZESTRB <= "00001111";
+					when others =>
+						PSTRB <= "0000";
+						SIZESTRB <= "00000000";
+				end case;
+				
+				leftshift <= to_integer(unsigned(ALIGNMENT));
+				BYTESTRB <= SIZESTRB(7-leftshift downto 0) & zeros8(leftshift-1 downto 0);
+				if (BYTESTRB(7) or BYTESTRB(6) or BYTESTRB(5) or BYTESTRB(4)) ='1' then
+					SECOND_OP <= '1' ;
+				else 
+					SECOND_OP <= '0' ;
+				end if;
+				
+				-- 1 bit combinational signal TRIGGER	√			
+				-- 30 bit ADDR	√
+				-- 2 bit ALIGNMENT	√
+				-- 8 bit register BE	Is it BYTESTRB?
+				-- 1 bit register UNALIGNMENT	
+				-- 64 bit register WDATA
+
+					
+				first_cycle <= '0';
+			end if;
 			current_state <= next_state;
 		end if;
 	end process;
 	
 	--! FSM
-	FSM : process(current_state, next_state, PREADY, )
+	FSM : process(current_state, next_state, PREADY)
 	begin
 	--default assignment
 	busy_o <= not(PREADY);
 	case current_state is
 		when idle =>
-			reset <= '1';
-			if busy_o = '1' then
+			if not(PREADY) = '1' then
 				next_state <= idle;
 			else 
 				next_state <= op1B;
 			end if;
 		when op1B =>
-			if busy_o = '1' then
+			if not(PREADY) = '1' then
 				next_state <= op1B;
 			else 
 				if SECOND_OP = '1' then
@@ -187,14 +198,14 @@ BEGIN
 				end if;
 			end if;
 		when op2A =>
-			WORDADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(WORDADDR)) + 1, 8));
-			if busy_o = '1' then
+			WORDADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(WORDADDR)) + 1, 30));
+			if not(PREADY) = '1' then
 				next_state <= op2A;
 			else 
 				next_state <= op2B;
 			end if;
 		when op2B =>	
-			if busy_o = '1' then
+			if not(PREADY) = '1' then
 				next_state <= op2B;
 			else 
 				next_state <= idle;
@@ -202,25 +213,33 @@ BEGIN
 	end case;
 	end process;
 	
-	reset : process(reset)
+	
+	write_process : process (wr_i, wdata_i, trigger)
 	begin
-		reset <= '0';
+		if trigger = '1' then 
+			WDATA64(31 downto 0) <= wdata_i;
+			if SECOND_OP ='0' then			
 
-		
-	end process;
-	writeprocess : process(wdata_i, rd_i)
-	begin
-
-	end process;
-
-
-	readprocess : process(PRDATA, rd_i, size_i, addr_i, ) 
-	begin
-
+			else
+				WDATA64(63 downto 32) <= wdata_i;
+			end if;
+		end if;
 	end process;
 	
-end architecture;
+	read_process : process (rd_i, rdata_o)
+	begin
+		if trigger = '1' then 
+			RDATA64(31 downto 0) <= PRDATA0;
+			
+			if SECOND_OP ='1' then
 
+				RDATA64(63 downto 32) <= PRDATA1;
+			end if;
+		end if;
+	end process;	
+	
+	
+end architecture;
 
 
 
