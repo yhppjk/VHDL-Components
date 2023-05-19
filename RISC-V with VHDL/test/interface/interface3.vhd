@@ -4,7 +4,7 @@
 -- Filename: memory_interface3 .vhd
 -- Description: A memory_interface3  
 -- Author: YIN Haoping
--- Date: April 19, 2023
+-- Date: May 9, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
@@ -75,32 +75,8 @@ architecture behavioral of memory_interface3  is
 	
 	TYPE state_type is(idle, op1B, op2A, op2B);
 	signal current_state, next_state : state_type := idle;
-	
-	
 
-
-	
-	
-BEGIN
-	--logical blocks
-	
-	--first_cycle process
-			
-			--64 bit register RDATA
-			--A combinational block to left-shift an 8 bit input by 0,1,2,3
-			--A combinational block to left-shift a 64 bit input by 0,8,16,24
-			--A combinational block to right-shift a 64 bit input by 0,8,16,24
-			--A combinational block to zero/sign-extend a 32-bit value given a 2 bit size input (byte, halfword, word) and a 1 bit signed input(for rdata_o) 
-			--FSM
-			
-			
-	-- assuming wdata_i is a std_logic_vector signal
-	
-
-
-
-	
-	
+BEGIN	
 	--! clock and reset
 	clock_and_reset : process(clk, rst)
 	begin
@@ -135,8 +111,16 @@ BEGIN
 			PSTRB <= "0000";
 			rdata_o <= (others => '0');
 			
-		
 			--begin
+				--PWRITE definition ? 	
+			if wr_i ='1' then
+				PWRITE <= '1';
+			else
+				PWRITE <= '0';
+			end if;
+
+				
+
 			first_cycle <= '1';
 			trigger <= rd_i or wr_i;
 			busy_o <= trigger;
@@ -226,7 +210,9 @@ BEGIN
 			-- if not(PREADY) = '1' then
 				-- next_state <= op1B;
 			-- else 
+			if wr_i = '1' and rd_i = '0' then
 				PWDATA <= WDATA64(31 downto 0);
+			elsif wr_i = '0' and rd_i = '1' then
 				if SECOND_OP = '1' then
 					PRDATA0 <= PRDATA;
 					next_state <= op2A;
@@ -264,6 +250,7 @@ BEGIN
 					
 					next_state <= idle;
 				end if;
+			end if;
 			-- end if;
 		-- state op2A			
 		when op2A =>
@@ -271,7 +258,6 @@ BEGIN
 			WORDADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(WORDADDR)) + 1, 30));
 			busy_o <= '1';
 			PENABLE <= '0';			
-			PWDATA <= WDATA64(63 downto 32);
 
 			PSTRB <= BYTESTRB(7 downto 4);
 			next_state <= op2B;
@@ -280,76 +266,52 @@ BEGIN
 			first_cycle <= '0';
 			SECOND_OP <='0';
 			PENABLE <= '1';
-			
-			PRDATA1 <= PRDATA;
-			RDATA64 <= PRDATA1 & PRDATA0; 
-			RDATA64ALIGNED <= (31+(shift_count * 8) downto 0 =>'0') & RDATA64(31 downto (shift_count * 8));
-			if unsigned_i = '0' then
-				case size_i is 
-					when "00" => 
-						rdata_o(31 downto 8) <= (others => RDATA64ALIGNED(7));
-						rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
-					when "01" =>
-						rdata_o(31 downto 16) <=  (others => RDATA64ALIGNED(15));
-						rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
-					when "10" =>
-						rdata_o<=  RDATA64ALIGNED(31 downto 0);
-					when "11" =>
-						rdata_o <= RDATA64ALIGNED(31 downto 0);
-					when others =>
-				end case;
-			else
-				case size_i is 
-					when "00" => 
-						rdata_o(31 downto 8) <= (others => '0');
-						rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
-					when "01" =>
-						rdata_o(31 downto 16) <= (others => '0');
-						rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
-					when "10" =>
-						rdata_o<=  RDATA64ALIGNED(31 downto 0);
-					when "11" =>
-						rdata_o <= RDATA64ALIGNED(31 downto 0);
-					when others =>
-				end case;
-			end if;	
-			PWDATA <= WDATA64(63 downto 32);
-						
+			if wr_i = '1' and rd_i = '0' then
+				PWDATA <= WDATA64(63 downto 32);
+			elsif wr_i = '0' and rd_i = '1' then
+				PRDATA1 <= PRDATA;
+				RDATA64 <= PRDATA1 & PRDATA0; 
+				RDATA64ALIGNED <= (31+(shift_count * 8) downto 0 =>'0') & RDATA64(31 downto (shift_count * 8));
+				if unsigned_i = '0' then
+					case size_i is 
+						when "00" => 
+							rdata_o(31 downto 8) <= (others => RDATA64ALIGNED(7));
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						when "01" =>
+							rdata_o(31 downto 16) <=  (others => RDATA64ALIGNED(15));
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						when "10" =>
+							rdata_o<=  RDATA64ALIGNED(31 downto 0);
+						when "11" =>
+							rdata_o <= RDATA64ALIGNED(31 downto 0);
+						when others =>
+					end case;
+				else
+					case size_i is 
+						when "00" => 
+							rdata_o(31 downto 8) <= (others => '0');
+							rdata_o(7 downto 0) <= RDATA64ALIGNED(7 downto 0);
+						when "01" =>
+							rdata_o(31 downto 16) <= (others => '0');
+							rdata_o(15 downto 0) <= RDATA64ALIGNED(15 downto 0);
+						when "10" =>
+							rdata_o<=  RDATA64ALIGNED(31 downto 0);
+						when "11" =>
+							rdata_o <= RDATA64ALIGNED(31 downto 0);
+						when others =>
+					end case;
+				end if;	
+			end if;
+		
 			busy_o <= not(PREADY);
 			if not(PREADY) = '1' then
 				next_state <= op2B;
 			else 
 				next_state <= idle;
 			end if;
-			
+
 	end case;
 	end process;
-	
-	
-	-- write_process : process (wr_i, wdata_i, trigger)
-	-- begin
-		-- if trigger = '1' then 
-			-- WDATA64(31 downto 0) <= wdata_i;
-			-- if SECOND_OP ='0' then			
-
-			-- else
-				-- WDATA64(63 downto 32) <= wdata_i;
-			-- end if;
-		-- end if;
-	-- end process;
-	
-	-- read_process : process (rd_i, trigger, PRDATA)
-	-- begin
-		-- if trigger = '1' then 
-			-- RDATA64(31 downto 0) <= PRDATA0;
-			
-			-- if SECOND_OP ='1' then
-
-				-- RDATA64(63 downto 32) <= PRDATA1;
-			-- end if;
-		-- end if;
-	-- end process;	
-	
 	
 end architecture;
 

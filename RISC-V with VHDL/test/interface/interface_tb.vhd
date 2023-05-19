@@ -4,7 +4,7 @@
 -- Filename: pc.vhd
 -- Description: A pc 
 -- Author: YIN Haoping
--- Date: April 19, 2023
+-- Date: May 15, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;
@@ -74,7 +74,7 @@ BEGIN
     UUT: memory_interface3
 
         PORT MAP (
-	    PADDR => PADDR,	--32 bit address
+	    PADDR => PADDR,		--32 bit address
         PSTRB=> PSTRB,		--4 bit byte lane write strobe
         PWDATA =>PWDATA, 	--32 bit write data
         PWRITE => PWRITE,						--1 bit command; 0 = read, 1 = write
@@ -104,48 +104,94 @@ BEGIN
 	simulation: process
 	begin
 		    -- Hold reset state during initialization
+		--rst <= '1';
+		--wait for clk_period;
+		--rst <= '0';
+		
+		--test1 : read test
+		
+		--rd_i <= '1';
+		--wr_i <= '0'
+		
+		-- wr_i <= '1';
+		-- addr_i <= "00000000000000000000000000000001";
+		-- wdata_i <= "00000000000000000000000000000001";
+		-- wait for clk_period;
+		-- wr_i <= '0';
+		-- wait for clk_period;
+		-- rd_i <= '1';
+		-- addr_i <= "00000000000000000000000000000001";
+		-- wait for clk_period;
+		-- rd_i <= '0';
+		-- wait for clk_period;
+
+		-- wr_i <= '1';
+		-- addr_i <= "00000000000000000000000000000010"; -- new address
+		-- wdata_i <= "00000000000000000000000000000010"; -- new data
+		-- wait for clk_period;
+		-- wr_i <= '0';
+		-- wait for clk_period;
+
+		--Read from the new address
+		-- rd_i <= '1';
+		-- addr_i <= "00000000000000000000000000000010"; -- new address
+		-- wait for clk_period;
+		-- rd_i <= '0';
+		-- wait for clk_period;
+
+		--Try read without write
+		-- rd_i <= '1';
+		-- addr_i <= "00000000000000000000000000000011"; -- new address
+		-- wait for clk_period;
+		-- rd_i <= '0';
+		-- wait for clk_period;
+		
+		
+		
+		
+		-- hold reset state
 		rst <= '1';
 		wait for clk_period;
 		rst <= '0';
 		
-		-- Insert your stimulus here
-		-- This is a very basic example
+		wait for clk_period;
+		
+		-- Single write operation
 		wr_i <= '1';
 		addr_i <= "00000000000000000000000000000001";
-		wdata_i <= "00000000000000000000000000000001";
-		wait for clk_period;
+		wdata_i <= "00000000111111110000000011111111";
+		size_i <= "10";
+		unsigned_i <= '1';
+		wait for clk_period*2;
 		wr_i <= '0';
+
 		wait for clk_period;
+
+		-- Double write operation
+		wr_i <= '1';
+		addr_i  <= "00000000000000000000000000000010";
+		wdata_i <= "11111111000000001111111100000000";
+		wait for clk_period*2;
+		wr_i <= '0';
+		addr_i  <= "00000000000000000000000000000011";
+		wdata_i <= "11110000111100001111000011110000";
+		wait for clk_period*2;
+
+		-- Single read operation
 		rd_i <= '1';
 		addr_i <= "00000000000000000000000000000001";
-		wait for clk_period;
+		wait for clk_period*2;
 		rd_i <= '0';
+
 		wait for clk_period;
 
-		-- Add more stimulus here as needed
-		-- Here are some examples
-
-		-- Write at different address
-		wr_i <= '1';
-		addr_i <= "00000000000000000000000000000010"; -- new address
-		wdata_i <= "00000000000000000000000000000010"; -- new data
-		wait for clk_period;
-		wr_i <= '0';
-		wait for clk_period;
-
-		-- Read from the new address
+		-- Double read operation
 		rd_i <= '1';
-		addr_i <= "00000000000000000000000000000010"; -- new address
-		wait for clk_period;
+		addr_i <= "00000000000000000000000000000010";
+		wait for clk_period*2;
 		rd_i <= '0';
-		wait for clk_period;
-
-		-- Try read without write
-		rd_i <= '1';
-		addr_i <= "00000000000000000000000000000011"; -- new address
-		wait for clk_period;
-		rd_i <= '0';
-		wait for clk_period;
+		addr_i <= "00000000000000000000000000000011";
+		wait for clk_period*2;
 	
 		
 	

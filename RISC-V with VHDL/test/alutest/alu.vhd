@@ -2,7 +2,7 @@
 --! @file alu
 --! @A alu for calculation 
 -- Filename: alu.vhd
--- Description: A alu 
+-- Description: A alu  for calculation
 -- Author: YIN Haoping
 -- Date: April 19, 2023
 ----------------------------------------------------------
@@ -19,46 +19,49 @@ USE ieee.numeric_std.ALL;
 
 entity alu is 
 	generic(
-	selopbits : positive := 4;
-	flagbits : positive := 3
+	selopbits : positive := 4;		--! selop bit
+	flagbits : positive := 3		--! flags bit
 	);
 	port(
 	--INPUTS
-	op1 : in std_logic_vector(31 downto 0);
-	op2 : in std_logic_vector(31 downto 0);
-	selop : in std_logic_vector(3 downto 0);
+	op1 : in std_logic_vector(31 downto 0);		--! 32-bit operand1
+	op2 : in std_logic_vector(31 downto 0);		--! 32-bit operand2
+	selop : in std_logic_vector(3 downto 0);	--! X-bit operation selection
 	--OUTPUTS
-	res : out std_logic_vector(31 downto 0);
-	flags : out std_logic_vector(flagbits-1 downto 0)
+	res : out std_logic_vector(31 downto 0);	--! 32-bit result
+	flags : out std_logic_vector(flagbits-1 downto 0)	--! F-bit result of comparison for branch
 	);
 end entity alu;
 	
+--! @brief Architecture definition of alu
+--! @details More details about this alu element.
 
 architecture behavioral of alu is
-	constant ALU_ADD : std_logic_vector(3 downto 0) := "0000";
-	constant ALU_SUB : std_logic_vector(3 downto 0) := "0001";
-	constant ALU_SLL : std_logic_vector(3 downto 0) := "0010";
-	constant ALU_SRL : std_logic_vector(3 downto 0) := "0011";
-	constant ALU_SRA : std_logic_vector(3 downto 0) := "0100";
-	constant ALU_AND : std_logic_vector(3 downto 0) := "0101";
-	constant ALU_OR  : std_logic_vector(3 downto 0) := "0110";
-	constant ALU_XOR : std_logic_vector(3 downto 0) := "0111";
-	constant ALU_BEQ : std_logic_vector(3 downto 0) := "1000";
-	constant ALU_BLT : std_logic_vector(3 downto 0) := "1001";
-	constant ALU_BLTU : std_logic_vector(3 downto 0) := "1010";
-	constant ALU_JAL : std_logic_vector(3 downto 0) := "1011";
-	constant ALU_LUI : std_logic_vector(3 downto 0) := "1100";
+	constant ALU_ADD : std_logic_vector(3 downto 0) := "0000";		--! ADDITION operation
+	constant ALU_SUB : std_logic_vector(3 downto 0) := "0001";		--! SUBTRACTION operation
+	constant ALU_SLL : std_logic_vector(3 downto 0) := "0010";		--!	SHIFT LEFT LOGICAL operation
+	constant ALU_SRL : std_logic_vector(3 downto 0) := "0011";		--! SHIFT RIGHT LOGICAL operation
+	constant ALU_SRA : std_logic_vector(3 downto 0) := "0100";		--! SHIFT RIGHT ARITHMETIC operation
+	constant ALU_AND : std_logic_vector(3 downto 0) := "0101";		--! AND operation
+	constant ALU_OR  : std_logic_vector(3 downto 0) := "0110";		--! OR operation
+	constant ALU_XOR : std_logic_vector(3 downto 0) := "0111";		--! EXCLUSIVE OR operation
+	constant ALU_BEQ : std_logic_vector(3 downto 0) := "1000";		--! BRANCH IF EQUAL operation
+	constant ALU_BLT : std_logic_vector(3 downto 0) := "1001";		--! BRANCH IF LESS THAN operation
+	constant ALU_BLTU : std_logic_vector(3 downto 0) := "1010";		--! BRANCH IF LESS THAN UNSIGNED operation
+	constant ALU_JAL : std_logic_vector(3 downto 0) := "1011";		--! JUMP AND LINK operation
+	constant ALU_LUI : std_logic_vector(3 downto 0) := "1100";		--! LOAD UPPER IMMEDIATE operation
+
 	
-	signal result : integer;
-	signal local_selop : std_logic_vector(3 downto 0);
 begin
 
 process(op1, op2)
 begin
 
+	--! Initialization of output
 	res <= (others => '0');
 	flags <= (others => '0');
 
+	--! Case for different selop, running different operation
 	case selop is
 		when ALU_ADD =>
 			res <= std_logic_vector(signed(op1) + signed(op2));
@@ -95,7 +98,7 @@ begin
 		when others =>
 	end case;
 end process;
-
 end architecture behavioral;
+
 
 

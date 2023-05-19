@@ -1,10 +1,10 @@
 ----------------------------------------------------------
 --! @file pc
---! @A pc for calculation 
+--! @A program counter  
 -- Filename: pc.vhd
--- Description: A pc 
+-- Description: A program counter 
 -- Author: YIN Haoping
--- Date: April 19, 2023
+-- Date: May 4, 2023
 ----------------------------------------------------------
 --! Use standard library
 LIBRARY ieee;

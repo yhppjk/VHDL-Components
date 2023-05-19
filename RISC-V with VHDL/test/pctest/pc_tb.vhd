@@ -58,6 +58,7 @@ BEGIN
 
     PROCESS
     BEGIN
+
         reset <= '1';
         ena_in <= '0';
         ena_pc <= '0';
@@ -74,6 +75,10 @@ BEGIN
         ena_pc <= '1';
         wait for 10 ns;
         ena_pc <= '0';
+		
+
+	
+	
 		
         ASSERT false
 		REPORT "Simulation ended ( not a failure actually ) "
