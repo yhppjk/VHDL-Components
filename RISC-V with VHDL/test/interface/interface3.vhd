@@ -17,15 +17,7 @@ USE ieee.numeric_std.ALL;
 --! Detailed description of this
 --! memory_interface3  design element.
 entity memory_interface3  is
-    generic (
-        dataWidth : positive := 32;			--! generic of datawidth
-		addressWidth : positive := 5;		--! generic of address width
-		sychro_reset : boolean := false; 	--! sychronous reset
-		reset_zero : boolean := false;		--! reset address 0 only
-		ignore_zero : boolean := false;		--! ignore write address 0
-		combination_read : boolean := false;	--! generic of Combination and sychrnonous selection
-		read_delay: time := 0 ns			--! generic of read delay time
-    );
+
 	port (
 		--memory side,AMBA APB master
 	    PADDR: OUT std_logic_vector(31 DOWNTO 0);		--32 bit address
@@ -111,27 +103,22 @@ BEGIN
 			PSTRB <= "0000";
 			rdata_o <= (others => '0');
 			
-			--begin
-				--PWRITE definition ? 	
 			if wr_i ='1' then
 				PWRITE <= '1';
-			else
-				PWRITE <= '0';
 			end if;
-
-				
 
 			first_cycle <= '1';
 			trigger <= rd_i or wr_i;
 			busy_o <= trigger;
 			WORDADDR <= addr_i(31 downto 2);
 			ALIGNMENT <= addr_i(1 downto 0);
+			PADDR <= WORDADDR & ALIGNMENT;
 			
 			case size_i is
 				when "00" =>
 					case addr_i(1 downto 0) is
 						when "00" =>
-							PSTRB <= "0001";
+							PSTRB <= "0001"; -- 0001 shifted addr_i(1 downto 0) positions to the left
 						when "01" =>
 							PSTRB <= "0010";
 						when "10" =>
@@ -145,7 +132,7 @@ BEGIN
 				when "01" =>
 					case addr_i(1 downto 0) is
 						when "00" =>
-							PSTRB <= "0011";
+							PSTRB <= "0011"; -- 0011 shifted addr_i(1 downto 0) positions to the left
 						when "01" =>
 							PSTRB <= "0110";
 						when "10" =>
@@ -164,6 +151,13 @@ BEGIN
 					PSTRB <= "0000";
 					SIZESTRB <= "00000000";
 			end case;
+			
+			-- whole case:
+			--PSTRB <= 0001 shifted addr_i(1 downto 0) positions to the left when (size_i ="00")
+			--  else   0011 shifted addr_i(1 downto 0) positions to the left when (size_i ="01")
+			--  else   "1111" when (size_i ="10") or (size_i ="10")
+			--  else   "0000";
+			
 			--Write data 1
 			shift_count <= to_integer(unsigned(ALIGNMENT));
 			case ALIGNMENT is
@@ -205,7 +199,7 @@ BEGIN
 			first_cycle <= '0';
 			PENABLE <= '1';
 			busy_o <= not(PREADY);
-		
+
 		
 			-- if not(PREADY) = '1' then
 				-- next_state <= op1B;
@@ -257,8 +251,8 @@ BEGIN
 			-- write 2
 			WORDADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(WORDADDR)) + 1, 30));
 			busy_o <= '1';
-			PENABLE <= '0';			
-
+			PENABLE <= '0';				
+			PADDR <= WORDADDR & ALIGNMENT;
 			PSTRB <= BYTESTRB(7 downto 4);
 			next_state <= op2B;
 		-- state op2B	

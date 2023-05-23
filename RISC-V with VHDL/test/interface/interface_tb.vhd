@@ -167,6 +167,10 @@ BEGIN
 
 		wait for clk_period;
 
+
+
+
+
 		-- Double write operation
 		wr_i <= '1';
 		addr_i  <= "00000000000000000000000000000010";
@@ -177,6 +181,10 @@ BEGIN
 		wdata_i <= "11110000111100001111000011110000";
 		wait for clk_period*2;
 
+
+
+
+
 		-- Single read operation
 		rd_i <= '1';
 		addr_i <= "00000000000000000000000000000001";
@@ -184,6 +192,10 @@ BEGIN
 		rd_i <= '0';
 
 		wait for clk_period;
+
+
+
+
 
 		-- Double read operation
 		rd_i <= '1';

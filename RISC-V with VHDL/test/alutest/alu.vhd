@@ -74,7 +74,7 @@ begin
 		when ALU_SRA =>
 			res <= std_logic_vector(shift_right(signed(op1), to_integer(unsigned(op2(4 downto 0)))));		
 		when ALU_AND =>
-			res <= op1 and op2; 
+			res <= op1 and op2;
 		when ALU_OR =>
 			res <= op1 or op2;
 		when ALU_XOR =>	
@@ -97,6 +97,7 @@ begin
 			res <= op2;
 		when others =>
 	end case;
+	
 end process;
 end architecture behavioral;
 

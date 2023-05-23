@@ -4,6 +4,7 @@
 
 
 ### Here I record some of the abstract of meeting
+
 #### 29/03/2023 
 		--time values
 		--read delay(time) /= 0 then
@@ -34,4 +35,9 @@
 	-- computer can calculate the result
 	-- comparer the result with alu result 
 	-- the test bench will run automatically and reply a error or a message of finish.	
-
+#### 23/05/2023
+	-- Make more test for alu test
+	-- To generate the exact place of the error by function
+	-- Show the wrong result and the correct one
+	-- Be awared that test the extreme circustance
+	-- The memory interface should start after the alu, with the pdf and the instruction in mail.

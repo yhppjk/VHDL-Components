@@ -50,6 +50,4 @@ BEGIN
     END PROCESS;
 	current_pc <= std_logic_vector(internal_pc);
 
-
-
 end architecture;
