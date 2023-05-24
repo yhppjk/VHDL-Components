@@ -66,7 +66,7 @@ begin
 		when ALU_ADD =>
 			res <= std_logic_vector(signed(op1) + signed(op2));
 		when ALU_SUB =>
-			res <= std_logic_vector(signed(op1)-signed(op2));
+			res <= std_logic_vector(signed(op1) - signed(op2));
 		when ALU_SLL =>
 			res <= std_logic_vector(shift_left(unsigned(op1), to_integer(unsigned(op2(4 downto 0)))));
 		when ALU_SRL =>
@@ -88,9 +88,12 @@ begin
 				flags(1) <='1';
 			end if;
 		when ALU_BLTU =>
-			if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then
+			-- if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then
+				-- flags(2) <='1';
+			-- end if;
+			if to_integer(unsigned(op1))< to_integer(unsigned(op2)) then
 				flags(2) <='1';
-			end if;			
+			end if;		
 		when ALU_JAL =>
 			res <= op1;
 		when ALU_LUI => 
