@@ -42,28 +42,28 @@
 	-- Be awared that test the extreme circustance
 	-- The memory interface should start after the alu, with the pdf and the instruction in mail.
 ##### memory interface guideline
-	Section 2.2 "Read transfers", Figure 2-3
-   at T2 edge the memory interface detects the CPU transaction request  
-(Address is ADDR1, read because PWRITE=0, PENABLE=0 because is the  
-first clock of the transfer); in the following clock cycles the CPU's  
-memory interface
-maintains values for address, PWRITE, but change PENABLE = 1.
-   at T3 edge the memory device answers with the data DATA1 and  
-PREADY=1 (meaning last clock cycle of transfer)
-
-
-Section 2.2 "Read transfers", Figure 2-4 is the same, but the memory  
-device inserts two wait states (edges T3 and T4)
-by saying PREADY = 0 ("I'm not ready, please wait), and provide the  
-requested value ar T5 saying PREADY = 1
-("Here's the value you requested, transfer ended")
-
-Tests: A combination of operation (read/write which means rd_i=1, wr_i  
-= 0 / rd_i = 0, wr_i = 1), a few addresses, size 00/01/10/11,  
-signed/unsigned 0/1, with a memory device answering with 0/1/2 wait  
-states. The memory device must answer
-the read value with some known value (eg. 0000...000 when not  
-answering a read, 1010...1010 when answering a read).
-In isolation (with several clock cycles with no transfers between one  
-transfer and the next one) and with no
-"space" between two consecutive transfers.
+	--Section 2.2 "Read transfers", Figure 2-3
+	--at T2 edge the memory interface detects the CPU transaction request  
+	--(Address is ADDR1, read because PWRITE=0, PENABLE=0 because is the  
+	--first clock of the transfer); in the following clock cycles the CPU's  
+	--memory interface
+	--maintains values for address, PWRITE, but change PENABLE = 1.
+	--   at T3 edge the memory device answers with the data DATA1 and  
+	--PREADY=1 (meaning last clock cycle of transfer)
+	--
+	--
+	--Section 2.2 "Read transfers", Figure 2-4 is the same, but the memory  
+	--device inserts two wait states (edges T3 and T4)
+	--by saying PREADY = 0 ("I'm not ready, please wait), and provide the  
+	--requested value ar T5 saying PREADY = 1
+	--("Here's the value you requested, transfer ended")
+	--
+	--Tests: A combination of operation (read/write which means rd_i=1, wr_i  
+	--= 0 / rd_i = 0, wr_i = 1), a few addresses, size 00/01/10/11,  
+	--signed/unsigned 0/1, with a memory device answering with 0/1/2 wait  
+	--states. The memory device must answer
+	--the read value with some known value (eg. 0000...000 when not  
+	--answering a read, 1010...1010 when answering a read).
+	--In isolation (with several clock cycles with no transfers between one  
+	--transfer and the next one) and with no
+	--"space" between two consecutive transfers.
