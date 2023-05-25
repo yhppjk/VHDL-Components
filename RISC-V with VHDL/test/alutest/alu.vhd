@@ -68,11 +68,29 @@ begin
 		when ALU_SUB =>
 			res <= std_logic_vector(signed(op1) - signed(op2));
 		when ALU_SLL =>
-			res <= std_logic_vector(shift_left(unsigned(op1), to_integer(unsigned(op2(4 downto 0)))));
+			if to_integer(unsigned(op2)) < 32 then
+				res <= std_logic_vector(shift_left(unsigned(op1), to_integer(unsigned(op2(31 downto 0)))));
+			else 
+				res <= (others =>'0');
+			end if;
+			
 		when ALU_SRL =>
-			res <= std_logic_vector(shift_right(unsigned(op1), to_integer(unsigned(op2(4 downto 0)))));
+			if to_integer(unsigned(op2)) < 32 then
+				res <= std_logic_vector(shift_right(unsigned(op1), to_integer(unsigned(op2(31 downto 0)))));
+			else 
+				res <= (others =>'0');
+			end if;
+			
 		when ALU_SRA =>
-			res <= std_logic_vector(shift_right(signed(op1), to_integer(unsigned(op2(4 downto 0)))));		
+			if to_integer(unsigned(op2)) < 32 then
+				res <= std_logic_vector(shift_right(signed(op1), to_integer(unsigned(op2(31 downto 0)))));		
+			else 
+				if op1(31) ='1' then
+					res <= (others => '1');
+				else
+					res <= (others => '0');
+				end if;
+			end if;
 		when ALU_AND =>
 			res <= op1 and op2;
 		when ALU_OR =>
@@ -91,7 +109,7 @@ begin
 			-- if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then
 				-- flags(2) <='1';
 			-- end if;
-			if to_integer(unsigned(op1))< to_integer(unsigned(op2)) then
+			if unsigned(op1)< unsigned(op2) then
 				flags(2) <='1';
 			end if;		
 		when ALU_JAL =>
