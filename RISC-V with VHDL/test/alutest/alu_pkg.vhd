@@ -37,7 +37,9 @@ PACKAGE alu_pkg IS
 	function error_event (alu_code : std_logic_vector(3 downto 0) ) return string;
 	
 	function change_to_string(data : std_logic_vector) return string;
-
+	
+	function to_binary_string(slv : std_logic_vector) return string; 
+	
 	type test_t is
 	record
 	  op1                         : std_logic_vector(31 downto 0);
@@ -84,7 +86,7 @@ PACKAGE alu_pkg IS
 	-- Test case 16: Maximum positive number added to itself (overflow)
 	("01111111111111111111111111111111", "01111111111111111111111111111111", ALU_ADD, "11111111111111111111111111111110", "000"), -- Overflow
 	-- Test case 17: Maximum negative number added to itself (overflow)
-	("10000000000000000000000000000000", "10000000000000000000000000000000", ALU_ADD, "00000000000000000000000000000000", "000"), -- Overflow
+	("10000000000000000000000000000000", "10000000000000000000000000000000", ALU_ADD, "00000000000000000000000000000000", "100"), -- Overflow
 	-- Test case 18: Zero added to maximum positive number (no overflow)
 	("00000000000000000000000000000000", "01111111111111111111111111111111", ALU_ADD, "01111111111111111111111111111111", "000"), 
 	-- Test case 19: Zero added to maximum negative number (no overflow)
@@ -129,7 +131,7 @@ PACKAGE alu_pkg IS
     -- Test case 17: Largest negative number - positive number, should wrap around to largest positive number
     ("10000000000000000000000000000000", "00000000000000000000000000000001", ALU_SUB, "01111111111111111111111111111111", "000"),
     -- Test case 18: Zero - largest negative number, should return largest positive number+1
-    ("00000000000000000000000000000000", "10000000000000000000000000000000", ALU_SUB, "10000000000000000000000000000000", "000"),	--error**overflow, out of the positive limite
+    ("00000000000000000000000000000000", "10000000000000000000000000000000", ALU_SUB, "01111111111111111111111111111111", "000"),	--error**overflow, out of the positive limite(01111111111111111111111111111111)
     -- Test case 19: Zero - largest positive number, should return largest negative number+1
     ("00000000000000000000000000000000", "01111111111111111111111111111111", ALU_SUB, "10000000000000000000000000000001", "000"),	
 	
@@ -546,5 +548,16 @@ PACKAGE BODY alu_pkg IS
 				return string'("Wrong ALU code");
 		end case;
 	end function error_event;
-
+	
+	
+	function to_binary_string(slv : std_logic_vector) return string is
+		variable result : string (1 to slv'length);
+	begin
+		for i in slv'range loop
+			result(i + 1) := std_logic'image(slv(i))(2);
+		end loop;
+		return result;
+	end function to_binary_string;
+	
+	
 END PACKAGE BODY alu_pkg;

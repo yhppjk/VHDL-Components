@@ -48,9 +48,10 @@ begin
 			
 			wait for 10 ns;
 
-			assert res = vectors(i).exp_res report "res error, wrong result "&integer'image(to_integer(unsigned(res)))&" the correct result is "&integer'image(to_integer(unsigned(vectors(i).exp_res)))&
-				" test failed, check NO."&INTEGER'image(k) &" case of the <"&error_event(vectors(i).selop)&"> operation"severity warning;
-			assert flags = vectors(i).exp_flags report "flag error, flag = "&integer'image(to_integer(unsigned(flags)))&" test failed, check NO."&INTEGER'image(k) &" case of the <"&error_event(vectors(i).selop)&"> operation"severity warning;
+			assert res = vectors(i).exp_res report "res error, wrong result "&to_binary_string(res)&"  the operation is "&to_binary_string(vectors(i).op1)&" <"&error_event(vectors(i).selop)&"> "&to_binary_string(vectors(i).op2)&"  correct result is "&to_binary_string(vectors(i).exp_res)&
+				". test failed, check NO."&INTEGER'image(k) &" case of the <"&error_event(vectors(i).selop)&"> operation"severity warning;
+			assert flags = vectors(i).exp_flags report "flag error, flag = "&INTEGER'image(to_integer(unsigned(flags)))&" the operation is "&to_binary_string(vectors(i).op1)&" <"&error_event(vectors(i).selop)&"> "&to_binary_string(vectors(i).op2)&". the correct flags is "&INTEGER'image(to_integer(unsigned(vectors(i).exp_flags)))&
+				". test failed, check NO."&INTEGER'image(k) &" case of the <"&error_event(vectors(i).selop)&"> operation"severity warning;
 			
 		end loop;
 

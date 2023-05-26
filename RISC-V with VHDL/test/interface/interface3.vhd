@@ -158,10 +158,18 @@ BEGIN
 			--  else   "1111" when (size_i ="10") or (size_i ="10")
 			--  else   "0000";
 			
-			PSTRB <= shift_left("0001",to_integer(unsigned(addr_i))) when size_i = "00"
-				else shift_left("0011",to_integer(unsigned(addr_i))) when size_i = "01"
-				else shift_left("1111",to_integer(unsigned(addr_i))) when size_i = "10" or size_i = "11"
-				else "0000";
+			-- PSTRB <= shift_left("0001",to_integer(unsigned(addr_i))) when size_i = "00"
+				-- else shift_left("0011",to_integer(unsigned(addr_i))) when size_i = "01"
+				-- else shift_left("1111",to_integer(unsigned(addr_i))) when size_i = "10" or size_i = "11"
+				-- else "0000";
+						
+			-- SIZESTRB <= shift_left("0001",to_integer(unsigned(addr_i))) when size_i = "00"
+				-- else shift_left("0011",to_integer(unsigned(addr_i))) when size_i = "01"
+				-- else shift_left("1111",to_integer(unsigned(addr_i))) when size_i = "10" or size_i = "11"
+				-- else "0000";
+
+				
+				
 			--Write data 1
 			shift_count <= to_integer(unsigned(ALIGNMENT));
 			case ALIGNMENT is

@@ -67,3 +67,6 @@
 	--In isolation (with several clock cycles with no transfers between one  
 	--transfer and the next one) and with no
 	--"space" between two consecutive transfers.
+#### 26/05/2023
+	-- alu assert the calculation. the op1, op2, operation, and correct result.
+	-- CPU interface Programming

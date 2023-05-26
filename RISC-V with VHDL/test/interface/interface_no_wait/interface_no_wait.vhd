@@ -84,7 +84,52 @@ BEGIN
 				-- 64 bit register WDATA
 			current_state <= next_state;
 		end if;
-	end process;
+	end process clock_and_reset;
+	
+	
+	FSM : process(PREADY, PSELx, PENABLE)
+	begin
+		case current_state is 
+			when idle =>
+			
+				if PSELx = '1' then
+					next_state <= op1A;
+				else 
+					next_state <= idle;
+				end if;	
+					 
+			when op1A =>
+				ADDR <= addr_i(31 downto 2);
+				ALIGNMENT <= addr_i(1 downto 0);
+				
+				if PWRITE = '1' then
+					
+					
+				
+				elsif PWRITE = '0' then
+				
+				
+				
+				end if;
+				
+				
+				next_state <= op2A;
+				
+			when op2A =>
+			
+				if PENABLE = '1' and PREADY = '1' then
+					next_state <= op1A;
+				elsif PENABLE = '0' and PREADY = '1' then
+					next_state <= idle;
+				elsif PREADY = '0' then
+					next_state <= op2A;				
+				end if;	
+				
+			
+		end case;
+		
+		
+	end process FSM;
 	
 	
 	

@@ -106,9 +106,6 @@ begin
 				flags(1) <='1';
 			end if;
 		when ALU_BLTU =>
-			-- if to_integer(unsigned(op1))-to_integer(unsigned(op2)) < 0 then
-				-- flags(2) <='1';
-			-- end if;
 			if unsigned(op1) < unsigned(op2)  then
 				flags(2) <='1';
 			end if;		
