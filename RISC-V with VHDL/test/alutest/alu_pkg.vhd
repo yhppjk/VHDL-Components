@@ -551,7 +551,7 @@ PACKAGE BODY alu_pkg IS
 	
 	
 	function to_binary_string(slv : std_logic_vector) return string is
-		variable result : string (1 to slv'length);
+		variable result : string (1 to 32);
 	begin
 		for i in slv'range loop
 			result(i + 1) := std_logic'image(slv(i))(2);
