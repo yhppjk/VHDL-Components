@@ -1,8 +1,8 @@
 ----------------------------------------------------------
---! @file memory_interface3 
---! @A memory_interface3  for calculation 
--- Filename: memory_interface3 .vhd
--- Description: A memory_interface3  
+--! @file interface_with_wait 
+--! @A interface_with_wait  for calculation 
+-- Filename: interface_with_wait .vhd
+-- Description: A interface_with_wait  
 -- Author: YIN Haoping
 -- Date: May 9, 2023
 ----------------------------------------------------------
@@ -12,15 +12,15 @@ use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
 
 
---! memory_interface3  entity description
+--! interface_with_wait  entity description
 
 --! Detailed description of this
---! memory_interface3  design element.
-entity memory_interface3  is
+--! interface_with_wait  design element.
+entity interface_with_wait  is
 
 	port (
 		--memory side,AMBA APB master
-	    PADDR: OUT std_logic_vector(29 DOWNTO 0);		--32 bit address
+	    PADDR: OUT std_logic_vector(29 DOWNTO 0) := (others => '0');		--32 bit address
         PSTRB: OUT std_logic_vector(3 DOWNTO 0);		--4 bit byte lane write strobe
         PWDATA: OUT std_logic_vector(31 DOWNTO 0);		--32 bit write data
         PWRITE: OUT std_logic;							--1 bit command; 0 = read, 1 = write
@@ -45,7 +45,7 @@ entity memory_interface3  is
 
 end entity;
 
-architecture behavioral of memory_interface3  is
+architecture behavioral of interface_with_wait  is
 	signal WORDADDR : std_logic_vector(29 downto 0);	--high 30 bits of addr_i
 	signal ALIGNMENT : std_logic_vector(1 downto 0);	--low 2 bits of addr_i
 	signal SIZESTRB : std_logic_vector(7 downto 0);		--8 bits encoding of byte strobes in a word
@@ -110,7 +110,7 @@ BEGIN
 		end if;
 	end process;
 
-	read_data: process(size_i) 
+	read_data: process(clk) 
 		variable var_sizestrb : std_logic_vector(7 downto 0);
 	begin
 		case size_i is
@@ -153,8 +153,9 @@ BEGIN
 
 	end process read_data;
 	
-	write_data : process(wdata_i) 
+	write_data : process(clk) 
 	begin
+		PWRITE <= '1';
 		case ALIGNMENT is
 			when "00" =>
 				WDATA64 <= zeros32 & wdata_i;
@@ -167,7 +168,7 @@ BEGIN
 			when others =>
 				WDATA64 <= (others => '0');
 		end case;	
-		if rising_edge(clk) and first_cycle ='1' then
+		if rising_edge(clk) and first_cycle ='1' and wr_i = '1' then
 			register_PWDATA <= WDATA64(63 downto 32);
 		end if;
 		if op2 = '0' then
@@ -178,7 +179,7 @@ BEGIN
 	end process write_data;
 	
 	
-	addr_process : process(addr_i)
+	addr_process : process(clk)
 	begin
 		WORDADDR <= addr_i(31 downto 2);
 		ALIGNMENT <= addr_i(1 downto 0);
@@ -188,7 +189,7 @@ BEGIN
 		end if;
 		
 		if op2 ='0' then
-			PADDR <= WORDADDR;
+			PADDR <= WORDADDR;	
 		elsif op2 = '1' then 
 			PADDR <= register_PADDR;
 		end if;
@@ -198,9 +199,10 @@ BEGIN
 	end process addr_process;
 	
 	
-	rdata_process: process(PRDATA)
+	rdata_process: process(clk)
 	begin
-		if op1='1' and PREADY='1' and rising_edge(clk) then
+		PWRITE <= '0';
+		if op1='1' and PREADY='1' and rising_edge(clk) and rd_i = '1' then
 			register_PRDATA <= PRDATA;
 		end if;
 		RDATA64A <= zeros32 & PRDATA;
@@ -258,7 +260,54 @@ BEGIN
 	end process rdata_process;
 	
 	
-	
+	FSM : process (clk)
+	begin
+		case current_state is
+			when idle =>
+				op1 <= '1';
+				op2 <= '0';
+				first_cycle <= '1';
+				busy_sel <= "00";
+				preq_sel <= "00";
+				PENABLE <= '0';
+				if trigger = '1' then
+					next_state <= op1B;
+				end if;
+				
+			when op1B =>
+				op1 <= '1';
+				op2 <= '0';
+				first_cycle <= '0';
+				busy_sel <= "01";
+				preq_sel <= "01";
+				PENABLE <= '1';
+				if PREADY = '1' and unaligned = '0' then
+					next_state <= idle;
+				elsif PREADY = '1' and unaligned = '1'then 
+					next_state <= op2A;
+				end if;
+
+			when op2A =>
+				op1 <= '0';
+				op2 <= '1';
+				first_cycle <= '0';
+				busy_sel <= "10";
+				preq_sel <= "01";
+				PENABLE <= '0';
+				next_state <= op2B;			
+			
+			when op2B =>
+				op1 <= '0';
+				op2 <= '0';
+				first_cycle <= '0';
+				busy_sel <= "11";
+				preq_sel <= "01";
+				PENABLE <= '1';
+				if PREADY = '1' then
+					next_state <= idle;
+				end if;		
+		end case;		
+	end process FSM;
 	
 
 	
