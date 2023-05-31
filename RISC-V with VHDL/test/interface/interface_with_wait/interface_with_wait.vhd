@@ -69,7 +69,7 @@ architecture behavioral of interface_with_wait  is
 	signal register_unaligned : std_logic := '0';
 	signal register_PWDATA : std_logic_vector(31 downto 0);
 	signal register_PADDR : std_logic_vector(29 downto 0);
-	signal register_PRDATA : std_logic_vector(31 downto 0);
+	signal register_PRDATA : std_logic_vector(31 downto 0) := (others => '0');
 	signal op1 : std_logic;
 	signal op2 : std_logic;
 	
@@ -89,6 +89,9 @@ architecture behavioral of interface_with_wait  is
 BEGIN	
 	
 	trigger <= rd_i or wr_i;
+	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')
+		else '0' when (rd_i = '1' and wr_i = '0');
+
 	WORDADDR <= addr_i(31 downto 2);
 	ALIGNMENT <= addr_i(1 downto 0);
 	busy_o <= trigger when busy_sel = "00" else
@@ -110,7 +113,7 @@ BEGIN
 		end if;
 	end process;
 
-	read_data: process(clk) 
+	init_data: process(clk) 
 		variable var_sizestrb : std_logic_vector(7 downto 0);
 	begin
 		case size_i is
@@ -148,14 +151,15 @@ BEGIN
 			PSTRB <= register_PSTRB;
 		elsif op2 = '1' then 
 			PSTRB <= BYTESTRB(3 downto 0);
+		else 
+			PSTRB <= (others => '0');
 		end if;
 		unaligned <= register_unaligned;
 
-	end process read_data;
+	end process init_data;
 	
 	write_data : process(clk) 
 	begin
-		PWRITE <= '1';
 		case ALIGNMENT is
 			when "00" =>
 				WDATA64 <= zeros32 & wdata_i;
@@ -192,6 +196,8 @@ BEGIN
 			PADDR <= WORDADDR;	
 		elsif op2 = '1' then 
 			PADDR <= register_PADDR;
+		else 
+			PADDR <= (others => '0');
 		end if;
 		
 	
@@ -201,7 +207,6 @@ BEGIN
 	
 	rdata_process: process(clk)
 	begin
-		PWRITE <= '0';
 		if op1='1' and PREADY='1' and rising_edge(clk) and rd_i = '1' then
 			register_PRDATA <= PRDATA;
 		end if;

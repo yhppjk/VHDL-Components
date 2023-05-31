@@ -43,12 +43,17 @@ architecture tb_behavior of interface_with_wait_tb is
     
 	component mock_of_memory is
 		port(
+			num_wait : IN integer := 2;
+			dataread : IN std_logic_vector(31 downto 0);
 			clk : IN std_logic;
 			PADDR : IN std_logic_vector(29 downto 0);
 			PWDATA : IN std_logic_vector(31 downto 0);
 			PSEL : IN std_logic;
+			PWRITE : IN std_logic;
+			PENABLE : IN std_logic;
+			
 			PREADY : OUT std_logic;
-			PRDATA : OUT std_logic_vector(31 downto 0)
+			PRDATA : OUT std_logic_vector(31 downto 0):= (others => '0')
 		);
 	
 	end component;
@@ -59,19 +64,22 @@ architecture tb_behavior of interface_with_wait_tb is
 
 	signal rd_i : std_logic := '0';
 	signal wr_i : std_logic := '0';
-	signal addr_i : std_logic_vector(31 downto 0);
-	signal size_i : std_logic_vector(1 downto 0);
+	signal addr_i : std_logic_vector(31 downto 0) := (others => '0');
+	signal size_i : std_logic_vector(1 downto 0) := (others => '0');
 	signal unsigned_i : std_logic := '0';
-	signal wdata_i : std_logic_vector(31 downto 0);
-	signal rdata_o : std_logic_vector(31 downto 0);
+	signal wdata_i : std_logic_vector(31 downto 0) := (others => '0');
+	signal rdata_o : std_logic_vector(31 downto 0) := (others => '0');
 	signal busy_o : std_logic;
+	
+	signal dataread : std_logic_vector(31 downto 0);
+	signal num_wait : integer;
 	
 	--internal signals
 	signal mem_PADDR: std_logic_vector(29 downto 0);
     signal mem_PWDATA: std_logic_vector(31 downto 0);
     signal mem_PSEL: std_logic;
     signal mem_PREADY: std_logic;
-    signal mem_PRDATA: std_logic_vector(31 downto 0);
+    signal mem_PRDATA: std_logic_vector(31 downto 0) := (others => '0');
     -- Add the other signals here like rd_i, wr_i etc.
     -- Initialize these signals with random or specific values for testing
     -- ...
@@ -85,7 +93,7 @@ architecture tb_behavior of interface_with_wait_tb is
     constant tb_clk_period : time := 10 ns;
 
 begin
-    -- Instantiate the interface_with_wait component
+    -- Instantiate the interface_with_wait component	
     UUT: interface_with_wait
         port map (
             clk => tb_clk,
@@ -114,7 +122,11 @@ begin
             PWDATA => mem_PWDATA,
             PSEL => mem_PSEL,
             PREADY => mem_PREADY,
-            PRDATA => mem_PRDATA
+            PRDATA => mem_PRDATA,
+			PENABLE =>PENABLE_out,
+			PWRITE => PWRITE_out,
+			dataread => dataread,
+			num_wait => num_wait
         );
 
 	
@@ -131,32 +143,47 @@ begin
         -- Reset pulse
         tb_rst <= '0';
         wait for tb_clk_period * 2;
-
-        -- Add your test cases here
-		rd_i <= '0';
-		wr_i <= '1';
-		
+	
+		rd_i <= '1';
+		wr_i <= '0';
 		size_i <= "10";
 		addr_i <= "00000000000000000000000000000011";
 		unsigned_i <= '1';
-		wdata_i <= "01010101010101010101010101010101";
+		
+		num_wait <= 0;
+		dataread <= x"0A0A0A0A";
 		
 		wait for 50 ns;
-		
-		addr_i <= "00000000000000000000000000000111";
-		wait for 50 ns;
-		
-		addr_i <= "00000000000000000000000000001011";
-		wdata_i <= "11111111111111110101010101010101";
-		wait for 50 ns;
-		
-		rd_i <= '1';
-		wr_i <= '0';
-		addr_i <= "00000000000000000000000000000011";
 
-		wait for 50 ns;
-		addr_i <= "00000000000000000000000000001011";
-		wait for 50 ns;
+
+
+        -- Add your test cases here
+		-- num_wait <= 0; dataread <= x"00000000";
+		
+		-- rd_i <= '0';
+		-- wr_i <= '1';
+		
+		-- size_i <= "10";
+		-- addr_i <= "00000000000000000000000000000011";
+		-- unsigned_i <= '1';
+		-- wdata_i <= "01010101010101010101010101010101";
+		
+		-- wait for 50 ns;
+		
+		-- addr_i <= "00000000000000000000000000000111";
+		-- wait for 50 ns;
+		
+		-- addr_i <= "00000000000000000000000000001011";
+		-- wdata_i <= "11111111111111110101010101010101";
+		-- wait for 50 ns;
+		
+		-- rd_i <= '1';
+		-- wr_i <= '0';
+		-- addr_i <= "00000000000000000000000000000011";
+
+		-- wait for 50 ns;
+		-- addr_i <= "00000000000000000000000000001011";
+		-- wait for 50 ns;
 
 
 		ASSERT false

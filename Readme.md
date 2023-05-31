@@ -70,3 +70,11 @@
 #### 26/05/2023
 	-- alu assert the calculation. the op1, op2, operation, and correct result.
 	-- CPU interface Programming
+#### 31/05/2023
+	-- mock is not a register but a reaction element to show the right reaction wave in the modelsim
+	-- create 2 signal to modify the num_wait and dataread
+	
+	-- create some block to reuse (register and mux)
+	-- Maybe, the interface is a combination block, with some small blocks
+	-- the sensitivity list should be the signals input.
+	-- 
