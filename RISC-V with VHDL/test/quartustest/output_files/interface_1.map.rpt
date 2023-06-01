@@ -1,0 +1,533 @@
+Analysis & Synthesis report for interface_1
+Thu Jun 01 16:33:23 2023
+Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. User-Specified and Inferred Latches
+  9. Registers Removed During Synthesis
+ 10. General Register Statistics
+ 11. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 12. Parameter Settings for User Entity Instance: mux2togen:mux_PSTRB
+ 13. Parameter Settings for User Entity Instance: registergen_interface:registergen_PSTRB
+ 14. Parameter Settings for User Entity Instance: register1_interface:register1_PSTRB
+ 15. Parameter Settings for User Entity Instance: registergen_interface:registergen_PWDATA
+ 16. Parameter Settings for User Entity Instance: mux2togen:mux_PWDATA
+ 17. Parameter Settings for User Entity Instance: registergen_interface:registergen_addr
+ 18. Parameter Settings for User Entity Instance: mux2togen:mux_addr
+ 19. Parameter Settings for User Entity Instance: registergen_PRDATA:register_PRDATA
+ 20. Parameter Settings for User Entity Instance: mux2togen:mux1_PRDATA
+ 21. Post-Synthesis Netlist Statistics for Top Partition
+ 22. Elapsed Time Per Partition
+ 23. Analysis & Synthesis Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2018  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details.
+
+
+
++-------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                  ;
++---------------------------------+---------------------------------------------+
+; Analysis & Synthesis Status     ; Successful - Thu Jun 01 16:33:23 2023       ;
+; Quartus Prime Version           ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
+; Revision Name                   ; interface_1                                 ;
+; Top-level Entity Name           ; interface_1                                 ;
+; Family                          ; Cyclone V                                   ;
+; Logic utilization (in ALMs)     ; N/A                                         ;
+; Total registers                 ; 90                                          ;
+; Total pins                      ; 206                                         ;
+; Total virtual pins              ; 0                                           ;
+; Total block memory bits         ; 0                                           ;
+; Total DSP Blocks                ; 0                                           ;
+; Total HSSI RX PCSs              ; 0                                           ;
+; Total HSSI PMA RX Deserializers ; 0                                           ;
+; Total HSSI TX PCSs              ; 0                                           ;
+; Total HSSI PMA TX Serializers   ; 0                                           ;
+; Total PLLs                      ; 0                                           ;
+; Total DLLs                      ; 0                                           ;
++---------------------------------+---------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                             ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Option                                                                          ; Setting            ; Default Value      ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+; Device                                                                          ; 5CSXFC5D6F31C6     ;                    ;
+; Top-level entity name                                                           ; interface_1        ; interface_1        ;
+; Family name                                                                     ; Cyclone V          ; Cyclone V          ;
+; Use smart compilation                                                           ; Off                ; Off                ;
+; Enable parallel Assembler and Timing Analyzer during compilation                ; On                 ; On                 ;
+; Enable compact report table                                                     ; Off                ; Off                ;
+; Restructure Multiplexers                                                        ; Auto               ; Auto               ;
+; MLAB Add Timing Constraints For Mixed-Port Feed-Through Mode Setting Don't Care ; Off                ; Off                ;
+; Create Debugging Nodes for IP Cores                                             ; Off                ; Off                ;
+; Preserve fewer node names                                                       ; On                 ; On                 ;
+; Intel FPGA IP Evaluation Mode                                                   ; Enable             ; Enable             ;
+; Verilog Version                                                                 ; Verilog_2001       ; Verilog_2001       ;
+; VHDL Version                                                                    ; VHDL_1993          ; VHDL_1993          ;
+; State Machine Processing                                                        ; Auto               ; Auto               ;
+; Safe State Machine                                                              ; Off                ; Off                ;
+; Extract Verilog State Machines                                                  ; On                 ; On                 ;
+; Extract VHDL State Machines                                                     ; On                 ; On                 ;
+; Ignore Verilog initial constructs                                               ; Off                ; Off                ;
+; Iteration limit for constant Verilog loops                                      ; 5000               ; 5000               ;
+; Iteration limit for non-constant Verilog loops                                  ; 250                ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                                         ; On                 ; On                 ;
+; Infer RAMs from Raw Logic                                                       ; On                 ; On                 ;
+; Parallel Synthesis                                                              ; On                 ; On                 ;
+; DSP Block Balancing                                                             ; Auto               ; Auto               ;
+; NOT Gate Push-Back                                                              ; On                 ; On                 ;
+; Power-Up Don't Care                                                             ; On                 ; On                 ;
+; Remove Redundant Logic Cells                                                    ; Off                ; Off                ;
+; Remove Duplicate Registers                                                      ; On                 ; On                 ;
+; Ignore CARRY Buffers                                                            ; Off                ; Off                ;
+; Ignore CASCADE Buffers                                                          ; Off                ; Off                ;
+; Ignore GLOBAL Buffers                                                           ; Off                ; Off                ;
+; Ignore ROW GLOBAL Buffers                                                       ; Off                ; Off                ;
+; Ignore LCELL Buffers                                                            ; Off                ; Off                ;
+; Ignore SOFT Buffers                                                             ; On                 ; On                 ;
+; Limit AHDL Integers to 32 Bits                                                  ; Off                ; Off                ;
+; Optimization Technique                                                          ; Balanced           ; Balanced           ;
+; Carry Chain Length                                                              ; 70                 ; 70                 ;
+; Auto Carry Chains                                                               ; On                 ; On                 ;
+; Auto Open-Drain Pins                                                            ; On                 ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                                           ; Off                ; Off                ;
+; Auto ROM Replacement                                                            ; On                 ; On                 ;
+; Auto RAM Replacement                                                            ; On                 ; On                 ;
+; Auto DSP Block Replacement                                                      ; On                 ; On                 ;
+; Auto Shift Register Replacement                                                 ; Auto               ; Auto               ;
+; Allow Shift Register Merging across Hierarchies                                 ; Auto               ; Auto               ;
+; Auto Clock Enable Replacement                                                   ; On                 ; On                 ;
+; Strict RAM Replacement                                                          ; Off                ; Off                ;
+; Allow Synchronous Control Signals                                               ; On                 ; On                 ;
+; Force Use of Synchronous Clear Signals                                          ; Off                ; Off                ;
+; Auto Resource Sharing                                                           ; Off                ; Off                ;
+; Allow Any RAM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any ROM Size For Recognition                                              ; Off                ; Off                ;
+; Allow Any Shift Register Size For Recognition                                   ; Off                ; Off                ;
+; Use LogicLock Constraints during Resource Balancing                             ; On                 ; On                 ;
+; Ignore translate_off and synthesis_off directives                               ; Off                ; Off                ;
+; Timing-Driven Synthesis                                                         ; On                 ; On                 ;
+; Report Parameter Settings                                                       ; On                 ; On                 ;
+; Report Source Assignments                                                       ; On                 ; On                 ;
+; Report Connectivity Checks                                                      ; On                 ; On                 ;
+; Ignore Maximum Fan-Out Assignments                                              ; Off                ; Off                ;
+; Synchronization Register Chain Length                                           ; 3                  ; 3                  ;
+; Power Optimization During Synthesis                                             ; Normal compilation ; Normal compilation ;
+; HDL message level                                                               ; Level2             ; Level2             ;
+; Suppress Register Optimization Related Messages                                 ; Off                ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report                        ; 5000               ; 5000               ;
+; Number of Swept Nodes Reported in Synthesis Report                              ; 5000               ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report                       ; 100                ; 100                ;
+; Clock MUX Protection                                                            ; On                 ; On                 ;
+; Auto Gated Clock Conversion                                                     ; Off                ; Off                ;
+; Block Design Naming                                                             ; Auto               ; Auto               ;
+; SDC constraint protection                                                       ; Off                ; Off                ;
+; Synthesis Effort                                                                ; Auto               ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal                    ; On                 ; On                 ;
+; Pre-Mapping Resynthesis Optimization                                            ; Off                ; Off                ;
+; Analysis & Synthesis Message Level                                              ; Medium             ; Medium             ;
+; Disable Register Merging Across Hierarchies                                     ; Auto               ; Auto               ;
+; Resource Aware Inference For Block RAM                                          ; On                 ; On                 ;
+; Automatic Parallel Synthesis                                                    ; On                 ; On                 ;
+; Partial Reconfiguration Bitstream ID                                            ; Off                ; Off                ;
++---------------------------------------------------------------------------------+--------------------+--------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 8           ;
+; Maximum allowed            ; 4           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 4           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processors 2-4         ;   0.0%      ;
++----------------------------+-------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                           ;
++----------------------------------+-----------------+-----------------+-------------------------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type       ; File Name with Absolute Path                                                                    ; Library ;
++----------------------------------+-----------------+-----------------+-------------------------------------------------------------------------------------------------+---------+
+; wdata_interface.vhd              ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/wdata_interface.vhd       ;         ;
+; size_interface.vhd               ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/size_interface.vhd        ;         ;
+; registergen_PRDATA.vhd           ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_PRDATA.vhd    ;         ;
+; registergen_interface.vhd        ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_interface.vhd ;         ;
+; register1_interface.vhd          ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/register1_interface.vhd   ;         ;
+; rdata_interface2.vhd             ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface2.vhd      ;         ;
+; rdata_interface1.vhd             ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface1.vhd      ;         ;
+; mux2togen.vhd                    ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/mux2togen.vhd             ;         ;
+; interface_1_pkg.vhd              ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1_pkg.vhd       ;         ;
+; interface_1.vhd                  ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd           ;         ;
+; addr_interface.vhd               ; yes             ; User VHDL File  ; C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/addr_interface.vhd        ;         ;
++----------------------------------+-----------------+-----------------+-------------------------------------------------------------------------------------------------+---------+
+
+
++------------------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary                      ;
++---------------------------------------------+--------------------+
+; Resource                                    ; Usage              ;
++---------------------------------------------+--------------------+
+; Estimate of Logic utilization (ALMs needed) ; 131                ;
+;                                             ;                    ;
+; Combinational ALUT usage for logic          ; 202                ;
+;     -- 7 input functions                    ; 17                 ;
+;     -- 6 input functions                    ; 30                 ;
+;     -- 5 input functions                    ; 48                 ;
+;     -- 4 input functions                    ; 22                 ;
+;     -- <=3 input functions                  ; 85                 ;
+;                                             ;                    ;
+; Dedicated logic registers                   ; 90                 ;
+;                                             ;                    ;
+; I/O pins                                    ; 206                ;
+;                                             ;                    ;
+; Total DSP Blocks                            ; 0                  ;
+;                                             ;                    ;
+; Maximum fan-out node                        ; current_state.op2A ;
+; Maximum fan-out                             ; 105                ;
+; Total fan-out                               ; 1550               ;
+; Average fan-out                             ; 2.20               ;
++---------------------------------------------+--------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                   ;
++-----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------+-----------------------+--------------+
+; Compilation Hierarchy Node                    ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                   ; Entity Name           ; Library Name ;
++-----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------+-----------------------+--------------+
+; |interface_1                                  ; 202 (14)            ; 90 (0)                    ; 0                 ; 0          ; 206  ; 0            ; |interface_1                                          ; interface_1           ; work         ;
+;    |addr_interface:addr_operation|            ; 29 (29)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|addr_interface:addr_operation            ; addr_interface        ; work         ;
+;    |mux2togen:mux_PSTRB|                      ; 4 (4)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|mux2togen:mux_PSTRB                      ; mux2togen             ; work         ;
+;    |mux2togen:mux_PWDATA|                     ; 32 (32)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|mux2togen:mux_PWDATA                     ; mux2togen             ; work         ;
+;    |mux2togen:mux_addr|                       ; 30 (30)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|mux2togen:mux_addr                       ; mux2togen             ; work         ;
+;    |rdata_interface2:rdata_operation2|        ; 79 (79)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|rdata_interface2:rdata_operation2        ; rdata_interface2      ; work         ;
+;    |register1_interface:register1_PSTRB|      ; 0 (0)               ; 1 (1)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|register1_interface:register1_PSTRB      ; register1_interface   ; work         ;
+;    |registergen_PRDATA:register_PRDATA|       ; 1 (1)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0            ; |interface_1|registergen_PRDATA:register_PRDATA       ; registergen_PRDATA    ; work         ;
+;    |registergen_interface:registergen_PSTRB|  ; 0 (0)               ; 3 (3)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|registergen_interface:registergen_PSTRB  ; registergen_interface ; work         ;
+;    |registergen_interface:registergen_PWDATA| ; 0 (0)               ; 24 (24)                   ; 0                 ; 0          ; 0    ; 0            ; |interface_1|registergen_interface:registergen_PWDATA ; registergen_interface ; work         ;
+;    |registergen_interface:registergen_addr|   ; 1 (1)               ; 30 (30)                   ; 0                 ; 0          ; 0    ; 0            ; |interface_1|registergen_interface:registergen_addr   ; registergen_interface ; work         ;
+;    |size_interface:size_operation|            ; 4 (4)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|size_interface:size_operation            ; size_interface        ; work         ;
+;    |wdata_interface:wdata_operation|          ; 8 (8)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |interface_1|wdata_interface:wdata_operation          ; wdata_interface       ; work         ;
++-----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+-------------------------------------------------------+-----------------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
++---------------------------------------------------------------------------------------------------+
+; User-Specified and Inferred Latches                                                               ;
++----------------------------------------------------+---------------------+------------------------+
+; Latch Name                                         ; Latch Enable Signal ; Free of Timing Hazards ;
++----------------------------------------------------+---------------------+------------------------+
+; current_state.op2A                                 ; Selector4           ; yes                    ;
+; PWRITE$latch                                       ; GND                 ; yes                    ;
+; current_state.idle                                 ; Selector4           ; yes                    ;
+; current_state.op1B                                 ; Selector4           ; yes                    ;
+; current_state.op2B                                 ; Selector4           ; yes                    ;
+; Number of user-specified and inferred latches = 5  ;                     ;                        ;
++----------------------------------------------------+---------------------+------------------------+
+Note: All latches listed above may not be present at the end of synthesis due to various synthesis optimizations.
+
+
++---------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                                ;
++----------------------------------------------------------+----------------------------------------+
+; Register name                                            ; Reason for Removal                     ;
++----------------------------------------------------------+----------------------------------------+
+; registergen_interface:registergen_PWDATA|reg_out[24..31] ; Stuck at GND due to stuck port data_in ;
+; registergen_interface:registergen_PSTRB|reg_out[3]       ; Stuck at GND due to stuck port data_in ;
+; Total Number of Removed Registers = 9                    ;                                        ;
++----------------------------------------------------------+----------------------------------------+
+
+
++------------------------------------------------------+
+; General Register Statistics                          ;
++----------------------------------------------+-------+
+; Statistic                                    ; Value ;
++----------------------------------------------+-------+
+; Total registers                              ; 90    ;
+; Number of registers using Synchronous Clear  ; 24    ;
+; Number of registers using Synchronous Load   ; 8     ;
+; Number of registers using Asynchronous Clear ; 90    ;
+; Number of registers using Asynchronous Load  ; 0     ;
+; Number of registers using Clock Enable       ; 90    ;
+; Number of registers using Preset             ; 0     ;
++----------------------------------------------+-------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                  ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                        ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
+; 4:1                ; 8 bits    ; 16 LEs        ; 0 LEs                ; 16 LEs                 ; Yes        ; |interface_1|registergen_interface:registergen_PWDATA|reg_out[13] ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; Yes        ; |interface_1|registergen_interface:registergen_PWDATA|reg_out[1]  ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 32 LEs               ; 0 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux28              ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux25              ;
+; 3:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux43              ;
+; 3:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux52              ;
+; 3:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |interface_1|mux2togen:mux_PWDATA|dout[0]                         ;
+; 5:1                ; 8 bits    ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux26              ;
+; 5:1                ; 9 bits    ; 27 LEs        ; 27 LEs               ; 0 LEs                  ; No         ; |interface_1|mux2togen:mux_PWDATA|dout[11]                        ;
+; 5:1                ; 8 bits    ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |interface_1|mux2togen:mux_PWDATA|dout[20]                        ;
+; 5:1                ; 8 bits    ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |interface_1|mux2togen:mux_PWDATA|dout[29]                        ;
+; 6:1                ; 8 bits    ; 32 LEs        ; 24 LEs               ; 8 LEs                  ; No         ; |interface_1|rdata_interface2:rdata_operation2|Mux38              ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
+
+
++------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: mux2togen:mux_PSTRB ;
++----------------+-------+-----------------------------------------+
+; Parameter Name ; Value ; Type                                    ;
++----------------+-------+-----------------------------------------+
+; width          ; 4     ; Signed Integer                          ;
+; prop_delay     ; 0 fs  ; Physical                                ;
++----------------+-------+-----------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: registergen_interface:registergen_PSTRB ;
++----------------+-------+-------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                        ;
++----------------+-------+-------------------------------------------------------------+
+; width          ; 4     ; Signed Integer                                              ;
+; prop_delay     ; 0 fs  ; Physical                                                    ;
++----------------+-------+-------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: register1_interface:register1_PSTRB ;
++----------------+-------+---------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                    ;
++----------------+-------+---------------------------------------------------------+
+; prop_delay     ; 0 fs  ; Physical                                                ;
++----------------+-------+---------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: registergen_interface:registergen_PWDATA ;
++----------------+-------+--------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                         ;
++----------------+-------+--------------------------------------------------------------+
+; width          ; 32    ; Signed Integer                                               ;
+; prop_delay     ; 0 fs  ; Physical                                                     ;
++----------------+-------+--------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: mux2togen:mux_PWDATA ;
++----------------+-------+------------------------------------------+
+; Parameter Name ; Value ; Type                                     ;
++----------------+-------+------------------------------------------+
+; width          ; 32    ; Signed Integer                           ;
+; prop_delay     ; 0 fs  ; Physical                                 ;
++----------------+-------+------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: registergen_interface:registergen_addr ;
++----------------+-------+------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                       ;
++----------------+-------+------------------------------------------------------------+
+; width          ; 30    ; Signed Integer                                             ;
+; prop_delay     ; 0 fs  ; Physical                                                   ;
++----------------+-------+------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-----------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: mux2togen:mux_addr ;
++----------------+-------+----------------------------------------+
+; Parameter Name ; Value ; Type                                   ;
++----------------+-------+----------------------------------------+
+; width          ; 30    ; Signed Integer                         ;
+; prop_delay     ; 0 fs  ; Physical                               ;
++----------------+-------+----------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: registergen_PRDATA:register_PRDATA ;
++----------------+-------+--------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                   ;
++----------------+-------+--------------------------------------------------------+
+; width          ; 32    ; Signed Integer                                         ;
+; prop_delay     ; 0 fs  ; Physical                                               ;
++----------------+-------+--------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: mux2togen:mux1_PRDATA ;
++----------------+-------+-------------------------------------------+
+; Parameter Name ; Value ; Type                                      ;
++----------------+-------+-------------------------------------------+
+; width          ; 64    ; Signed Integer                            ;
+; prop_delay     ; 0 fs  ; Physical                                  ;
++----------------+-------+-------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-----------------------------------------------------+
+; Post-Synthesis Netlist Statistics for Top Partition ;
++-----------------------+-----------------------------+
+; Type                  ; Count                       ;
++-----------------------+-----------------------------+
+; arriav_ff             ; 90                          ;
+;     ENA CLR           ; 66                          ;
+;     ENA CLR SCLR      ; 16                          ;
+;     ENA CLR SCLR SLD  ; 8                           ;
+; arriav_lcell_comb     ; 203                         ;
+;     arith             ; 29                          ;
+;         1 data inputs ; 28                          ;
+;         2 data inputs ; 1                           ;
+;     extend            ; 17                          ;
+;         7 data inputs ; 17                          ;
+;     normal            ; 157                         ;
+;         1 data inputs ; 2                           ;
+;         2 data inputs ; 9                           ;
+;         3 data inputs ; 46                          ;
+;         4 data inputs ; 22                          ;
+;         5 data inputs ; 48                          ;
+;         6 data inputs ; 30                          ;
+; boundary_port         ; 206                         ;
+;                       ;                             ;
+; Max LUT depth         ; 3.80                        ;
+; Average LUT depth     ; 1.95                        ;
++-----------------------+-----------------------------+
+
+
++-------------------------------+
+; Elapsed Time Per Partition    ;
++----------------+--------------+
+; Partition Name ; Elapsed Time ;
++----------------+--------------+
+; Top            ; 00:00:00     ;
++----------------+--------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Analysis & Synthesis
+    Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
+    Info: Processing started: Thu Jun 01 16:33:09 2023
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off interface_1 -c interface_1
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
+Info (12021): Found 2 design units, including 1 entities, in source file wdata_interface.vhd
+    Info (12022): Found design unit 1: wdata_interface-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/wdata_interface.vhd Line: 30
+    Info (12023): Found entity 1: wdata_interface File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/wdata_interface.vhd Line: 19
+Info (12021): Found 2 design units, including 1 entities, in source file size_interface.vhd
+    Info (12022): Found design unit 1: size_interface-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/size_interface.vhd Line: 32
+    Info (12023): Found entity 1: size_interface File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/size_interface.vhd Line: 19
+Info (12021): Found 2 design units, including 1 entities, in source file registergen_prdata.vhd
+    Info (12022): Found design unit 1: registergen_PRDATA-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_PRDATA.vhd Line: 35
+    Info (12023): Found entity 1: registergen_PRDATA File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_PRDATA.vhd Line: 18
+Info (12021): Found 2 design units, including 1 entities, in source file registergen_interface.vhd
+    Info (12022): Found design unit 1: registergen_interface-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_interface.vhd Line: 34
+    Info (12023): Found entity 1: registergen_interface File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/registergen_interface.vhd Line: 18
+Info (12021): Found 2 design units, including 1 entities, in source file register1_interface.vhd
+    Info (12022): Found design unit 1: register1_interface-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/register1_interface.vhd Line: 32
+    Info (12023): Found entity 1: register1_interface File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/register1_interface.vhd Line: 16
+Info (12021): Found 2 design units, including 1 entities, in source file rdata_interface2.vhd
+    Info (12022): Found design unit 1: rdata_interface2-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface2.vhd Line: 33
+    Info (12023): Found entity 1: rdata_interface2 File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface2.vhd Line: 19
+Info (12021): Found 2 design units, including 1 entities, in source file rdata_interface1.vhd
+    Info (12022): Found design unit 1: rdata_interface1-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface1.vhd Line: 31
+    Info (12023): Found entity 1: rdata_interface1 File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface1.vhd Line: 19
+Info (12021): Found 2 design units, including 1 entities, in source file mux2togen.vhd
+    Info (12022): Found design unit 1: mux2togen-Behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/mux2togen.vhd Line: 33
+    Info (12023): Found entity 1: mux2togen File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/mux2togen.vhd Line: 18
+Info (12021): Found 2 design units, including 1 entities, in source file mock_of_memory.vhd
+    Info (12022): Found design unit 1: mock_of_memory-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/mock_of_memory.vhd Line: 40
+    Info (12023): Found entity 1: mock_of_memory File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/mock_of_memory.vhd Line: 19
+Info (12021): Found 2 design units, including 0 entities, in source file interface_1_pkg.vhd
+    Info (12022): Found design unit 1: interface_1_pkg File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1_pkg.vhd Line: 6
+    Info (12022): Found design unit 2: interface_1_pkg-body File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1_pkg.vhd Line: 123
+Info (12021): Found 2 design units, including 1 entities, in source file interface_1.vhd
+    Info (12022): Found design unit 1: interface_1-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 50
+    Info (12023): Found entity 1: interface_1 File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 19
+Info (12021): Found 2 design units, including 1 entities, in source file addr_interface.vhd
+    Info (12022): Found design unit 1: addr_interface-behavioral File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/addr_interface.vhd Line: 30
+    Info (12023): Found entity 1: addr_interface File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/addr_interface.vhd Line: 19
+Info (12127): Elaborating entity "interface_1" for the top level hierarchy
+Warning (10631): VHDL Process Statement warning at interface_1.vhd(284): inferring latch(es) for signal or variable "next_state", which holds its previous value in one or more paths through the process File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 284
+Info (10041): Inferred latch for "next_state.op2B" at interface_1.vhd(284) File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 284
+Info (10041): Inferred latch for "next_state.op2A" at interface_1.vhd(284) File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 284
+Info (10041): Inferred latch for "next_state.op1B" at interface_1.vhd(284) File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 284
+Info (10041): Inferred latch for "next_state.idle" at interface_1.vhd(284) File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 284
+Info (10041): Inferred latch for "PWRITE" at interface_1.vhd(100) File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 100
+Info (12128): Elaborating entity "size_interface" for hierarchy "size_interface:size_operation" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 115
+Info (12128): Elaborating entity "mux2togen" for hierarchy "mux2togen:mux_PSTRB" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 123
+Info (12128): Elaborating entity "registergen_interface" for hierarchy "registergen_interface:registergen_PSTRB" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 135
+Info (12128): Elaborating entity "register1_interface" for hierarchy "register1_interface:register1_PSTRB" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 148
+Info (12128): Elaborating entity "wdata_interface" for hierarchy "wdata_interface:wdata_operation" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 160
+Info (12128): Elaborating entity "registergen_interface" for hierarchy "registergen_interface:registergen_PWDATA" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 168
+Info (12128): Elaborating entity "mux2togen" for hierarchy "mux2togen:mux_PWDATA" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 181
+Info (12128): Elaborating entity "addr_interface" for hierarchy "addr_interface:addr_operation" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 193
+Info (12128): Elaborating entity "registergen_interface" for hierarchy "registergen_interface:registergen_addr" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 201
+Info (12128): Elaborating entity "mux2togen" for hierarchy "mux2togen:mux_addr" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 213
+Info (12128): Elaborating entity "rdata_interface1" for hierarchy "rdata_interface1:rdata_operation1" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 224
+Info (12128): Elaborating entity "registergen_PRDATA" for hierarchy "registergen_PRDATA:register_PRDATA" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 232
+Info (12128): Elaborating entity "mux2togen" for hierarchy "mux2togen:mux1_PRDATA" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 246
+Info (12128): Elaborating entity "rdata_interface2" for hierarchy "rdata_interface2:rdata_operation2" File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 258
+Warning (10631): VHDL Process Statement warning at rdata_interface2.vhd(43): inferring latch(es) for signal or variable "rdata_o", which holds its previous value in one or more paths through the process File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/rdata_interface2.vhd Line: 43
+Warning (13012): Latch current_state.op2A has unsafe behavior File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal current_state.op1B File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+Warning (13012): Latch current_state.idle has unsafe behavior File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal current_state.op2B File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+Warning (13012): Latch current_state.op1B has unsafe behavior File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal current_state.idle File: C:/Users/yhp/Desktop/VHDLcomponents/RISC-V with VHDL/test/quartustest/interface_1.vhd Line: 95
+Info (286030): Timing-Driven Synthesis is running
+Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
+    Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
+Info (21057): Implemented 458 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 104 input pins
+    Info (21059): Implemented 102 output pins
+    Info (21061): Implemented 252 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 9 warnings
+    Info: Peak virtual memory: 4850 megabytes
+    Info: Processing ended: Thu Jun 01 16:33:23 2023
+    Info: Elapsed time: 00:00:14
+    Info: Total CPU time (on all processors): 00:00:31
+
+

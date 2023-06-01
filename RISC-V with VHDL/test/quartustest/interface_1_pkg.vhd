@@ -68,7 +68,6 @@ PACKAGE interface_1_pkg IS
 
 	component addr_interface  is
 	port (
-		clk : in std_logic;
 		addr_i : in std_logic_vector(31 downto 0);
 		WORDADDR_plus1 : out std_logic_vector(29 downto 0);
 		WORDADDR : out std_logic_vector(29 downto 0);

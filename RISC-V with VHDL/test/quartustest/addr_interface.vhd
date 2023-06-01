@@ -19,7 +19,6 @@ USE ieee.numeric_std.ALL;
 entity addr_interface  is
 
 	port (
-		clk :in std_logic;
 		addr_i : in std_logic_vector(31 downto 0);
 		WORDADDR_plus1 : out std_logic_vector(29 downto 0);
 		WORDADDR : out std_logic_vector(29 downto 0);
@@ -31,7 +30,7 @@ end entity;
 architecture behavioral of addr_interface  is
 	constant addr_one : std_logic_vector(29 downto 0) := "000000000000000000000000000001";
 BEGIN	
-	process 
+	process (addr_i)
 		variable var_WORDADDR : std_logic_vector(29 downto 0) := "000000000000000000000000000000";
 	begin
 		var_WORDADDR := addr_i(31 downto 2);
@@ -39,7 +38,7 @@ BEGIN
 		
 		WORDADDR <= var_WORDADDR;
 		WORDADDR_plus1 <= std_logic_vector(unsigned(var_WORDADDR)+ unsigned(addr_one));
-		wait until falling_edge(clk);
+		
 	end process;
 	
 end architecture;

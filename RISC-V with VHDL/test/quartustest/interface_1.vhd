@@ -192,7 +192,6 @@ BEGIN
 	
 	addr_operation: addr_interface
 		port map (
-			clk => clk,
 			addr_i => addr_i,
 			WORDADDR_plus1 => WORDADDR_plus1,
 			WORDADDR => WORDADDR,
@@ -282,7 +281,7 @@ BEGIN
 	
 	
 	
-	FSM : process  --unaligned
+	FSM : process (trigger, rst, PREADY, unaligned, current_state) --unaligned
 	begin
 		case current_state is
 			when idle =>
@@ -328,8 +327,7 @@ BEGIN
 				if PREADY = '1' then
 					next_state <= idle;
 				end if;		
-		end case;
-		wait until rising_edge(clk);
+		end case;		
 	end process FSM;
 	
 end architecture;
