@@ -23,6 +23,7 @@ entity mock_of_memory is
 		-- from the testbench to control the slave
 	    num_wait : IN integer := 2;
 		dataread : IN std_logic_vector(31 downto 0);
+		testing : out std_logic;
 		
 		--actual signals to the memory interface
 		PADDR: IN std_logic_vector(29 downto 0);
@@ -70,23 +71,41 @@ begin
 		PRDATA <= x"00000000"; 
 		
 		while true loop
+			testing <= '0';
 			-- Wait for the test to start
 			wait until rising_edge(clk) and PSEL = '1';
+			testing <= '1';
 			--Capture for PADDR, PWRITE
 			cache_addr <= PADDR;
 			write_or_read <= PWRITE;
 			
 			--check PENABLE is 0 
-			if PENABLE = '1' and PWRITE = '0' then
+			assert PENABLE = '0' report "PENABLE = '1' in the very first cycle of a transfer" severity warning;
+			
+			if num_wait >  0 then
 				for i in 0 to num_wait - 1 loop
-					wait until rising_edge(clk);
+					wait until rising_edge(clk); wait for 1 ns;
+					assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
+					assert PWRITE = write_or_read report "PWRITE changed in the middle of a transfer" severity warning;
+					assert PENABLE = '0' report "PENABLE = '1' in the middle of a transfer" severity warning;			
 				end loop;
-				wait until falling_edge(clk);
-				PREADY <= '1'; PRDATA <= dataread;
-				wait until falling_edge(clk);
-				PREADY <= '0'; PRDATA <= x"00000000";
-				
 			end if;
+
+			wait until rising_edge(clk); wait for 1 ns;
+			assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
+			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
+
+			wait until falling_edge(clk); wait for 1 ns;
+			PREADY <= '1'; 
+			if (PWRITE= '0') then 
+				PRDATA <= dataread;
+			end if;
+			
+			assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
+			
+			wait until falling_edge(clk); wait for 1 ns;
+			PREADY <= '0'; PRDATA <= x"00000000";
+				
 			
 		end loop;
 	end process;

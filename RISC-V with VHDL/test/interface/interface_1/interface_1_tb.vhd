@@ -45,6 +45,8 @@ architecture tb_behavior of interface_1_tb is
 		port(
 			num_wait : IN integer := 2;
 			dataread : IN std_logic_vector(31 downto 0);
+			testing : out std_logic;
+			
 			clk : IN std_logic;
 			PADDR : IN std_logic_vector(29 downto 0);
 			PWDATA : IN std_logic_vector(31 downto 0);
@@ -73,6 +75,7 @@ architecture tb_behavior of interface_1_tb is
 	
 	signal dataread : std_logic_vector(31 downto 0);
 	signal num_wait : integer := 2;
+	signal testing : std_logic;
 	
 	--internal signals
 	signal mem_PADDR: std_logic_vector(29 downto 0);
@@ -127,7 +130,8 @@ begin
 			PENABLE =>PENABLE_out,
 			PWRITE => PWRITE_out,
 			dataread => dataread,
-			num_wait => num_wait
+			num_wait => num_wait,
+			testing => testing
         );
 
 	
@@ -143,52 +147,88 @@ begin
     begin
         -- Reset pulse
         tb_rst <= '0';
-		dataread <= x"0A0A0A0A";
+		dataread <= x"00000000";
         wait for tb_clk_period * 2;
 	
+	-- read test with no wait state
 		rd_i <= '1';
 		wr_i <= '0';
 		size_i <= "10";
 		
-		addr_i <= "00000000000000000000000000000011";
+		addr_i <= "00000000000000000000000000011100";
 		unsigned_i <= '1';
-		wdata_i <= x"0B0A0A0A";
+		wdata_i <= x"000000EE";
 		
-		num_wait <= 4;
-		dataread <= x"0B0B0B0A";
+		num_wait <= 0;
+		dataread <= x"0000000E";
 		
-		wait for 50 ns;
-
-
-
-        -- Add your test cases here
-		-- num_wait <= 0; dataread <= x"00000000";
+		wait until rising_edge(tb_clk) and testing = '1';
+		wait until rising_edge(tb_clk) and testing = '0';
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;
 		
-		-- rd_i <= '0';
-		-- wr_i <= '1';
+		rd_i <= '0';
+		wr_i <= '0';
 		
-		-- size_i <= "10";
-		-- addr_i <= "00000000000000000000000000000011";
-		-- unsigned_i <= '1';
-		-- wdata_i <= "01010101010101010101010101010101";
+		wait until rising_edge(tb_clk) and testing = '1';
+		wait until rising_edge(tb_clk) and testing = '0';
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;
 		
-		-- wait for 50 ns;
-		
-		-- addr_i <= "00000000000000000000000000000111";
-		-- wait for 50 ns;
-		
-		-- addr_i <= "00000000000000000000000000001011";
-		-- wdata_i <= "11111111111111110101010101010101";
-		-- wait for 50 ns;
-		
+	-- read test with 2 wait state
 		-- rd_i <= '1';
 		-- wr_i <= '0';
-		-- addr_i <= "00000000000000000000000000000011";
+		-- size_i <= "10";
+		
+		-- addr_i <= "00000000000000000000000000011000";
+		-- unsigned_i <= '1';
+		-- wdata_i <= x"000000DE";
+		
+		-- num_wait <= 2;
+		-- dataread <= x"0000001E";
+		
+		-- wait until rising_edge(tb_clk) and testing = '1';
+		-- wait until rising_edge(tb_clk) and testing = '0';
+		-- for i in 0 to 3 loop
+			-- wait until rising_edge(tb_clk);
+		-- end loop;
+		
+		
+	-- read test with 1 wait state
+		-- rd_i <= '1';
+		-- wr_i <= '0';
+		-- size_i <= "10";
+		
+		-- addr_i <= "00000000000000000000000000010100";
+		-- unsigned_i <= '1';
+		-- wdata_i <= x"000000CE";
+		
+		-- num_wait <= 1;
+		-- dataread <= x"000000EE";
+		
+		-- wait until rising_edge(tb_clk) and testing = '1';
+		-- wait until rising_edge(tb_clk) and testing = '0';
+		-- for i in 0 to 3 loop
+			-- wait until rising_edge(tb_clk);
+		-- end loop;	
+		
+	-- write test with no wait state
+		-- rd_i <= '0';
+		-- wr_i <= '1';
+		-- size_i <= "01";
+		-- addr_i <= "00000000000000000000000000001100";
+		-- unsigned_i <= '1';
+		
+		-- wait until rising_edge(tb_clk) and testing = '1';
+		-- wait until rising_edge(tb_clk) and testing = '0';
+		-- for i in 0 to 3 loop
+			-- wait until rising_edge(tb_clk);
+		-- end loop;
 
-		-- wait for 50 ns;
-		-- addr_i <= "00000000000000000000000000001011";
-		-- wait for 50 ns;
-		wait for 20 ns;
+
+
 	
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "

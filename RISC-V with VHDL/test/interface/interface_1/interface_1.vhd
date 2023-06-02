@@ -26,10 +26,11 @@ entity interface_1  is
 	    PADDR: OUT std_logic_vector(29 DOWNTO 0);		--32 bit address
         PSTRB: OUT std_logic_vector(3 DOWNTO 0);		--4 bit byte lane write strobe
         PWDATA: OUT std_logic_vector(31 DOWNTO 0);		--32 bit write data
-        PWRITE: OUT std_logic;							--1 bit command; 0 = read, 1 = write
+        PWRITE: OUT std_logic := '0';							--1 bit command; 0 = read, 1 = write
         PENABLE: OUT std_logic;							--1 bit signal used to signal the 2nd and subsequent cycles of an APB transfer (1)
         PREQ : OUT std_logic;
-
+				
+		
 		PRDATA: IN std_logic_vector(31 DOWNTO 0);		--32 bit read data
         PREADY: IN std_logic;							--1 bit handshake signal from the slave to insert wait state; a wait state is inserted if PENABLE = 1 and PREADY = 0
         
@@ -110,7 +111,8 @@ BEGIN
 	PREQ <= trigger when preq_sel = "00" else
 			'1' when preq_sel = "01" else
 			'0';
-	current_state <= next_state;		
+		
+
 	
 	size_operation : size_interface
 		port map (
@@ -266,43 +268,67 @@ BEGIN
 		);
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	FSM : process  --unaligned
+
+	state_change : process (rst, clk)
 	begin
+		if rst = '1' then 
+			current_state <= idle;
+		elsif rising_edge(clk) then
+			current_state <= next_state;	
+		end if;
+	end process;
+	
+	
+	state_value : process(current_state)  
+	begin
+	case current_state is
+		when idle =>
+			op1 <= '1';
+			op2 <= '0';
+			first_cycle <= '1';
+			busy_sel <= "00";
+			preq_sel <= "00";
+			PENABLE <= '0';
+			
+		when op1B =>
+			op1 <= '1';
+			op2 <= '0';
+			first_cycle <= '0';
+			busy_sel <= "01";
+			preq_sel <= "01";
+			PENABLE <= '1';
+
+		when op2A =>
+			op1 <= '0';
+			op2 <= '1';
+			first_cycle <= '0';
+			busy_sel <= "10";
+			preq_sel <= "01";
+			PENABLE <= '0';		
+		
+		when op2B =>
+			op1 <= '0';
+			op2 <= '0';
+			first_cycle <= '0';
+			busy_sel <= "11";
+			preq_sel <= "01";
+			PENABLE <= '1';
+	end case;
+
+
+	end process state_value;
+	
+	
+	FSM : process(trigger, PREADY, unaligned, current_state)  
+	begin
+		
 		case current_state is
 			when idle =>
-				op1 <= '1';
-				op2 <= '0';
-				first_cycle <= '1';
-				busy_sel <= "00";
-				preq_sel <= "00";
-				PENABLE <= '0';
 				if trigger = '1' then
 					next_state <= op1B;
 				end if;
 				
 			when op1B =>
-				op1 <= '1';
-				op2 <= '0';
-				first_cycle <= '0';
-				busy_sel <= "01";
-				preq_sel <= "01";
-				PENABLE <= '1';
 				if PREADY = '1' and unaligned = '0' then
 					next_state <= idle;
 				elsif PREADY = '1' and unaligned = '1'then 
@@ -310,26 +336,15 @@ BEGIN
 				end if;
 
 			when op2A =>
-				op1 <= '0';
-				op2 <= '1';
-				first_cycle <= '0';
-				busy_sel <= "10";
-				preq_sel <= "01";
-				PENABLE <= '0';
 				next_state <= op2B;			
 			
 			when op2B =>
-				op1 <= '0';
-				op2 <= '0';
-				first_cycle <= '0';
-				busy_sel <= "11";
-				preq_sel <= "01";
-				PENABLE <= '1';
 				if PREADY = '1' then
 					next_state <= idle;
 				end if;		
 		end case;
-		wait until rising_edge(clk);
+		
+
 	end process FSM;
 	
 end architecture;
