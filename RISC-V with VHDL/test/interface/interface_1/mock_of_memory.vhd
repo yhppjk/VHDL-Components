@@ -81,13 +81,15 @@ begin
 			
 			--check PENABLE is 0 
 			assert PENABLE = '0' report "PENABLE = '1' in the very first cycle of a transfer" severity warning;
-			
+			assert PSEL = '1' report "PSEL = '0'  in the very first cycle of a transfer" severity warning;
+
 			if num_wait >  0 then
 				for i in 0 to num_wait - 1 loop
 					wait until rising_edge(clk); wait for 1 ns;
 					assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
+					assert PSEL = '1' report "PSEL = '0'  in the middle of a transfer" severity warning;
 					assert PWRITE = write_or_read report "PWRITE changed in the middle of a transfer" severity warning;
-					assert PENABLE = '0' report "PENABLE = '1' in the middle of a transfer" severity warning;			
+					assert PENABLE = '1' report "PENABLE = '0' in the middle of a transfer" severity warning;			
 				end loop;
 			end if;
 
@@ -96,6 +98,7 @@ begin
 			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
 
 			wait until falling_edge(clk); wait for 1 ns;
+			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;			
 			PREADY <= '1'; 
 			if (PWRITE= '0') then 
 				PRDATA <= dataread;
@@ -105,7 +108,7 @@ begin
 			
 			wait until falling_edge(clk); wait for 1 ns;
 			PREADY <= '0'; PRDATA <= x"00000000";
-				
+			assert PENABLE = '0' report "PENABLE = '1' in the end of a transfer" severity warning;
 			
 		end loop;
 	end process;

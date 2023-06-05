@@ -78,3 +78,7 @@
 	-- Maybe, the interface is a combination block, with some small blocks
 	-- the sensitivity list should be the signals input.
 	-- 
+#### 02/06/2023
+	-- seperate the FSM in to 2 different block, one for switch state, one for give value in different state
+	-- verify the signal PSEL, PENABLE, PREADY by using assert in different position.
+	--

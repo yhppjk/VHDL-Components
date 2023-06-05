@@ -168,6 +168,17 @@ begin
 			wait until rising_edge(tb_clk);
 		end loop;
 		
+		
+		rd_i <= '1';
+		wr_i <= '0';
+		num_wait <= 3;
+		
+		wait until rising_edge(tb_clk) and testing = '1';
+		wait until rising_edge(tb_clk) and testing = '0';
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;
+		
 		rd_i <= '0';
 		wr_i <= '0';
 		
