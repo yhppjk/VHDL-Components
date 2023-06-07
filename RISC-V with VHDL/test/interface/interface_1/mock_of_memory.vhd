@@ -73,7 +73,7 @@ begin
 		while true loop
 			testing <= '0';
 			-- Wait for the test to start
-			wait until rising_edge(clk) and PSEL = '1';
+			wait until falling_edge(clk) and PSEL = '1';
 			testing <= '1';
 			--Capture for PADDR, PWRITE
 			cache_addr <= PADDR;
@@ -87,8 +87,8 @@ begin
 				for i in 0 to num_wait - 1 loop
 					wait until rising_edge(clk); wait for 1 ns;
 					assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
-					assert PSEL = '1' report "PSEL = '0'  in the middle of a transfer" severity warning;
 					assert PWRITE = write_or_read report "PWRITE changed in the middle of a transfer" severity warning;
+					assert PSEL = '1' report "PSEL = '0'  in the middle of a transfer" severity warning;
 					assert PENABLE = '1' report "PENABLE = '0' in the middle of a transfer" severity warning;			
 				end loop;
 			end if;
@@ -96,17 +96,22 @@ begin
 			wait until rising_edge(clk); wait for 1 ns;
 			assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
 			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
-
-			wait until falling_edge(clk); wait for 1 ns;
-			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;			
+			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;	
+			
+			wait until falling_edge(clk); wait for 1 ns;		
 			PREADY <= '1'; 
 			if (PWRITE= '0') then 
 				PRDATA <= dataread;
 			end if;
 			
 			assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
+			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
+			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;		
 			
-			wait until falling_edge(clk); wait for 1 ns;
+			wait until rising_edge(clk); wait for 1 ns;
+			assert PENABLE = '0' report "PENABLE = '1' in the end of a transfer" severity warning;
+			
+			wait for 1 ns;
 			PREADY <= '0'; PRDATA <= x"00000000";
 			assert PENABLE = '0' report "PENABLE = '1' in the end of a transfer" severity warning;
 			

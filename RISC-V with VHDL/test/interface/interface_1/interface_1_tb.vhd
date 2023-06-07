@@ -11,6 +11,7 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
+USE work.interface_1_pkg.ALL;
 
 --! Testbench entity description
 entity interface_1_tb is
@@ -135,111 +136,71 @@ begin
         );
 
 	
+	
     -- Clock process
     clk_process : process
     begin
         tb_clk <= not tb_clk;
         wait for tb_clk_period / 2;
     end process;
+		
 
+		
     -- Stimulus process
     stim_proc: process
+		
+		procedure test_rd32_transfer(
+		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
+		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
+		constant unsigned_i_val : in std_logic;
+		constant num_wait_val: in integer;
+		constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
+		constant dataread_val: in std_logic_vector(31 downto 0);
+		constant rd_i_val : in std_logic;
+		constant wr_i_val : in std_logic;
+		constant tb_rst_val : in std_logic
+		) is
+		begin
+			addr_i <= addr_i_val;
+			size_i <= size_i_val;
+			unsigned_i <= unsigned_i_val;
+			num_wait <= num_wait_val;
+			wdata_i <= wdata_i_val;
+			dataread <= dataread_val;
+			rd_i <= rd_i_val;
+			wr_i <= wr_i_val;
+			tb_rst <= tb_rst_val;
+			wait until rising_edge(tb_clk) and testing = '1';
+			for i in 0 to num_wait loop
+				wait until rising_edge(tb_clk);
+			end loop;  
+		end procedure test_rd32_transfer;
+
     begin
         -- Reset pulse
-        tb_rst <= '0';
-		dataread <= x"00000000";
-        wait for tb_clk_period * 2;
-	
-	-- read test with no wait state
-		rd_i <= '1';
-		wr_i <= '0';
-		size_i <= "10";
 		
-		addr_i <= "00000000000000000000000000011100";
-		unsigned_i <= '1';
-		wdata_i <= x"000000EE";
+		tb_rst <= '0';
+		test_rd32_transfer(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0');
 		
-		num_wait <= 0;
-		dataread <= x"0000000E";
-		
-		wait until rising_edge(tb_clk) and testing = '1';
-		wait until rising_edge(tb_clk) and testing = '0';
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
+		for i in list32'low to list32'high loop
+			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
 		end loop;
-		
-		
-		rd_i <= '1';
-		wr_i <= '0';
-		num_wait <= 3;
-		
-		wait until rising_edge(tb_clk) and testing = '1';
-		wait until rising_edge(tb_clk) and testing = '0';
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
+		REPORT "32-bit test finished";
+
+		for i in list32'low to list32'high loop
+			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
 		end loop;
+		REPORT "32-bit test finished";
 		
-		rd_i <= '0';
-		wr_i <= '0';
+		for i in list16'low to list16'high loop
+			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		end loop;
+		REPORT "32-bit test finished";
 		
-		wait until rising_edge(tb_clk) and testing = '1';
-		wait until rising_edge(tb_clk) and testing = '0';
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
+		for i in list8'low to list8'high loop
+			test_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);
 		end loop;
+		REPORT "8-bit test finished";
 		
-	-- read test with 2 wait state
-		-- rd_i <= '1';
-		-- wr_i <= '0';
-		-- size_i <= "10";
-		
-		-- addr_i <= "00000000000000000000000000011000";
-		-- unsigned_i <= '1';
-		-- wdata_i <= x"000000DE";
-		
-		-- num_wait <= 2;
-		-- dataread <= x"0000001E";
-		
-		-- wait until rising_edge(tb_clk) and testing = '1';
-		-- wait until rising_edge(tb_clk) and testing = '0';
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-		
-		
-	-- read test with 1 wait state
-		-- rd_i <= '1';
-		-- wr_i <= '0';
-		-- size_i <= "10";
-		
-		-- addr_i <= "00000000000000000000000000010100";
-		-- unsigned_i <= '1';
-		-- wdata_i <= x"000000CE";
-		
-		-- num_wait <= 1;
-		-- dataread <= x"000000EE";
-		
-		-- wait until rising_edge(tb_clk) and testing = '1';
-		-- wait until rising_edge(tb_clk) and testing = '0';
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;	
-		
-	-- write test with no wait state
-		-- rd_i <= '0';
-		-- wr_i <= '1';
-		-- size_i <= "01";
-		-- addr_i <= "00000000000000000000000000001100";
-		-- unsigned_i <= '1';
-		
-		-- wait until rising_edge(tb_clk) and testing = '1';
-		-- wait until rising_edge(tb_clk) and testing = '0';
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-
-
-
 	
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "

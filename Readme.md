@@ -81,4 +81,35 @@
 #### 02/06/2023
 	-- seperate the FSM in to 2 different block, one for switch state, one for give value in different state
 	-- verify the signal PSEL, PENABLE, PREADY by using assert in different position.
-	--
+	
+#### 02/06/2023	
+	-- do a procedure to isolate the value change for the Address, unsigned, dataread, etc.
+	-- do a list (like ALU_pkg) which contains all the test statement(and the correct result)
+	-- now it is the test for the case of 32-bit, so it names test_rd32_transfer. After this, there will have rd16, rd8.
+	-- not sure about how a procedure fonctionne 
+		procedure test_rd32_transfer (
+			constant addr_val: std_logic_vector(29 downto 0);
+			constant size_val: std_logic_vector(1 downto 0);
+			constant unsigned_val : std_logic;
+			constant numwait_val : integer;
+			constant wdata_val : std_logic_vector(31 downto 0);
+			constant dataread_val : std_logic_vector(31 downto 0)
+		);
+		begin
+			rd_i <= '1';
+			wr_i <= '0';
+			size_i <= size_val;
+			
+			addr_i <= addr_val;
+			unsigned_i <= unsigned_val;
+			num_wait <= numwait_val;
+			
+			wdata_i <= wdata_val;
+			dataread <= dataread_val;
+			
+			wait until rising_edge(tb_clk) and testing = '1';
+			--wait until rising_edge(tb_clk) and testing = '0';
+			for i in 0 to num_wait loop
+				wait until rising_edge(tb_clk);
+			end loop;
+		end procedure test_rd32_transfer;
