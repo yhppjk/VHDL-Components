@@ -149,6 +149,7 @@ begin
     -- Stimulus process
     stim_proc: process
 		
+		-- Procedure for giving values to signal
 		procedure test_rd32_transfer(
 		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
 		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
@@ -177,16 +178,9 @@ begin
 		end procedure test_rd32_transfer;
 
     begin
-        -- Reset pulse
-		
-		tb_rst <= '0';
-		test_rd32_transfer(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0');
-		
-		for i in list32'low to list32'high loop
-			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
-		end loop;
-		REPORT "32-bit test finished";
 
+
+		
 		for i in list32'low to list32'high loop
 			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
 		end loop;
@@ -194,7 +188,7 @@ begin
 		
 		for i in list16'low to list16'high loop
 			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		end loop;
-		REPORT "32-bit test finished";
+		REPORT "16-bit test finished";
 		
 		for i in list8'low to list8'high loop
 			test_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);

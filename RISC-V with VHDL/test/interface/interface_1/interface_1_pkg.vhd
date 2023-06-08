@@ -126,7 +126,7 @@ PACKAGE interface_1_pkg IS
 		tb_rst_val :  std_logic;
 	end record;
 	
-	type test_transfer32 is array (0 to 5)of test_transfer;
+	type test_transfer32 is array (0 to 25)of test_transfer;
 	type test_transfer16 is array (0 to 2)of test_transfer;
 	type test_transfer8 is array (0 to 2)of test_transfer;
 	
@@ -138,7 +138,30 @@ PACKAGE interface_1_pkg IS
 		(x"0000002E", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
 		(x"0000002F", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
 		(x"0000002C", "10", '1', 2, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
-		(x"0000002C", "10", '1', 1, x"000000EE", x"AEAEEAEA", '1', '0', '0'));
+		(x"0000002C", "10", '1', 1, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
+		
+
+		(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002E", "10", '1', 1, x"000000AA", x"BEAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: BEAEEAEA
+		(x"00000030", "10", '1', 2, x"000000BB", x"CEAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: CEAEEAEA
+		(x"00000032", "10", '1', 3, x"000000CC", x"DEAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: DEAEEAEA
+		(x"00000034", "10", '1', 4, x"000000DD", x"EEAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: EEAEEAEA
+		(x"00000036", "10", '1', 0, x"000000EF", x"FEAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: FEAEEAEA
+		(x"00000038", "10", '1', 1, x"000000FA", x"1EAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: 1EAEEAEA
+		(x"0000003A", "10", '1', 2, x"0000001B", x"2EAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: 2EAEEAEA
+		(x"0000003C", "10", '1', 3, x"0000002C", x"3EAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: 3EAEEAEA
+		(x"0000003E", "10", '1', 4, x"0000003D", x"4EAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: 4EAEEAEA
+		(x"00000040", "10", '1', 0, x"0000004E", x"5EAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: 5EAEEAEA
+		(x"00000042", "10", '1', 1, x"0000005F", x"6EAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: 6EAEEAEA
+		(x"00000044", "10", '1', 2, x"0000006A", x"7EAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: 7EAEEAEA
+		(x"00000046", "10", '1', 3, x"0000007B", x"8EAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: 8EAEEAEA
+		(x"00000048", "10", '1', 4, x"0000008C", x"9EAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: 9EAEEAEA
+		(x"0000004A", "10", '1', 0, x"0000009D", x"AEAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000004C", "10", '1', 1, x"000000AE", x"BEAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: BEAEEAEA
+		(x"0000004E", "10", '1', 2, x"000000BF", x"CEAEEAEA", '1', '0', '0'), -- 10, Read 32-bit,  Expected output: CEAEEAEA
+		(x"00000050", "10", '1', 3, x"000000C0", x"DEAEEAEA", '1', '0', '0'), -- 00, Read 32-bit,  Expected output: DEAEEAEA
+		(x"00000052", "10", '1', 4, x"000000D1", x"EEAEEAEB", '1', '0', '0')  -- 10, Read 32-bit,  Expected output: EEAEEAEB
+		);
 	CONSTANT list16 : test_transfer16 :=(
 		(x"0000002C", "01", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
 		(x"0000002C", "01", '1', 2, x"000000EE", x"AEAEEAEA", '1', '0', '0'),
@@ -152,8 +175,7 @@ PACKAGE interface_1_pkg IS
 	--	how to test a unaligned value?
 	--	how many case should I create?
 		
-	--type test_vectors_t is array (0 to 200) of test_t;
-	--CONSTANT vectors: test_vectors_t := (
+
 	
 
 
