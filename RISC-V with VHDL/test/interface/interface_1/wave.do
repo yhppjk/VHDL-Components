@@ -10,6 +10,7 @@ add wave -noupdate /interface_1_tb/memory/PREADY
 add wave -noupdate /interface_1_tb/UUT/current_state
 add wave -noupdate /interface_1_tb/UUT/next_state
 add wave -noupdate -radix hexadecimal /interface_1_tb/rdata_o
+add wave -noupdate -radix hexadecimal /interface_1_tb/UUT/PWDATA
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {46000 ps} 0}
 quietly wave cursor active 1

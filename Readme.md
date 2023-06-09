@@ -113,3 +113,10 @@
 				wait until rising_edge(tb_clk);
 			end loop;
 		end procedure test_rd32_transfer;
+		
+#### 09/06/2023
+	-- check PSTRB as how to check PADDR 
+	-- able to check if the operation need 2 step or 1 step
+	-- check PREQ / PSEL
+	-- check byte lane(if the PSTRB will change this byte lane)
+	-- when the interface is doing a read transfer, the PSTRB must be low
