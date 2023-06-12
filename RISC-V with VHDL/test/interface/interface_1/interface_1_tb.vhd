@@ -54,7 +54,7 @@ architecture tb_behavior of interface_1_tb is
 			PSEL : IN std_logic;
 			PWRITE : IN std_logic;
 			PENABLE : IN std_logic;
-			
+			PSTRB : IN std_logic_vector(3 downto 0);
 			PREADY : OUT std_logic;
 			PRDATA : OUT std_logic_vector(31 downto 0):= (others => '0')
 		);
@@ -77,7 +77,7 @@ architecture tb_behavior of interface_1_tb is
 	signal dataread : std_logic_vector(31 downto 0);
 	signal num_wait : integer := 2;
 	signal testing : std_logic;
-	
+	signal tb_PSTRB : std_logic_vector(3 downto 0);
 	--internal signals
 	signal mem_PADDR: std_logic_vector(29 downto 0);
     signal mem_PWDATA: std_logic_vector(31 downto 0);
@@ -89,7 +89,7 @@ architecture tb_behavior of interface_1_tb is
     -- ...
 
 	--output signals
-	signal PSTRB_out : std_logic_vector(3 downto 0);
+	--signal PSTRB_out : std_logic_vector(3 downto 0);
 	signal PWRITE_out :std_logic;
 	signal PENABLE_out : std_logic;
 
@@ -102,7 +102,7 @@ begin
         port map (
             clk => tb_clk,
             rst => tb_rst, 
-            PSTRB => PSTRB_out,    
+            PSTRB => tb_PSTRB,    
             PWRITE => PWRITE_out,			
             PENABLE => PENABLE_out,          
             rd_i => rd_i,       
@@ -132,7 +132,8 @@ begin
 			PWRITE => PWRITE_out,
 			dataread => dataread,
 			num_wait => num_wait,
-			testing => testing
+			testing => testing,
+			PSTRB => tb_PSTRB
         );
 
 	
@@ -178,20 +179,35 @@ begin
 		end procedure test_rd32_transfer;
 
     begin
-
+	
+		rd_i <= '0';
+		wr_i <= '0';
+		wait until falling_edge(tb_clk);
 
 		
 		for i in list32'low to list32'high loop
 			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
+			rd_i <= '0';
+			wr_i <= '0';
+			wait until falling_edge(tb_clk);
 		end loop;
 		REPORT "32-bit test finished";
 		
 		for i in list16'low to list16'high loop
-			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		end loop;
+			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		
+			rd_i <= '0';
+			wr_i <= '0';
+			wait until falling_edge(tb_clk);
+
+		end loop;
+			
 		REPORT "16-bit test finished";
 		
 		for i in list8'low to list8'high loop
 			test_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);
+			rd_i <= '0';
+			wr_i <= '0';
+			wait until falling_edge(tb_clk);
 		end loop;
 		REPORT "8-bit test finished";
 		

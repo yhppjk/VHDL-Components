@@ -27,7 +27,7 @@ entity interface_1  is
         PSTRB: OUT std_logic_vector(3 DOWNTO 0);		--4 bit byte lane write strobe
         PWDATA: OUT std_logic_vector(31 DOWNTO 0);		--32 bit write data
         PWRITE: OUT std_logic := '0';							--1 bit command; 0 = read, 1 = write
-        PENABLE: OUT std_logic;							--1 bit signal used to signal the 2nd and subsequent cycles of an APB transfer (1)
+        PENABLE: OUT std_logic := '0';							--1 bit signal used to signal the 2nd and subsequent cycles of an APB transfer (1)
         PREQ : OUT std_logic;
 				
 		
@@ -51,7 +51,7 @@ end entity;
 architecture behavioral of interface_1  is
 
 
-
+	signal inter_PSTRB : std_logic_vector(3 DOWNTO 0) := "0000";
 
 	signal WORDADDR : std_logic_vector(29 downto 0);	--high 30 bits of addr_i
 	signal WORDADDR_plus1 : std_logic_vector(29 downto 0);
@@ -107,11 +107,22 @@ BEGIN
 		 (unaligned or not(PREADY)) when busy_sel = "01"  else
 		 '1' when busy_sel = "10" else
 		 not(PREADY);
-		
+		 
 	PREQ <= trigger when preq_sel = "00" else
-			'1' when preq_sel = "01" else
-			'0';
-		
+	'1' when preq_sel = "01" else
+	'0';
+	
+	-- preq_process : process(trigger, preq_sel) is
+	-- BEGIN
+		-- if preq_sel = "00" then
+			-- PREQ <= trigger;
+		-- elsif preq_sel= "01" then
+			-- PREQ <= '1';
+		-- else 
+			-- PREQ <= '0';
+		-- end if;
+
+	-- end process;	
 
 	
 	size_operation : size_interface
@@ -131,7 +142,7 @@ BEGIN
 			din0 => BYTESTRB_3_0,
 			din1 => register_out_PSTRB,
 			sel => op2,
-			dout => PSTRB
+			dout => inter_PSTRB
 		);
 	
 	registergen_PSTRB : registergen_interface 
@@ -346,6 +357,13 @@ BEGIN
 		
 
 	end process FSM;
+	
+	PSTRB_low : process(wr_i) is 
+	begin
+		for i in  PSTRB'range loop
+			PSTRB(i) <= inter_PSTRB(i) and wr_i; 
+		end loop;
+	end process;
 	
 end architecture;
 
