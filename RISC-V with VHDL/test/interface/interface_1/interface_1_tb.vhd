@@ -189,7 +189,8 @@ begin
 			test_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
 			rd_i <= '0';
 			wr_i <= '0';
-			wait until falling_edge(tb_clk);
+
+			wait until rising_edge(tb_clk);
 		end loop;
 		REPORT "32-bit test finished";
 		
@@ -197,8 +198,8 @@ begin
 			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		
 			rd_i <= '0';
 			wr_i <= '0';
-			wait until falling_edge(tb_clk);
 
+			wait until rising_edge(tb_clk);
 		end loop;
 			
 		REPORT "16-bit test finished";
@@ -206,8 +207,8 @@ begin
 		for i in list8'low to list8'high loop
 			test_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);
 			rd_i <= '0';
-			wr_i <= '0';
-			wait until falling_edge(tb_clk);
+
+			wait until rising_edge(tb_clk);
 		end loop;
 		REPORT "8-bit test finished";
 		

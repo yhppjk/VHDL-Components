@@ -115,8 +115,13 @@
 		end procedure test_rd32_transfer;
 		
 #### 09/06/2023
-	-- check PSTRB as how to check PADDR 
+	-- check PSTRB as how to check PADDR √
 	-- able to check if the operation need 2 step or 1 step (unaligned?)
 	-- check PREQ / PSEL √
 	-- check byte lane(if the PSTRB will change this byte lane)
 	-- when the interface is doing a read transfer, the PSTRB must be low √
+	
+	for every byte lane, at each transfer:
+	assert not(byte lane is relevant(need calculation))   or  (PWDATA's Actual byte lane value  =  PWDATA's Expected byte lane value(need calculation))
+		report" ..... "
+		severity warning
