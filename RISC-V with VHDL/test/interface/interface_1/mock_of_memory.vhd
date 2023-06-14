@@ -33,6 +33,7 @@ entity mock_of_memory is
 		PSTRB : IN std_logic_vector(3 downto 0);
 		clk : IN std_logic;
 		
+		--unaligned : IN std_logic;
 		
 		PREADY : OUT std_logic := '1';
 		PRDATA : OUT std_logic_vector(31 downto 0)
@@ -57,30 +58,29 @@ begin
 		
 		while true loop
 		
-			if PWRITE = '1' then
-				if PWDATA(31 downto 24) = x"00" then
-					PWDATA_PSTRB(3) <= '0';
-				else
-					PWDATA_PSTRB(3) <= '1';
-				end if;
+		
+			if PWDATA(31 downto 24) = x"00" then
+				PWDATA_PSTRB(3) <= '0';
+			else
+				PWDATA_PSTRB(3) <= '1';
+			end if;
 
-				if PWDATA(23 downto 16) = x"00" then
-					PWDATA_PSTRB(2) <= '0';
-				else
-					PWDATA_PSTRB(2) <= '1';
-				end if;
+			if PWDATA(23 downto 16) = x"00" then
+				PWDATA_PSTRB(2) <= '0';
+			else
+				PWDATA_PSTRB(2) <= '1';
+			end if;
 
-				if PWDATA(15 downto 8) = x"00" then
-					PWDATA_PSTRB(1) <= '0';
-				else
-					PWDATA_PSTRB(1) <= '1';
-				end if;
+			if PWDATA(15 downto 8) = x"00" then
+				PWDATA_PSTRB(1) <= '0';
+			else
+				PWDATA_PSTRB(1) <= '1';
+			end if;
 
-				if PWDATA(7 downto 0) = x"00" then
-					PWDATA_PSTRB(0) <= '0';
-				else
-					PWDATA_PSTRB(0) <= '1';
-				end if;
+			if PWDATA(7 downto 0) = x"00" then
+				PWDATA_PSTRB(0) <= '0';
+			else
+				PWDATA_PSTRB(0) <= '1';
 			end if;
 		
 			testing <= '0';
@@ -96,7 +96,7 @@ begin
 
 			
 			assert not(PSTRB /= "0000" )   or  ( PWDATA_PSTRB  =  PSTRB)  -- what means byte lane is relevant?
-			report" ..... " severity warning;
+			report" PSTRB is not corrects " severity warning;
 			
 			--check PENABLE is 0 
 

@@ -60,72 +60,60 @@ architecture behavioral of interface_1  is
 	signal BYTESTRB_3_0 : std_logic_vector(3 downto 0);		--8 bits left-shifted value of SIZESTRB
 	signal BYTESTRB_7_4 : std_logic_vector(3 downto 0);		--8 bits left-shifted value of SIZESTRB
 	
-	signal register_in_PSTRB : std_logic_vector(3 downto 0); 
-	signal register_out_PSTRB : std_logic_vector(3 downto 0); 
-	signal register_in_PWDATA : std_logic_vector(31 downto 0);
-	signal register_out_PWDATA : std_logic_vector(31 downto 0);
-	signal wdata64_31_0 : std_logic_vector(31 downto 0);
-	signal register_out_addr : std_logic_vector(29 downto 0);
-	signal register_in_PRDATA : std_logic_vector(31 downto 0);
-	signal register_out_PRDATA : std_logic_vector(31 downto 0);
+	signal register_in_PSTRB : std_logic_vector(3 downto 0); 	--internal signal of register PSTRB
+	signal register_out_PSTRB : std_logic_vector(3 downto 0); 	--output signal of register PSTRB
+	signal register_in_PWDATA : std_logic_vector(31 downto 0);	--internal signal of register PWDATA
+	signal register_out_PWDATA : std_logic_vector(31 downto 0);	--output signal of register PWDATA
+	signal wdata64_31_0 : std_logic_vector(31 downto 0);		--register WDATA64_31_0
+	signal register_out_addr : std_logic_vector(29 downto 0);	--output signal of register addr
+	signal register_in_PRDATA : std_logic_vector(31 downto 0);	--internal signal of register PRDATA
+	signal register_out_PRDATA : std_logic_vector(31 downto 0);	--output signal of register PRDATA
 	
 	
-	signal size_or_output : std_logic := '0';
-	signal op1 : std_logic := '1';
-	signal op2 : std_logic := '0';
-	signal trigger : std_logic := '0';
-	signal first_cycle : std_logic := '1';
-	signal unaligned : std_logic := '0';
+	signal size_or_output : std_logic := '0';		--the OR operation result which is for unaligned
+	signal op1 : std_logic := '1';					--the signal for op1 parametre
+	signal op2 : std_logic := '0';					--the signal for op2 parametre
+	signal trigger : std_logic := '0';				--the signal for trigger parametre
+	signal first_cycle : std_logic := '1';			--the signal for first_cycle parametre
+	signal unaligned : std_logic := '0';			--the signal for unaligned parametre
 	
-	signal busy_sel : std_logic_vector(1 downto 0);
-	signal preq_sel : std_logic_vector(1 downto 0);
+	signal busy_sel : std_logic_vector(1 downto 0);	--the signal for busy_sel parametre
+	signal preq_sel : std_logic_vector(1 downto 0);	--the signal for preq_sel parametre
 	
-	signal WDATA64 : std_logic_vector(63 downto 0); 	--
-	signal RDATA64 : std_logic_vector(63 downto 0);		--
-	signal RDATA64A : std_logic_vector(63 downto 0);	
-	signal RDATA64B : std_logic_vector(63 downto 0);	
-	signal PRDATA0 : std_logic_vector(31 downto 0);		--
-	signal PRDATA1 : std_logic_vector(31 downto 0);		--
-	signal RDATA64ALIGNED : std_logic_vector(63 downto 0);
+	signal WDATA64 : std_logic_vector(63 downto 0); 	--the output signal of WDATA64
+	signal RDATA64 : std_logic_vector(63 downto 0);		--the internal signal of RDATA64
+	signal RDATA64A : std_logic_vector(63 downto 0);	--the internal signal of RDATA64A
+	signal RDATA64B : std_logic_vector(63 downto 0);	--the internal signal of RDATA64B
+
 	
-	constant zeros8 : std_logic_vector(7 downto 0) := (others => '0');
-	constant zeros16 : std_logic_vector(15 downto 0) := (others => '0');
-	constant zeros32: std_logic_vector(31 downto 0) := (others => '0');
+	constant zeros8 : std_logic_vector(7 downto 0) := (others => '0');	--constant of zeros 8-bit
+	constant zeros16 : std_logic_vector(15 downto 0) := (others => '0'); --constant of zeros 16-bit
+	constant zeros32: std_logic_vector(31 downto 0) := (others => '0');	--constant of zeros 32-bit
 	
-	TYPE state_type is(idle, op1B, op2A, op2B);
-	signal current_state, next_state : state_type := idle;
+	TYPE state_type is(idle, op1B, op2A, op2B);				--state type of FSM
+	signal current_state, next_state : state_type := idle;	--state signal of FSM
 
 BEGIN	
 		
-	trigger <= rd_i or wr_i;
-	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')
+	trigger <= rd_i or wr_i;											-- trigger value
+	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')						-- PWRITE value
 		else '0' when (rd_i = '1' and wr_i = '0');
 
-	WORDADDR <= addr_i(31 downto 2);
-	ALIGNMENT <= addr_i(1 downto 0);
-	busy_o <= trigger when busy_sel = "00" else
+	WORDADDR <= addr_i(31 downto 2);									--divide addr_i to WORDADDR
+	ALIGNMENT <= addr_i(1 downto 0);									--divide addr_i to ALIGNMENT
+	busy_o <= trigger when busy_sel = "00" else							--busy_o definition
 		 (unaligned or not(PREADY)) when busy_sel = "01"  else
 		 '1' when busy_sel = "10" else
 		 not(PREADY);
 		 
-	PREQ <= trigger when preq_sel = "00" else
+	PREQ <= trigger when preq_sel = "00" else							--PREQ definition
 	'1' when preq_sel = "01" else
 	'0';
 	
-	-- preq_process : process(trigger, preq_sel) is
-	-- BEGIN
-		-- if preq_sel = "00" then
-			-- PREQ <= trigger;
-		-- elsif preq_sel= "01" then
-			-- PREQ <= '1';
-		-- else 
-			-- PREQ <= '0';
-		-- end if;
-
-	-- end process;	
+	
 
 	
-	size_operation : size_interface
+	size_operation : size_interface										--size operation block
 		port map (
 			size_i => size_i,
 			ALIGNMENT => ALIGNMENT,
@@ -133,7 +121,7 @@ BEGIN
 			BYTESTRB_7_4 => BYTESTRB_7_4,
 			or_output => size_or_output
 		);
-	mux_PSTRB : mux2togen
+	mux_PSTRB : mux2togen												--PSTRB mux block
 		GENERIC map(
 			width => 4,
 			prop_delay => 0 ns
@@ -145,7 +133,7 @@ BEGIN
 			dout => inter_PSTRB
 		);
 	
-	registergen_PSTRB : registergen_interface 
+	registergen_PSTRB : registergen_interface 							--register of PSTRB value block
 		generic map (
 			width => 4,
 			prop_delay => 0 ns	
@@ -158,7 +146,7 @@ BEGIN
 			rst => rst
 		);
 	
-	register1_PSTRB : register1_interface
+	register1_PSTRB : register1_interface								--register of PSTRB unaligned block
 		generic map (
 			prop_delay => 0 ns
 		)
@@ -170,7 +158,7 @@ BEGIN
 			reg_out => unaligned
 		);
 	
-	wdata_operation : wdata_interface
+	wdata_operation : wdata_interface									--wdata operation block
 		port map(
 			wdata_i => wdata_i,
 			ALIGNMENT => ALIGNMENT,
@@ -178,7 +166,7 @@ BEGIN
 			WDATA64_64_32 => register_in_PWDATA
 		);
 		
-	registergen_PWDATA : registergen_interface 
+	registergen_PWDATA : registergen_interface 							--register of PWDATA block
 		generic map (
 			width => 32,
 			prop_delay => 0 ns	
@@ -191,7 +179,7 @@ BEGIN
 			rst => rst
 		);
 		
-	mux_PWDATA : mux2togen
+	mux_PWDATA : mux2togen												--mux of PWDATA block
 		GENERIC map(
 			width => 32,
 			prop_delay => 0 ns
@@ -203,7 +191,7 @@ BEGIN
 			dout => PWDATA
 		);
 	
-	addr_operation: addr_interface
+	addr_operation: addr_interface										--address operation block
 		port map (
 			clk => clk,
 			addr_i => addr_i,
@@ -212,7 +200,7 @@ BEGIN
 			ALIGNMENT => ALIGNMENT
 		);
 	
-	registergen_addr : registergen_interface
+	registergen_addr : registergen_interface							--address register block
 		generic map (
 			width => 30,
 			prop_delay => 0 ns	
@@ -224,7 +212,7 @@ BEGIN
 			reg_out => register_out_addr,
 			rst => rst
 		);
-	mux_addr : mux2togen
+	mux_addr : mux2togen												-- mux of address block
 		GENERIC map(
 			width => 30,
 			prop_delay => 0 ns
@@ -235,7 +223,7 @@ BEGIN
 			sel => op2,
 			dout => PADDR
 		);	
-	rdata_operation1 : rdata_interface1
+	rdata_operation1 : rdata_interface1									--first step of rdata operation block
 		port map (
 			PRDATA => PRDATA,
 			register_RDATA => register_out_PRDATA,
@@ -243,7 +231,7 @@ BEGIN
 			RDATA64B => RDATA64B,
 			RDATA_reg => register_in_PRDATA
 		);
-	register_PRDATA : registergen_PRDATA
+	register_PRDATA : registergen_PRDATA								--register of PRDATA block
 		generic map (
 			width => 32,
 			prop_delay => 0 ns	
@@ -257,7 +245,7 @@ BEGIN
 			rst => rst
 		);
 	
-	mux1_PRDATA : mux2togen
+	mux1_PRDATA : mux2togen												-- mux of PRDATA block
 		GENERIC map(
 			width => 64,
 			prop_delay => 0 ns
@@ -269,7 +257,7 @@ BEGIN
 			dout => RDATA64
 		);
 	
-	rdata_operation2 :rdata_interface2
+	rdata_operation2 :rdata_interface2									--second operation of rdata block
 		port map(
 			RDATA64 => RDATA64,
 			ALIGNMENT => ALIGNMENT,
@@ -280,7 +268,7 @@ BEGIN
 	
 	
 
-	state_change : process (rst, clk)
+	state_change : process (rst, clk)									-- state change process
 	begin
 		if rst = '1' then 
 			current_state <= idle;
@@ -290,7 +278,7 @@ BEGIN
 	end process;
 	
 	
-	state_value : process(current_state)  
+	state_value : process(current_state)  								-- state change value process
 	begin
 	case current_state is
 		when idle =>
@@ -330,7 +318,7 @@ BEGIN
 	end process state_value;
 	
 	
-	FSM : process(trigger, PREADY, unaligned, current_state)  
+	FSM : process(trigger, PREADY, unaligned, current_state)  		--next state process
 	begin
 		
 		case current_state is
@@ -358,7 +346,7 @@ BEGIN
 
 	end process FSM;
 	
-	PSTRB_low : process(wr_i) is 
+	PSTRB_low : process(wr_i) is 									--PSTRB low when wr_i = '0' 
 	begin
 		for i in  PSTRB'range loop
 			PSTRB(i) <= inter_PSTRB(i) and wr_i; 
