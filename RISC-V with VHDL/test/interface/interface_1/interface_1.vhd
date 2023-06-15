@@ -96,9 +96,11 @@ architecture behavioral of interface_1  is
 BEGIN	
 		
 	trigger <= rd_i or wr_i;											-- trigger value
+	
+	
 	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')						-- PWRITE value
 		else '0' when (rd_i = '1' and wr_i = '0');
-
+	
 	WORDADDR <= addr_i(31 downto 2);									--divide addr_i to WORDADDR
 	ALIGNMENT <= addr_i(1 downto 0);									--divide addr_i to ALIGNMENT
 	busy_o <= trigger when busy_sel = "00" else							--busy_o definition
@@ -360,3 +362,11 @@ end architecture;
 
 
 
+	-- PWRITE_PROCESS : process(rd_i, wr_i) is
+	-- begin
+		-- if rd_i = '0' and wr_i = '1' then
+			-- PWRITE <= '1';
+		-- elsif rd_i = '1' and wr_i = '0' then
+			-- PWRITE <= '0';
+		-- end if;		
+	-- end process;

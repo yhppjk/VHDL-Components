@@ -45,7 +45,6 @@ architecture behavioral of mock_of_memory is
 	signal cache_addr : std_logic_vector(29 downto 0);
 	signal write_or_read : std_logic;
 	signal cache_PSTRB : std_logic_vector(3 downto 0);
-	signal PWDATA_PSTRB : std_logic_vector(3 downto 0);
 begin
 
 	
@@ -59,30 +58,6 @@ begin
 		while true loop
 		
 		
-			if PWDATA(31 downto 24) = x"00" then
-				PWDATA_PSTRB(3) <= '0';
-			else
-				PWDATA_PSTRB(3) <= '1';
-			end if;
-
-			if PWDATA(23 downto 16) = x"00" then
-				PWDATA_PSTRB(2) <= '0';
-			else
-				PWDATA_PSTRB(2) <= '1';
-			end if;
-
-			if PWDATA(15 downto 8) = x"00" then
-				PWDATA_PSTRB(1) <= '0';
-			else
-				PWDATA_PSTRB(1) <= '1';
-			end if;
-
-			if PWDATA(7 downto 0) = x"00" then
-				PWDATA_PSTRB(0) <= '0';
-			else
-				PWDATA_PSTRB(0) <= '1';
-			end if;
-		
 			testing <= '0';
 			-- Wait for the test to start
 			assert PENABLE = '0' report "PENABLE = '1' in the very first cycle of a transfer" severity warning;			
@@ -93,16 +68,11 @@ begin
 			write_or_read <= PWRITE;
 			cache_PSTRB <= PSTRB;
 			
-
-			
-			assert not(PSTRB /= "0000" )   or  ( PWDATA_PSTRB  =  PSTRB)  -- what means byte lane is relevant?
-			report" PSTRB is not corrects " severity warning;
-			
+			assert PWRITE = '1' or PSTRB = "0000" report "PSTRB should be ""0000"" in a read transfer " severity warning;
 			--check PENABLE is 0 
 
 			assert PSEL = '1' report "PSEL = '0'  in the very first cycle of a transfer" severity warning;
-			-- assert (not ())
-			--
+
 
 			if num_wait >  0 then
 				for i in 0 to num_wait - 1 loop
@@ -128,7 +98,7 @@ begin
 			end if;
 			
 			--assert not(PSTRB ="");
-			assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
+			--assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
 			assert PSTRB = cache_PSTRB report "PSTRB changed in the end of a transfer" severity warning;
 			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
 			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;		

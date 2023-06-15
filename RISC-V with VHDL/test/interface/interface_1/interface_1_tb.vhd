@@ -193,6 +193,10 @@ begin
 			wait until rising_edge(tb_clk);
 		end loop;
 		REPORT "32-bit test finished";
+			
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;  
 		
 		for i in list16'low to list16'high loop
 			test_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		
@@ -203,10 +207,89 @@ begin
 		end loop;
 			
 		REPORT "16-bit test finished";
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;  
 		
 		for i in list8'low to list8'high loop
 			test_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);
 			rd_i <= '0';
+
+			wait until rising_edge(tb_clk);
+		end loop;
+		REPORT "8-bit test finished";
+		
+	
+		ASSERT false
+			REPORT "Simulation ended ( not a failure actually ) "
+		SEVERITY failure;
+    end process;
+	
+	
+    -- Checking process
+    check_proc: process
+		
+		-- Procedure for giving values to signal
+		procedure check_rd32_transfer(
+		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
+		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
+		constant unsigned_i_val : in std_logic;
+		constant num_wait_val: in integer;
+		constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
+		constant dataread_val: in std_logic_vector(31 downto 0);
+		constant rd_i_val : in std_logic;
+		constant wr_i_val : in std_logic;
+		constant tb_rst_val : in std_logic
+		) is
+		begin
+			wait until rising_edge(tb_clk) and testing = '1';
+			assert PSTRB = "0000" report ...
+			assert PWRITE = '0' report ...
+			assert PENABLE = '0' report ...
+			assert PRDATA = addr_i_val report ...
+			assert busy_o = '1' report ....
+			
+			for i in 0 to num_wait loop
+				wait until rising_edge(tb_clk);
+				assert PSTRB = "0000" report ...
+				assert PWRITE = '0' report ...
+				assert PENABLE = '1' report ...
+				assert PRDATA = addr_i_val report ...
+				assert busy_o = '1' report ....
+			end loop;  
+			assert busy_o = '0' report ....
+			assert rdata_o = dataread_val report ....
+		end procedure test_rd32_transfer;
+
+    begin
+	
+		wait until falling_edge(tb_clk);
+
+		
+		for i in list32'low to list32'high loop
+			check_rd32_transfer(list32(i).addr_val, list32(i).size_val, list32(i).unsigned_i_val, list32(i).num_wait_val, list32(i).wdata_i_val, list32(i).dataread_val, list32(i).rd_i_val,list32(i).wr_i_val,list32(i).tb_rst_val);
+
+			wait until rising_edge(tb_clk);
+		end loop;
+		REPORT "32-bit test finished";
+			
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;  
+		
+		for i in list16'low to list16'high loop
+			check_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val);		
+
+			wait until rising_edge(tb_clk);
+		end loop;
+			
+		REPORT "16-bit test finished";
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;  
+		
+		for i in list8'low to list8'high loop
+			check_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val);
 
 			wait until rising_edge(tb_clk);
 		end loop;

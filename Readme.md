@@ -125,3 +125,11 @@
 	assert not(byte lane is relevant(need calculation))   or  (PWDATA's Actual byte lane value  =  PWDATA's Expected byte lane value(need calculation))
 		report" ..... "
 		severity warning
+		
+#### 15/06/2023
+	-- check PSTRB should be done in testbench as a parelle process whose clock cycle should be exactly correspond to the simulation clock cycle
+	-- another procedure which place in the parelle process. Will be used to check the output signal is correct.
+	-- in these two procedures, the parametres is enough to divide different situation(10 situation: word,half,byte, two time word, two time half; unsigned, signed;) 
+	-- for the test, it is recommended to divide different situation in different list.
+
+	
