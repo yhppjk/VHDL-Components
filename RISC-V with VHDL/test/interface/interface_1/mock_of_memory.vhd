@@ -97,8 +97,7 @@ begin
 				PRDATA <= dataread;
 			end if;
 			
-			--assert not(PSTRB ="");
-			--assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
+			assert PADDR = cache_addr report "PADDR changed in the end of a transfer" severity warning;
 			assert PSTRB = cache_PSTRB report "PSTRB changed in the end of a transfer" severity warning;
 			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
 			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;		

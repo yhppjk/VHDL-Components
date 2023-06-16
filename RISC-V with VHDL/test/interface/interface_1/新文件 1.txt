@@ -1,0 +1,36 @@
+/*	
+		--read operation: (which PSTRB will stay "0000") 	
+			wait until rising_edge(tb_clk) and testing = '1';
+			
+			-- check statement： one time, word
+			if size_i_val = "10" and addr_i_val(1 downto 0) = "00" then
+			
+			-- check statement : one time, half word, unsigned
+			elsif size_i_val = "01" and addr_i_val(1 downto 0) /= "11" and unsigned_i_val = '1'then
+			
+			-- check statement : one time, half word, signed
+			elsif size_i_val = "01" and addr_i_val(1 downto 0) /= "11" and unsigned_i_val = '0' then
+			
+			-- check statement : one time, byte, unsigned
+			elsif size_i_val = "00"  and unsigned_i_val = '1' then
+			
+			-- check statement : one time, byte, signed
+			elsif size_i_val = "00"  and unsigned_i_val = '0' then
+			
+			-- check statement: two time, word
+			elsif size_i_val = "10" and addr_i_val(1 downto 0) /= "00" then
+				
+			-- check statement: two time, half word, unsigned
+			elsif size_i_val = "01" and addr_i_val(1 downto 0) = "11" and unsigned_i_val = '1' then
+			-- check statement: two time, half word, signed
+			elsif size_i_val = "01" and addr_i_val(1 downto 0) = "11" and unsigned_i_val = '0' then
+			
+
+			end if;
+		
+			if rd_i ='0' and wr_i = '1' then
+			
+			else 
+				assert tb_PSTRB = "0000" report "tb_PSTRB Stay ""0000"" in a not write transfer" severity warning;
+			end if;
+*/

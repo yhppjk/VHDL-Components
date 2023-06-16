@@ -89,7 +89,6 @@ architecture tb_behavior of interface_1_tb is
     -- ...
 
 	--output signals
-	--signal PSTRB_out : std_logic_vector(3 downto 0);
 	signal PWRITE_out :std_logic;
 	signal PENABLE_out : std_logic;
 
@@ -231,35 +230,52 @@ begin
 		
 		-- Procedure for giving values to signal
 		procedure check_rd32_transfer(
-		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
-		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
-		constant unsigned_i_val : in std_logic;
-		constant num_wait_val: in integer;
-		constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
-		constant dataread_val: in std_logic_vector(31 downto 0);
-		constant rd_i_val : in std_logic;
-		constant wr_i_val : in std_logic;
-		constant tb_rst_val : in std_logic
+			constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
+			constant size_i_val : in std_logic_vector(1 DOWNTO 0);
+			constant unsigned_i_val : in std_logic;
+			constant num_wait_val: in integer;
+			constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
+			constant dataread_val: in std_logic_vector(31 downto 0);
+			constant rd_i_val : in std_logic;
+			constant wr_i_val : in std_logic;
+			constant tb_rst_val : in std_logic
 		) is
+		
+		variable res_PSTRB : std_logic_vector(3 downto 0);
+		variable res_PWRITE : std_logic;
+
+		
 		begin
-			wait until rising_edge(tb_clk) and testing = '1';
-			assert PSTRB = "0000" report ...
-			assert PWRITE = '0' report ...
-			assert PENABLE = '0' report ...
-			assert PRDATA = addr_i_val report ...
-			assert busy_o = '1' report ....
 			
+			
+			--	the output signals to the mock:
+			--	PADDR, PSTRB, PWDATA, PWRITE, PENABLE, PREQ, 
+		
+			res_PWRITE	:= wr_i;
+			if 	res_PWRITE ='0' then
+				res_PSTRB := "0000";
+			else
+				res_PSTRB := "1111";
+			end if;
+			
+			wait until rising_edge(tb_clk) and testing = '1';
+			assert tb_PSTRB = res_PSTRB report "PSTRB beginning" severity warning;
+			assert PWRITE_out = res_PWRITE report "PWRITE beginning" severity warning;
+			assert PENABLE_out = '0' report "PENABLE beginning" severity warning;			--PENABLE, It is determined by FSM, is a internal signal 
+			assert mem_PRDATA = x"00000000" report "PRDATA beginning" severity warning;
+			assert busy_o = '1' report "busy_o beginning" severity warning;
+						
 			for i in 0 to num_wait loop
 				wait until rising_edge(tb_clk);
-				assert PSTRB = "0000" report ...
-				assert PWRITE = '0' report ...
-				assert PENABLE = '1' report ...
-				assert PRDATA = addr_i_val report ...
-				assert busy_o = '1' report ....
+				assert tb_PSTRB = res_PSTRB report "PSTRB middle " severity warning;
+				assert PWRITE_out = res_PWRITE report "PWRITE middle " severity warning;
+				assert PENABLE_out = '1' report "PENABLE middle " severity warning;
+				assert mem_PRDATA = dataread_val report "PRDATA middle " severity warning;
+				assert busy_o = '1' report "busy_o middle " severity warning;
 			end loop;  
-			assert busy_o = '0' report ....
-			assert rdata_o = dataread_val report ....
-		end procedure test_rd32_transfer;
+			assert busy_o = '0' report "busy_o end " severity warning;
+			assert rdata_o = dataread_val report "rdata_o end" severity warning;
+		end procedure check_rd32_transfer;
 
     begin
 	
@@ -302,3 +318,7 @@ begin
     end process;
 
 end architecture tb_behavior;
+
+
+
+
