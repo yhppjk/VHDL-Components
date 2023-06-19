@@ -60,7 +60,7 @@ begin
 		
 			testing <= '0';
 			-- Wait for the test to start
-			assert PENABLE = '0' report "PENABLE = '1' in the very first cycle of a transfer" severity warning;			
+			assert PENABLE = '0' report "mock PENABLE = '1' in the very first cycle of a transfer" severity warning;			
 			wait until falling_edge(clk) and PSEL = '1';
 			testing <= '1';
 			--Capture for PADDR, PWRITE
@@ -68,28 +68,28 @@ begin
 			write_or_read <= PWRITE;
 			cache_PSTRB <= PSTRB;
 			
-			assert PWRITE = '1' or PSTRB = "0000" report "PSTRB should be ""0000"" in a read transfer " severity warning;
+			assert PWRITE = '1' or PSTRB = "0000" report "mock PSTRB should be ""0000"" in a read transfer " severity warning;
 			--check PENABLE is 0 
 
-			assert PSEL = '1' report "PSEL = '0'  in the very first cycle of a transfer" severity warning;
+			assert PSEL = '1' report "mock PSEL = '0'  in the very first cycle of a transfer" severity warning;
 
 
 			if num_wait >  0 then
 				for i in 0 to num_wait - 1 loop
 					wait until rising_edge(clk); wait for 1 ns;
-					assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
-					assert PSTRB = cache_PSTRB report "PSTRB changed in the middle of a transfer" severity warning;
-					assert PWRITE = write_or_read report "PWRITE changed in the middle of a transfer" severity warning;
-					assert PSEL = '1' report "PSEL = '0'  in the middle of a transfer" severity warning;
-					assert PENABLE = '1' report "PENABLE = '0' in the middle of a transfer" severity warning;			
+					assert PADDR = cache_addr report "mock PADDR changed in the middle of a transfer" severity warning;
+					assert PSTRB = cache_PSTRB report "mock PSTRB changed in the middle of a transfer" severity warning;
+					assert PWRITE = write_or_read report "mock PWRITE changed in the middle of a transfer" severity warning;
+					assert PSEL = '1' report "mock PSEL = '0'  in the middle of a transfer" severity warning;
+					assert PENABLE = '1' report "mock PENABLE = '0' in the middle of a transfer" severity warning;			
 				end loop;
 			end if;
 
 			wait until rising_edge(clk); wait for 1 ns;
-			assert PADDR = cache_addr report "PADDR changed in the middle of a transfer" severity warning;
-			assert PSTRB = cache_PSTRB report "PSTRB changed in the middle of a transfer" severity warning;
-			assert PSEL = '1' report "PSEL deactivated too early!" severity warning;
-			assert PENABLE = '1' report "PENABLE = '0' before the end of a transfer" severity warning;	
+			assert PADDR = cache_addr report "mock PADDR changed in the middle of a transfer" severity warning;
+			assert PSTRB = cache_PSTRB report "mock PSTRB changed in the middle of a transfer" severity warning;
+			assert PSEL = '1' report "mock PSEL deactivated too early!" severity warning;
+			assert PENABLE = '1' report "mock PENABLE = '0' before the end of a transfer" severity warning;	
 			
 			wait until falling_edge(clk); wait for 1 ns;		
 			PREADY <= '1'; 

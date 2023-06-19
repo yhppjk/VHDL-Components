@@ -79,6 +79,7 @@ architecture behavioral of interface_1  is
 	
 	signal busy_sel : std_logic_vector(1 downto 0);	--the signal for busy_sel parametre
 	signal preq_sel : std_logic_vector(1 downto 0);	--the signal for preq_sel parametre
+	signal PREQ_internal: std_logic;
 	
 	signal WDATA64 : std_logic_vector(63 downto 0); 	--the output signal of WDATA64
 	signal RDATA64 : std_logic_vector(63 downto 0);		--the internal signal of RDATA64
@@ -107,7 +108,11 @@ BEGIN
 		 (unaligned or not(PREADY)) when busy_sel = "01"  else
 		 '1' when busy_sel = "10" else
 		 not(PREADY);
-		 
+	
+	PREQ_internal <= trigger when preq_sel = "00" else							--PREQ definition
+	'1' when preq_sel = "01" else
+	'0';
+	
 	PREQ <= trigger when preq_sel = "00" else							--PREQ definition
 	'1' when preq_sel = "01" else
 	'0';
