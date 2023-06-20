@@ -11,10 +11,11 @@ add wave -noupdate /interface_1_tb/UUT/current_state
 add wave -noupdate /interface_1_tb/UUT/next_state
 add wave -noupdate -radix hexadecimal /interface_1_tb/rdata_o
 add wave -noupdate -radix hexadecimal /interface_1_tb/UUT/PWDATA
-add wave -noupdate /interface_1_tb/memory/PWDATA_PSTRB
-add wave -noupdate /interface_1_tb/memory/PSTRB
+add wave -noupdate /interface_1_tb/tb_PSTRB
+add wave -noupdate /interface_1_tb/UUT/ALIGNMENT
+add wave -noupdate /interface_1_tb/size_i
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1255952 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1110035 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 257
 configure wave -valuecolwidth 100
@@ -30,4 +31,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {1183345 ps} {1302469 ps}
+WaveRestoreZoom {1462697 ps} {1744069 ps}

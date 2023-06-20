@@ -98,7 +98,6 @@ BEGIN
 		
 	trigger <= rd_i or wr_i;											-- trigger value
 	
-	
 	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')						-- PWRITE value
 		else '0' when (rd_i = '1' and wr_i = '0');
 	
