@@ -132,4 +132,7 @@
 	-- in these two procedures, the parametres is enough to divide different situation(10 situation: word,half,byte, two time word, two time half; unsigned, signed;) 
 	-- for the test, it is recommended to divide different situation in different list.
 
-	
+#### 15/06/2023
+	-- the should check the falling_edge of tb_clk to verify if the signal change between the rising and falling_edge.
+	-- isolate the problemf to check the situation(important!)
+	-- 

@@ -1,7 +1,7 @@
 ----------------------------------------------------------
---! @file interface_1_tb.vhd
+--! @file interface_2_tb.vhd
 --! @Testbench for interface_1
--- Filename: interface_1_tb.vhd
+-- Filename: interface_2_tb.vhd
 -- Description: Testbench for interface_1
 -- Author: YIN Haoping
 -- Date: May 19, 2023
@@ -14,10 +14,10 @@ USE ieee.numeric_std.ALL;
 USE work.interface_1_pkg.ALL;
 
 --! Testbench entity description
-entity interface_1_tb is
+entity interface_2_tb is
 end entity;
 
-architecture tb_behavior of interface_1_tb is
+architecture tb_behavior of interface_2_tb is
     -- Declare the component to be tested
     component interface_1 is
         port (
@@ -192,46 +192,10 @@ begin
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;
-	-- 32bit test
-		for i in list32_one_read'low to list32_one_read'high loop
-			test_rd32_transfer(list32_one_read(i).addr_val, list32_one_read(i).size_val, list32_one_read(i).unsigned_i_val, list32_one_read(i).num_wait_val, list32_one_read(i).wdata_i_val, list32_one_read(i).dataread_val, list32_one_read(i).rd_i_val,list32_one_read(i).wr_i_val,list32_one_read(i).tb_rst_val);
-			rd_i <= '0';
-			wr_i <= '0';
-			tb_rst <= '1';
 
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
-		REPORT "32-bit read test finished";
-		
-		for i in list32_one_write'low to list32_one_write'high loop
-			test_rd32_transfer(list32_one_write(i).addr_val, list32_one_write(i).size_val, list32_one_write(i).unsigned_i_val, list32_one_write(i).num_wait_val, list32_one_write(i).wdata_i_val, list32_one_write(i).dataread_val, list32_one_write(i).rd_i_val,list32_one_write(i).wr_i_val,list32_one_write(i).tb_rst_val);
-			rd_i <= '0';
-			wr_i <= '0';
-			tb_rst <= '1';
-
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
-		REPORT "32-bit write test finished";
 		
 	-- 16bit test
-		for i in list16_one_read'low to list16_one_read'high loop
-			test_rd32_transfer(list16_one_read(i).addr_val, list16_one_read(i).size_val, list16_one_read(i).unsigned_i_val, list16_one_read(i).num_wait_val, list16_one_read(i).wdata_i_val, list16_one_read(i).dataread_val, list16_one_read(i).rd_i_val,list16_one_read(i).wr_i_val,list16_one_read(i).tb_rst_val);
-			rd_i <= '0';
-			wr_i <= '0';
-			tb_rst <= '1';
 
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
-		REPORT "16-bit read test finished";
 		
 		for i in list16_one_write'low to list16_one_write'high loop
 			test_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val);
@@ -248,18 +212,7 @@ begin
 		REPORT "16-bit write test finished";
 		
 	-- 8bit test
-		for i in list8_one_read'low to list8_one_read'high loop
-			test_rd32_transfer(list8_one_read(i).addr_val, list8_one_read(i).size_val, list8_one_read(i).unsigned_i_val, list8_one_read(i).num_wait_val, list8_one_read(i).wdata_i_val, list8_one_read(i).dataread_val, list8_one_read(i).rd_i_val,list8_one_read(i).wr_i_val,list8_one_read(i).tb_rst_val);
-			rd_i <= '0';
-			wr_i <= '0';
-			tb_rst <= '1';
 
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
-		REPORT "8-bit read test finished";
 		
 		for i in list8_one_write'low to list8_one_write'high loop
 			test_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val);
@@ -373,40 +326,6 @@ begin
 			wait until rising_edge(tb_clk);
 		end loop;
 		
-		for i in list32_one_read'low to list32_one_read'high loop
-			check_rd32_transfer(list32_one_read(i).addr_val, list32_one_read(i).size_val, list32_one_read(i).unsigned_i_val, list32_one_read(i).num_wait_val, list32_one_read(i).wdata_i_val, list32_one_read(i).dataread_val, list32_one_read(i).rd_i_val,list32_one_read(i).wr_i_val,list32_one_read(i).tb_rst_val, list32_one_read(i).PSTRB_val);
-
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
-		REPORT "32-bit read check finished";		
-
-		
-		
-		for i in list32_one_write'low to list32_one_write'high loop
-			check_rd32_transfer(list32_one_write(i).addr_val, list32_one_write(i).size_val, list32_one_write(i).unsigned_i_val, list32_one_write(i).num_wait_val, list32_one_write(i).wdata_i_val, list32_one_write(i).dataread_val, list32_one_write(i).rd_i_val,list32_one_write(i).wr_i_val,list32_one_write(i).tb_rst_val, list32_one_write(i).PSTRB_val);
-		
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;		
-		REPORT "32-bit write check finished";
-	
-		
-
-		
-		for i in list16_one_read'low to list16_one_read'high loop
-			check_rd32_transfer(list16_one_read(i).addr_val, list16_one_read(i).size_val, list16_one_read(i).unsigned_i_val, list16_one_read(i).num_wait_val, list16_one_read(i).wdata_i_val, list16_one_read(i).dataread_val, list16_one_read(i).rd_i_val,list16_one_read(i).wr_i_val,list16_one_read(i).tb_rst_val, list16_one_read(i).PSTRB_val);
-
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;		
-		REPORT "16-bit read check finished";
 		
 		for i in list16_one_write'low to list16_one_write'high loop
 			check_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val, list16_one_write(i).PSTRB_val);
@@ -418,16 +337,6 @@ begin
 		end loop;				
 		REPORT "16-bit write check finished";
 		
-		for i in list8_one_read'low to list8_one_read'high loop
-			check_rd32_transfer(list8_one_read(i).addr_val, list8_one_read(i).size_val, list8_one_read(i).unsigned_i_val, list8_one_read(i).num_wait_val, list8_one_read(i).wdata_i_val, list8_one_read(i).dataread_val, list8_one_read(i).rd_i_val,list8_one_read(i).wr_i_val,list8_one_read(i).tb_rst_val, list8_one_read(i).PSTRB_val);
-
-			wait until rising_edge(tb_clk);
-		end loop;
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;		
-		REPORT "8-bit read check finished";
-		
 		for i in list8_one_write'low to list8_one_write'high loop
 			check_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val, list8_one_write(i).PSTRB_val);
 		
@@ -437,32 +346,7 @@ begin
 		
 		
 		wait;
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;  
-		
-		-- for i in list16'low to list16'high loop
-			-- check_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val, list16_one_read(i).PSTRB_val);		
 
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-			
-		-- REPORT "16-bit test finished";
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;  
-		
-		-- for i in list8'low to list8'high loop
-			-- check_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val, list32_one_read(i).PSTRB_val);
-
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-		-- REPORT "8-bit test finished";
-		
-	
-		-- ASSERT false
-			-- REPORT "Simulation ended ( not a failure actually ) "
-		-- SEVERITY failure;
     end process;
 
 end architecture tb_behavior;
