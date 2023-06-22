@@ -437,32 +437,8 @@ begin
 		
 		
 		wait;
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;  
-		
-		-- for i in list16'low to list16'high loop
-			-- check_rd32_transfer(list16(i).addr_val, list16(i).size_val, list16(i).unsigned_i_val, list16(i).num_wait_val, list16(i).wdata_i_val, list16(i).dataread_val, list16(i).rd_i_val,list16(i).wr_i_val,list16(i).tb_rst_val, list16_one_read(i).PSTRB_val);		
 
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-			
-		-- REPORT "16-bit test finished";
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;  
-		
-		-- for i in list8'low to list8'high loop
-			-- check_rd32_transfer(list8(i).addr_val, list8(i).size_val, list8(i).unsigned_i_val, list8(i).num_wait_val, list8(i).wdata_i_val, list8(i).dataread_val, list8(i).rd_i_val,list8(i).wr_i_val,list8(i).tb_rst_val, list32_one_read(i).PSTRB_val);
 
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-		-- REPORT "8-bit test finished";
-		
-	
-		-- ASSERT false
-			-- REPORT "Simulation ended ( not a failure actually ) "
-		-- SEVERITY failure;
     end process;
 
 end architecture tb_behavior;

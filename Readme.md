@@ -135,4 +135,4 @@
 #### 15/06/2023
 	-- the should check the falling_edge of tb_clk to verify if the signal change between the rising and falling_edge.
 	-- isolate the problemf to check the situation(important!)
-	-- 
+	##### Problem was solved, change the process of (PSTRB and wr_i)

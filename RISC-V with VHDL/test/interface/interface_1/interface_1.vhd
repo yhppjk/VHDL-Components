@@ -352,7 +352,13 @@ BEGIN
 
 	end process FSM;
 	
-	PSTRB_low : process(wr_i) is 									--PSTRB low when wr_i = '0' 
+	
+	-- gen_pstrb : for i in PSTRB'range generate
+    -- PSTRB(i) <= inter_PSTRB(i) and wr_i;
+	-- end generate;
+	
+	
+	PSTRB_low : process(inter_PSTRB, wr_i) is 									--PSTRB low when wr_i = '0' 
 	begin
 		for i in  PSTRB'range loop
 			PSTRB(i) <= inter_PSTRB(i) and wr_i; 

@@ -31,6 +31,9 @@ end entity;
 
 architecture behavioral of size_interface  is
 
+signal cache_size_i : std_logic_vector(1 downto 0);
+signal cache_ALIGNMENT : std_logic_vector(1 downto 0);
+
 BEGIN	
 	process (size_i, ALIGNMENT)
 		variable var_SIZESTRB : std_logic_vector(7 downto 0);
