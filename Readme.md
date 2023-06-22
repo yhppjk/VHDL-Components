@@ -132,7 +132,11 @@
 	-- in these two procedures, the parametres is enough to divide different situation(10 situation: word,half,byte, two time word, two time half; unsigned, signed;) 
 	-- for the test, it is recommended to divide different situation in different list.
 
-#### 15/06/2023
+#### 21/06/2023
 	-- the should check the falling_edge of tb_clk to verify if the signal change between the rising and falling_edge.
 	-- isolate the problemf to check the situation(important!)
 	##### Problem was solved, change the process of (PSTRB and wr_i)
+
+#### 22/06/2023
+	-- create 3 more value in a test list, PSTRB2, result, result2. BUT, these values haven't be checked.
+	-- judge the unaligned to know if the transfer need op2, and do another part of procedure.

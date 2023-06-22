@@ -125,6 +125,9 @@ PACKAGE interface_1_pkg IS
 		wr_i_val :  std_logic;
 		tb_rst_val :  std_logic;
 		PSTRB_val : std_logic_vector(3 downto 0);
+		PSTRB_val2 : std_logic_vector(3 downto 0);
+		result_val : std_logic_vector(31 downto 0);
+		result_val2 : std_logic_vector(31 downto 0);
 		--rdata_o_val : std_logic_vector(31 downto 0);
 	end record;
 	
@@ -144,91 +147,91 @@ PACKAGE interface_1_pkg IS
 
 	CONSTANT list32_one_read : test_transfer_read32 :=(
 	--word Read test
-		
+		--addr_i, size_i, unsigned_i, numwait, wdata_i, dataread, rd_i, wr_i, rst, PSTRB1, PSTRB2, result1, result2
 		--wait_num test
-		(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002C", "10", '1', 2, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002C", "10", '1', 1, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		
-		(x"0000003C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000004C", "10", '1', 2, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000005C", "10", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000")	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002C", "10", '1', 2, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002C", "10", '1', 1, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+																										
+		(x"0000003C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000004C", "10", '1', 2, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000005C", "10", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000")	-- 00, Read 32-bit,  Expected output: AEAEEAEA
 
 
 		);
 	CONSTANT list32_one_write : test_transfer_write32 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "10", '1', 0, x"000000EE", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "10", '1', 2, x"000000EE", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "10", '1', 1, x"000000EE", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000003C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000004C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000005C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "10", '1', 0, x"000000EE", x"00000000", '0', '1', '0', "1111", "0000", x"000000EE", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "10", '1', 2, x"000000EE", x"00000000", '0', '1', '0', "1111", "0000", x"000000EE", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "10", '1', 1, x"000000EE", x"00000000", '0', '1', '0', "1111", "0000", x"000000EE", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																										
+		--shift left test                                                                               
+		(x"0000002C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111", "0000", x"EEAEEAEB", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000003C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111", "0000", x"EEAEEAEB", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000004C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111", "0000", x"EEAEEAEB", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000005C", "10", '1', 0, x"EEAEEAEB", x"00000000", '0', '1', '0', "1111", "0000", x"EEAEEAEB", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 	CONSTANT list16_one_read : test_transfer_read16 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "01", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002C", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000"), 	-- 11, Write 32-bit,  Expected output: EB000000
-		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "01", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"1234ABCD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																										
+		--shift left test                                                                               
+		(x"0000002C", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002D", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"1234ABCD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002E", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"ABCD1234", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"1234ABCD", x"00000000"), 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"1234ABCD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 	);	
 
 	
 	CONSTANT list16_one_write : test_transfer_write16 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"1234ABCD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0011", "0000", x"ABCD1234", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"1234ABCD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																										
+		--shift left test                                                                              
+		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110", "0000", x"ABCD1234", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110", "0000", x"1234ABCD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0000", x"ABCD1234", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0000", x"1234ABCD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 
 	CONSTANT list8_one_read : test_transfer_read8 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "00", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "00", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "00", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002D", "00", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002E", "00", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002F", "00", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"00000030", "00", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "00", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"00000034", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "00", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "00", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"00000034", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																										
+		--shift left test                                                                               
+		(x"0000002D", "00", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"00003400", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002E", "00", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"00CD0000", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002F", "00", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"34000000", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"00000030", "00", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 
-	
+--need check result	
 	CONSTANT list8_one_write : test_transfer_write8 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0001"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "00", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0001"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002C", "00", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0001"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002D", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0010"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002E", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0100"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002F", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"00000030", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0001", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "00", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0001", "0000", x"00000034", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002C", "00", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0001", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																				   
+		--shift left test                                                          
+		(x"0000002D", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0010", "0000", x"00003400", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002E", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0100", "0000", x"00CD0000", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002F", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0000", x"34000000", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"00000030", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0000", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);			
 	--questions:	
@@ -247,58 +250,58 @@ PACKAGE interface_1_pkg IS
 	--word Read test
 		
 		--wait_num test
-		(x"0000002D", "10", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002D", "10", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002D", "10", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		
-		(x"0000002E", "10", '1', 0, x"000000EE", x"1234ABCD", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002F", "10", '1', 2, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		(x"0000002F", "10", '1', 1, x"000000EE", x"1234ABCD", '1', '0', '0', "0000")	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002D", "10", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "1110", "0001", x"CD123400", x"AB000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002D", "10", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "1110", "0001", x"34ABCD00", x"12000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002D", "10", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "1110", "0001", x"CD123400", x"AB000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+																				   
+		(x"0000002E", "10", '1', 0, x"000000EE", x"1234ABCD", '1', '0', '0', "1100", "0011", x"ABCD0000", x"00001234"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002F", "10", '1', 2, x"000000EE", x"ABCD1234", '1', '0', '0', "1000", "0111", x"34000000", x"00ABCD12"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		(x"0000002F", "10", '1', 1, x"000000EE", x"1234ABCD", '1', '0', '0', "1000", "0111", x"CD000000", x"001234AB")	-- 00, Read 32-bit,  Expected output: AEAEEAEA
 
 
 		);
 	CONSTANT list32_two_write : test_transfer_write32_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002D", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002D", "10", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002E", "10", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1111"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002E", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002F", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002D", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002D", "10", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002E", "10", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																				  
+		--shift left test                                                          
+		(x"0000002E", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002F", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 	CONSTANT list16_two_read : test_transfer_read16_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "01", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002C", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000"), 	-- 11, Write 32-bit,  Expected output: EB000000
-		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002C", "01", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																				   
+		--shift left test                                                          
+		(x"0000002C", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002D", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002E", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 	);	
 
 	
 	CONSTANT list16_two_write : test_transfer_write16_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0011"),	-- 00, Write 32-bit,  Expected output: 000000EE
-																		   
-		--shift left test                                                 
-		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+																				  
+		--shift left test                                                          
+		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 
