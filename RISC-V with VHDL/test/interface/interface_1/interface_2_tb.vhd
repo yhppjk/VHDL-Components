@@ -156,7 +156,7 @@ begin
     stim_proc: process
 		
 		-- Procedure for giving values to signal
-		procedure test_rd32_transfer(
+		procedure test_rd32_two_transfer(
 		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
 		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
 		constant unsigned_i_val : in std_logic;
@@ -181,7 +181,11 @@ begin
 			for i in 0 to num_wait loop
 				wait until rising_edge(tb_clk);
 			end loop;  
-		end procedure test_rd32_transfer;
+			
+			wait until rising_edge(tb_clk); wait for 1 ns;
+			wait until falling_edge(tb_clk); wait for 1 ns;
+			
+		end procedure test_rd32_two_transfer;
 
     begin
 		--Initialization for seveval cycles
@@ -197,8 +201,8 @@ begin
 	-- 16bit test
 
 		
-		for i in list16_one_write'low to list16_one_write'high loop
-			test_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val);
+		for i in list16_two_write'low to list16_two_write'high loop
+			test_rd32_two_transfer(list16_two_write(i).addr_val, list16_two_write(i).size_val, list16_two_write(i).unsigned_i_val, list16_two_write(i).num_wait_val, list16_two_write(i).wdata_i_val, list16_two_write(i).dataread_val, list16_two_write(i).rd_i_val,list16_two_write(i).wr_i_val,list16_two_write(i).tb_rst_val);
 			rd_i <= '0';
 			wr_i <= '0';
 			tb_rst <= '1';
@@ -214,8 +218,8 @@ begin
 	-- 8bit test
 
 		
-		for i in list8_one_write'low to list8_one_write'high loop
-			test_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val);
+		for i in list32_two_write'low to list32_two_write'high loop
+			test_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val);
 			rd_i <= '0';
 			wr_i <= '0';
 			tb_rst <= '1';
@@ -238,7 +242,7 @@ begin
     check_proc: process
 		
 		-- Procedure for giving values to signal
-		procedure check_rd32_transfer(
+		procedure check_rd32_two_transfer(
 			constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
 			constant size_i_val : in std_logic_vector(1 DOWNTO 0);
 			constant unsigned_i_val : in std_logic;
@@ -248,7 +252,10 @@ begin
 			constant rd_i_val : in std_logic;
 			constant wr_i_val : in std_logic;
 			constant tb_rst_val : in std_logic;
-			constant PSTRB_val : in std_logic_vector(3 DOWNTO 0)
+			constant PSTRB_val : in std_logic_vector(3 DOWNTO 0);
+			constant PSTRB_val2 : in std_logic_vector(3 DOWNTO 0);
+			constant result_val : in std_logic_vector(31 downto 0);
+			constant result_val2 : in std_logic_vector(31 downto 0)
 		) is
 		
 		variable res_PSTRB : std_logic_vector(3 downto 0);
@@ -312,12 +319,21 @@ begin
 				end loop;  
 			end if;
 			wait until rising_edge(tb_clk); wait for 1 ns;
+			
 			assert PENABLE_out = '0' report "PENABLE end = 0 " severity warning;
 			assert busy_o = '0' report "busy_o end = 0" severity warning;
-			assert rdata_o = dataread_val report "rdata_o end = value" severity warning;
 			
+			if (wr_i = '0' and rd_i = '1') then 
+				assert rdata_o = result_val report "rdata_o end = value" severity warning;
+			elsif (wr_i = '1' and rd_i = '0') then
+				assert mem_PRDATA = result_val report "mem_PRDATA end = value" severity warning;
+			end if;
 			
-		end procedure check_rd32_transfer;
+			wait until rising_edge(tb_clk); wait for 1 ns;
+			wait until falling_edge(tb_clk); wait for 1 ns;
+
+			
+		end procedure check_rd32_two_transfer;
 
     begin
 	
@@ -327,8 +343,8 @@ begin
 		end loop;
 		
 		
-		for i in list16_one_write'low to list16_one_write'high loop
-			check_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val, list16_one_write(i).PSTRB_val);
+		for i in list16_two_write'low to list16_two_write'high loop
+			check_rd32_two_transfer(list16_two_write(i).addr_val, list16_two_write(i).size_val, list16_two_write(i).unsigned_i_val, list16_two_write(i).num_wait_val, list16_two_write(i).wdata_i_val, list16_two_write(i).dataread_val, list16_two_write(i).rd_i_val,list16_two_write(i).wr_i_val,list16_two_write(i).tb_rst_val, list16_two_write(i).PSTRB_val, list16_two_write(i).PSTRB_val2,list16_two_write(i).result_val, list16_two_write(i).result_val2);
 		
 			wait until rising_edge(tb_clk);
 		end loop;
@@ -337,8 +353,8 @@ begin
 		end loop;				
 		REPORT "16-bit write check finished";
 		
-		for i in list8_one_write'low to list8_one_write'high loop
-			check_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val, list8_one_write(i).PSTRB_val);
+		for i in list32_two_write'low to list32_two_write'high loop
+			check_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val, list32_two_write(i).PSTRB_val, list32_two_write(i).PSTRB_val2, list32_two_write(i).result_val, list32_two_write(i).result_val2);
 		
 			wait until rising_edge(tb_clk);
 		end loop;

@@ -91,6 +91,7 @@ begin
 			assert PSEL = '1' report "mock PSEL deactivated too early!" severity warning;
 			assert PENABLE = '1' report "mock PENABLE = '0' before the end of a transfer" severity warning;	
 			
+			
 			wait until falling_edge(clk); wait for 1 ns;		
 			PREADY <= '1'; 
 			if (PWRITE= '0') then 

@@ -231,7 +231,7 @@ PACKAGE interface_1_pkg IS
 		(x"0000002D", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0010", "0000", x"00003400", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
 		(x"0000002E", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0100", "0000", x"00CD0000", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
 		(x"0000002F", "00", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0000", x"34000000", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"00000030", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0000", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"00000030", "00", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0001", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);			
 	--questions:	
@@ -260,18 +260,20 @@ PACKAGE interface_1_pkg IS
 
 
 		);
+		
+	--addr_i, size_i, unsigned_i, numwait, wdata_i, dataread, rd_i, wr_i, rst, PSTRB1, PSTRB2, result1, result2
 	CONSTANT list32_two_write : test_transfer_write32_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002D", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002D", "10", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002E", "10", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002D", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1110", "0001", x"34ABCD00", x"00000012"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002D", "10", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1110", "0001", x"CD123400", x"000000AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002E", "10", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1110", "0001", x"ABCD0000", x"00001234"),	-- 00, Write 32-bit,  Expected output: 000000EE
 																				  
 		--shift left test                                                          
-		(x"0000002E", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002F", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1111", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002E", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0011", x"12340000", x"0000ABCD"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002E", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0011", x"ABCD0000", x"00001234"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002F", "10", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0111", x"34000000", x"00ABCD12"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002F", "10", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0111", x"CD000000", x"001234AB") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 	CONSTANT list16_two_read : test_transfer_read16_2 := (
@@ -293,15 +295,15 @@ PACKAGE interface_1_pkg IS
 	CONSTANT list16_two_write : test_transfer_write16_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "0011", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0001", x"34000000", x"00ABCD12"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
 																				  
 		--shift left test                                                          
-		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110", "0000", x"CD123400", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
+		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110", "0000", x"34ABCD00", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
+		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0000", x"ABCD0000", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
+		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0000", x"12340000", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 

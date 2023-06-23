@@ -295,7 +295,8 @@ begin
 			constant rd_i_val : in std_logic;
 			constant wr_i_val : in std_logic;
 			constant tb_rst_val : in std_logic;
-			constant PSTRB_val : in std_logic_vector(3 DOWNTO 0)
+			constant PSTRB_val : in std_logic_vector(3 DOWNTO 0);
+			constant result_val : in std_logic_vector(31 downto 0)
 		) is
 		
 		variable res_PSTRB : std_logic_vector(3 downto 0);
@@ -361,7 +362,12 @@ begin
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE end = 0 " severity warning;
 			assert busy_o = '0' report "busy_o end = 0" severity warning;
-			assert rdata_o = dataread_val report "rdata_o end = value" severity warning;
+			if (wr_i = '0' and rd_i = '1') then 
+				assert rdata_o = result_val report "rdata_o end = value" severity warning;
+			elsif (wr_i = '1' and rd_i = '0') then
+				assert mem_PRDATA = result_val report "mem_PRDATA end = value" severity warning;
+			end if;
+			--assert rdata_o = dataread_val report "rdata_o end = value" severity warning;
 			
 			
 		end procedure check_rd32_transfer;
@@ -374,7 +380,7 @@ begin
 		end loop;
 		
 		for i in list32_one_read'low to list32_one_read'high loop
-			check_rd32_transfer(list32_one_read(i).addr_val, list32_one_read(i).size_val, list32_one_read(i).unsigned_i_val, list32_one_read(i).num_wait_val, list32_one_read(i).wdata_i_val, list32_one_read(i).dataread_val, list32_one_read(i).rd_i_val,list32_one_read(i).wr_i_val,list32_one_read(i).tb_rst_val, list32_one_read(i).PSTRB_val);
+			check_rd32_transfer(list32_one_read(i).addr_val, list32_one_read(i).size_val, list32_one_read(i).unsigned_i_val, list32_one_read(i).num_wait_val, list32_one_read(i).wdata_i_val, list32_one_read(i).dataread_val, list32_one_read(i).rd_i_val,list32_one_read(i).wr_i_val,list32_one_read(i).tb_rst_val, list32_one_read(i).PSTRB_val, list32_one_read(i).result_val);
 
 			wait until rising_edge(tb_clk);
 		end loop;
@@ -386,20 +392,20 @@ begin
 		
 		
 		for i in list32_one_write'low to list32_one_write'high loop
-			check_rd32_transfer(list32_one_write(i).addr_val, list32_one_write(i).size_val, list32_one_write(i).unsigned_i_val, list32_one_write(i).num_wait_val, list32_one_write(i).wdata_i_val, list32_one_write(i).dataread_val, list32_one_write(i).rd_i_val,list32_one_write(i).wr_i_val,list32_one_write(i).tb_rst_val, list32_one_write(i).PSTRB_val);
+			check_rd32_transfer(list32_one_write(i).addr_val, list32_one_write(i).size_val, list32_one_write(i).unsigned_i_val, list32_one_write(i).num_wait_val, list32_one_write(i).wdata_i_val, list32_one_write(i).dataread_val, list32_one_write(i).rd_i_val,list32_one_write(i).wr_i_val,list32_one_write(i).tb_rst_val, list32_one_write(i).PSTRB_val, list32_one_write(i).result_val);
 		
 			wait until rising_edge(tb_clk);
 		end loop;
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;		
-		REPORT "32-bit write check finished";
+		REPORT "32-bit write check finished" & lf;
 	
 		
 
 		
 		for i in list16_one_read'low to list16_one_read'high loop
-			check_rd32_transfer(list16_one_read(i).addr_val, list16_one_read(i).size_val, list16_one_read(i).unsigned_i_val, list16_one_read(i).num_wait_val, list16_one_read(i).wdata_i_val, list16_one_read(i).dataread_val, list16_one_read(i).rd_i_val,list16_one_read(i).wr_i_val,list16_one_read(i).tb_rst_val, list16_one_read(i).PSTRB_val);
+			check_rd32_transfer(list16_one_read(i).addr_val, list16_one_read(i).size_val, list16_one_read(i).unsigned_i_val, list16_one_read(i).num_wait_val, list16_one_read(i).wdata_i_val, list16_one_read(i).dataread_val, list16_one_read(i).rd_i_val,list16_one_read(i).wr_i_val,list16_one_read(i).tb_rst_val, list16_one_read(i).PSTRB_val, list16_one_read(i).result_val);
 
 			wait until rising_edge(tb_clk);
 		end loop;
@@ -409,31 +415,31 @@ begin
 		REPORT "16-bit read check finished";
 		
 		for i in list16_one_write'low to list16_one_write'high loop
-			check_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val, list16_one_write(i).PSTRB_val);
+			check_rd32_transfer(list16_one_write(i).addr_val, list16_one_write(i).size_val, list16_one_write(i).unsigned_i_val, list16_one_write(i).num_wait_val, list16_one_write(i).wdata_i_val, list16_one_write(i).dataread_val, list16_one_write(i).rd_i_val,list16_one_write(i).wr_i_val,list16_one_write(i).tb_rst_val, list16_one_write(i).PSTRB_val, list16_one_write(i).result_val);
 		
 			wait until rising_edge(tb_clk);
 		end loop;
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;				
-		REPORT "16-bit write check finished";
+		REPORT "16-bit write check finished" & lf;
 		
 		for i in list8_one_read'low to list8_one_read'high loop
-			check_rd32_transfer(list8_one_read(i).addr_val, list8_one_read(i).size_val, list8_one_read(i).unsigned_i_val, list8_one_read(i).num_wait_val, list8_one_read(i).wdata_i_val, list8_one_read(i).dataread_val, list8_one_read(i).rd_i_val,list8_one_read(i).wr_i_val,list8_one_read(i).tb_rst_val, list8_one_read(i).PSTRB_val);
+			check_rd32_transfer(list8_one_read(i).addr_val, list8_one_read(i).size_val, list8_one_read(i).unsigned_i_val, list8_one_read(i).num_wait_val, list8_one_read(i).wdata_i_val, list8_one_read(i).dataread_val, list8_one_read(i).rd_i_val,list8_one_read(i).wr_i_val,list8_one_read(i).tb_rst_val, list8_one_read(i).PSTRB_val, list8_one_read(i).result_val);
 
 			wait until rising_edge(tb_clk);
 		end loop;
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;		
-		REPORT "8-bit read check finished";
+		REPORT "8-bit read check finished" ;
 		
 		for i in list8_one_write'low to list8_one_write'high loop
-			check_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val, list8_one_write(i).PSTRB_val);
+			check_rd32_transfer(list8_one_write(i).addr_val, list8_one_write(i).size_val, list8_one_write(i).unsigned_i_val, list8_one_write(i).num_wait_val, list8_one_write(i).wdata_i_val, list8_one_write(i).dataread_val, list8_one_write(i).rd_i_val,list8_one_write(i).wr_i_val,list8_one_write(i).tb_rst_val, list8_one_write(i).PSTRB_val, list8_one_write(i).result_val);
 		
 			wait until rising_edge(tb_clk);
 		end loop;
-		REPORT "8-bit write check finished";
+		REPORT "8-bit write check finished" & lf;
 		
 		
 		wait;
