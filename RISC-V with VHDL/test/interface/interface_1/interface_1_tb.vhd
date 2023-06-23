@@ -306,26 +306,27 @@ begin
 		
 		begin
 			
-
+		--check the very beginning of transfer both side of edge
 			wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE beginning1 = 0" severity warning;
 			cached_PENABLE <= PENABLE_out;
 			wait until falling_edge(tb_clk);wait for 1 ns;
 			assert PENABLE_out = cached_PENABLE report "PENABLE after falling edge!" severity warning;
-			
+		
+		--check other signals of transfer at a beginning point
 			wait until rising_edge(tb_clk) and testing = '1';wait for 1 ns;
 			assert tb_PSTRB = PSTRB_val report "PSTRB beginning" severity warning;
 			assert PWRITE_out = wr_i report "PWRITE beginning" severity warning;
 			assert PENABLE_out = '1' report "PENABLE beginning2 = 1" severity warning;			--PENABLE, It is determined by FSM, is a internal signal 
 			assert mem_PRDATA = x"00000000" report "PRDATA beginning" severity warning;
 			assert busy_o = '1' report "busy_o beginning" severity warning;
-			
+		--get cache of signals
 			cached_PENABLE  <= PENABLE_out;
 			cached_PSTRB	<= tb_PSTRB;
 			cached_PWRITE	<= PWRITE_out;
 			cached_mem_PRDATA <=mem_PRDATA;
 			cached_busy_o	<= busy_o;
-			
+		--check the falling edge to avoid the change	
 			wait until falling_edge(tb_clk) and testing = '1';wait for 1 ns;
 			assert tb_PSTRB = cached_PSTRB report "PSTRB beginning after falling_edge" severity warning;
 			assert PWRITE_out = cached_PWRITE report "PWRITE beginning after falling_edge" severity warning;
@@ -334,7 +335,7 @@ begin
 			assert busy_o = cached_busy_o report "busy_o beginning after falling_edge" severity warning;
 			
 			
-			
+		-- at the middle of transfer, get every cache, do verification at rising_edge and falling edge	
 			if 	num_wait > 0 then
 				for i in 0 to num_wait-1 loop
 					wait until rising_edge(tb_clk); wait for 1 ns;
@@ -359,6 +360,7 @@ begin
 					
 				end loop;  
 			end if;
+			
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE end = 0 " severity warning;
 			assert busy_o = '0' report "busy_o end = 0" severity warning;

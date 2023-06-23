@@ -183,6 +183,7 @@ begin
 			end loop;  
 			
 			wait until rising_edge(tb_clk); wait for 1 ns;
+			wait until rising_edge(tb_clk); wait for 1 ns;
 			wait until falling_edge(tb_clk); wait for 1 ns;
 			
 		end procedure test_rd32_two_transfer;
@@ -318,19 +319,28 @@ begin
 					
 				end loop;  
 			end if;
+			
+			
 			wait until rising_edge(tb_clk); wait for 1 ns;
-			
 			assert PENABLE_out = '0' report "PENABLE end = 0 " severity warning;
-			assert busy_o = '0' report "busy_o end = 0" severity warning;
-			
 			if (wr_i = '0' and rd_i = '1') then 
 				assert rdata_o = result_val report "rdata_o end = value" severity warning;
 			elsif (wr_i = '1' and rd_i = '0') then
-				assert mem_PRDATA = result_val report "mem_PRDATA end = value" severity warning;
+				assert mem_PWDATA = result_val report "mem_PWDATA end = value" severity warning;
 			end if;
 			
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			wait until falling_edge(tb_clk); wait for 1 ns;
+			if (wr_i = '0' and rd_i = '1') then 
+				assert rdata_o = result_val2 report "rdata_o end = value2" severity warning;
+			elsif (wr_i = '1' and rd_i = '0') then
+				assert mem_PWDATA = result_val2 report "mem_PWDATA end = value2" severity warning;
+			end if;
+			
+			assert PENABLE_out = '0' report "PENABLE end = 0 " severity warning;
+			assert busy_o = '0' report "busy_o end = 0" severity warning;
+			
+
 
 			
 		end procedure check_rd32_two_transfer;

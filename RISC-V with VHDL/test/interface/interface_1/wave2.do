@@ -12,13 +12,11 @@ add wave -noupdate /interface_2_tb/UUT/next_state
 add wave -noupdate -radix hexadecimal /interface_2_tb/rdata_o
 add wave -noupdate -radix hexadecimal /interface_2_tb/UUT/PWDATA
 add wave -noupdate /interface_2_tb/tb_PSTRB
-add wave -noupdate /interface_2_tb/UUT/ALIGNMENT
-add wave -noupdate /interface_2_tb/size_i
-add wave -noupdate /interface_2_tb/UUT/size_operation/BYTESTRB_3_0
-add wave -noupdate /interface_2_tb/UUT/size_operation/BYTESTRB_7_4
-add wave -noupdate /interface_2_tb/UUT/mux_PSTRB/dout
+add wave -noupdate /interface_2_tb/UUT/busy_o
+add wave -noupdate /interface_2_tb/memory/testing
+add wave -noupdate -radix hexadecimal /interface_2_tb/UUT/wdata_i
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {31096 ps} 0}
+WaveRestoreCursors {{Cursor 1} {5277 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 257
 configure wave -valuecolwidth 100
@@ -34,4 +32,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {281372 ps}
+WaveRestoreZoom {730010 ps} {866842 ps}
