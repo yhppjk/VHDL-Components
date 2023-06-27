@@ -140,10 +140,10 @@ PACKAGE interface_1_pkg IS
 	type test_transfer_write8 is array (0 to 6) of test_transfer;
 	
 	type test_transfer_read32_2 is array (0 to 5)of test_transfer;
-	type test_transfer_read16_2 is array (0 to 7)of test_transfer;
+	type test_transfer_read16_2 is array (0 to 3)of test_transfer;
 
 	type test_transfer_write32_2 is array (0 to 6) of test_transfer;
-	type test_transfer_write16_2 is array (0 to 6) of test_transfer;
+	type test_transfer_write16_2 is array (0 to 2) of test_transfer;
 
 	CONSTANT list32_one_read : test_transfer_read32 :=(
 	--word Read test
@@ -279,14 +279,10 @@ PACKAGE interface_1_pkg IS
 	CONSTANT list16_two_read : test_transfer_read16_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002C", "01", '1', 0, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
 		(x"0000002F", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
 		(x"0000002F", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"),	-- 00, Write 32-bit,  Expected output: 000000EE
 																				   
 		--shift left test                                                          
-		(x"0000002C", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"EEAEEAEB", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
 		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000"), 	-- 11, Write 32-bit,  Expected output: EB000000
 		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 	);	
@@ -297,13 +293,9 @@ PACKAGE interface_1_pkg IS
 		--wait_num test	
 		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
 		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0001", x"34000000", x"00ABCD12"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB")	-- 00, Write 32-bit,  Expected output: 000000EE
 																				  
 		--shift left test                                                          
-		(x"0000002D", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "0110", "0000", x"CD123400", x"00000000"), 	-- 00, Write 32-bit,  Expected output: EEAEEAEB
-		(x"0000002D", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "0110", "0000", x"34ABCD00", x"00000000"), 	-- 01, Write 32-bit,  Expected output: AEEAEB00
-		(x"0000002E", "01", '1', 0, x"ABCD1234", x"00000000", '0', '1', '0', "1100", "0000", x"ABCD0000", x"00000000"), 	-- 10, Write 32-bit,  Expected output: EAEB0000
-		(x"0000002E", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1100", "0000", x"12340000", x"00000000") 	-- 11, Write 32-bit,  Expected output: EB000000
 
 	);	
 

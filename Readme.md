@@ -140,3 +140,5 @@
 #### 22/06/2023
 	-- create 3 more value in a test list, PSTRB2, result, result2. BUT, these values haven't be checked.
 	-- judge the unaligned to know if the transfer need op2, and do another part of procedure.
+	
+#### 27/06/2023

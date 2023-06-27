@@ -106,7 +106,7 @@ BEGIN
 	busy_o <= trigger when busy_sel = "00" else							--busy_o definition
 		 (unaligned or not(PREADY)) when busy_sel = "01"  else
 		 '1' when busy_sel = "10" else
-		 not(PREADY);
+		 not(PREADY) when busy_sel = "11";
 	
 	PREQ_internal <= trigger when preq_sel = "00" else							--PREQ definition
 	'1' when preq_sel = "01" else
@@ -313,7 +313,7 @@ BEGIN
 		
 		when op2B =>
 			op1 <= '0';
-			op2 <= '0';
+			op2 <= '1';
 			first_cycle <= '0';
 			busy_sel <= "11";
 			preq_sel <= "01";
