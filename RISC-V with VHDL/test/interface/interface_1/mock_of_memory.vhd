@@ -32,7 +32,7 @@ entity mock_of_memory is
 		PENABLE : IN std_logic := '0';
 		PSTRB : IN std_logic_vector(3 downto 0);
 		clk : IN std_logic;
-		
+		rst : in std_logic;
 		--unaligned : IN std_logic;
 		
 		PREADY : OUT std_logic := '1';
@@ -57,7 +57,7 @@ begin
 		
 		while true loop
 		
-		
+		--if rst = '0' then
 			testing <= '0';
 			-- Wait for the test to start
 			assert PENABLE = '0' report "mock PENABLE = '1' in the very first cycle of a transfer" severity warning;			
@@ -109,6 +109,11 @@ begin
 			wait for 1 ns;
 			PREADY <= '0'; PRDATA <= x"00000000";
 			assert PENABLE = '0' report "PENABLE = '1' in the end of a transfer" severity warning;
+		-- else 
+			-- PREADY <= '0'; 
+			-- PRDATA <= x"00000000"; 
+			-- wait until rising_edge(clk);
+		-- end if;
 			
 		end loop;
 	end process;

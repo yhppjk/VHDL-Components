@@ -49,6 +49,7 @@ architecture tb_behavior of interface_1_tb is
 			testing : out std_logic;
 			
 			clk : IN std_logic;
+			rst : in std_logic;
 			PADDR : IN std_logic_vector(29 downto 0);
 			PWDATA : IN std_logic_vector(31 downto 0);
 			PSEL : IN std_logic;
@@ -57,6 +58,7 @@ architecture tb_behavior of interface_1_tb is
 			PSTRB : IN std_logic_vector(3 downto 0);
 			PREADY : OUT std_logic;
 			PRDATA : OUT std_logic_vector(31 downto 0):= (others => '0')
+			
 		);
 	
 	end component;
@@ -138,7 +140,8 @@ begin
 			dataread => dataread,
 			num_wait => num_wait,
 			testing => testing,
-			PSTRB => tb_PSTRB
+			PSTRB => tb_PSTRB,
+			rst => tb_rst
         );
 
 	
