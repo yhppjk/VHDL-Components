@@ -170,6 +170,7 @@ begin
 		constant tb_rst_val : in std_logic
 		) is
 		begin
+			
 			addr_i <= addr_i_val;
 			size_i <= size_i_val;
 			unsigned_i <= unsigned_i_val;
@@ -186,9 +187,7 @@ begin
 			
 			wait until falling_edge(tb_clk) and testing = '1';wait for 1 ns;
 			wait until rising_edge(tb_clk); wait for 1 ns;
-			
-			--wait until rising_edge(tb_clk); 
-
+			wait until rising_edge(tb_clk); wait for 1 ns;
 			--wait until falling_edge(tb_clk); wait for 1 ns;
 			
 		end procedure test_rd32_two_transfer;
@@ -216,7 +215,7 @@ begin
 			
 			-- wait for the initialization
 			
-			--wait until rising_edge(tb_clk); 
+			wait until rising_edge(tb_clk); 
 		end loop;
 		REPORT "16-bit write test finished";
 		
@@ -332,21 +331,22 @@ begin
 			assert PENABLE_out = '0' report "PENABLE end1 = 0 " severity warning;
 			wait until falling_edge(tb_clk) and testing = '1';wait for 1 ns;
 
-			wait until rising_edge(tb_clk); wait for 1 ns;
+			wait until rising_edge(tb_clk); 
 			
 			if (wr_i = '0' and rd_i = '1') then 
 				assert rdata_o = dataread_val report "rdata_o end = value" severity warning;
 			elsif (wr_i = '1' and rd_i = '0') then
 				assert mem_PWDATA = result_val2 report "mem_PWDATA2 end = value2" severity warning;
 			end if;
-			
+			assert PENABLE_out = '0' report "PENABLE end2 = 0 " severity warning;
+			wait for 1 ns;
 			
 
 			
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE end2 = 0 " severity warning;
 			assert busy_o = '0' report "busy_o end = 0" severity warning;
-
+			wait until rising_edge(tb_clk); wait for 1 ns;	
 
 
 		end procedure check_rd32_two_transfer;

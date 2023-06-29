@@ -292,7 +292,7 @@ PACKAGE interface_1_pkg IS
 	--Word Write test
 		--wait_num test	
 		(x"0000002F", "01", '1', 0, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0001", x"34000000", x"00ABCD12"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"00000033", "01", '1', 2, x"ABCD1234", x"00000000", '0', '1', '0', "1000", "0001", x"34000000", x"00ABCD12"),	-- 00, Write 32-bit,  Expected output: 000000EE
 		(x"0000002F", "01", '1', 1, x"1234ABCD", x"00000000", '0', '1', '0', "1000", "0001", x"CD000000", x"001234AB")	-- 00, Write 32-bit,  Expected output: 000000EE
 																				  
 		--shift left test                                                          
