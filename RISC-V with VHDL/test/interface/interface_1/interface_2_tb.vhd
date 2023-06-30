@@ -186,8 +186,13 @@ begin
 			end loop;  
 			
 			wait until falling_edge(tb_clk) and testing = '1';wait for 1 ns;
-			wait until rising_edge(tb_clk); wait for 1 ns;
-			wait until rising_edge(tb_clk); wait for 1 ns;
+			
+			for i in 0 to num_wait loop
+				wait until rising_edge(tb_clk);
+			end loop;  	
+			
+			
+			
 			--wait until falling_edge(tb_clk); wait for 1 ns;
 			
 		end procedure test_rd32_two_transfer;
@@ -219,24 +224,41 @@ begin
 		end loop;
 		REPORT "16-bit write test finished";
 		
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;			
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;			
 		
 		
 
-		-- REPORT "32-bit 2 write test start";
-		-- for i in list32_two_write'low to list32_two_write'high loop
-			-- test_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val);
-			-- rd_i <= '0';
-			-- wr_i <= '0';
-			-- tb_rst <= '1';
+		REPORT "32-bit 2 write test start";
+		for i in list32_two_write'low to list32_two_write'high loop
+			test_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val);
+			rd_i <= '0';
+			wr_i <= '0';
+			tb_rst <= '1';
 
 			
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
+			wait until rising_edge(tb_clk);
+		end loop;
 	
-		-- REPORT "32-bit write test finished";		
+		REPORT "32-bit write test finished";		
+		
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;		
+		
+		REPORT "32-bit 2 read test start";
+		for i in list32_two_read'low to list32_two_read'high loop
+			test_rd32_two_transfer(list32_two_read(i).addr_val, list32_two_read(i).size_val, list32_two_read(i).unsigned_i_val, list32_two_read(i).num_wait_val, list32_two_read(i).wdata_i_val, list32_two_read(i).dataread_val, list32_two_read(i).rd_i_val,list32_two_read(i).wr_i_val,list32_two_read(i).tb_rst_val);
+			rd_i <= '0';
+			wr_i <= '0';
+			tb_rst <= '1';
+
+			
+			wait until rising_edge(tb_clk);
+		end loop;
+	
+		REPORT "32-bit read test finished";	
 		
 		
 		wait for 20 ns;	
@@ -270,7 +292,7 @@ begin
 		
 		
 		begin
-			
+--op1			
 			wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE beginning1 = 0" severity warning;
 			cached_PENABLE <= PENABLE_out;
@@ -324,29 +346,82 @@ begin
 				end loop;  
 			end if;
 			
-			assert mem_PWDATA = result_val report "mem_PWDATA1 end = value1" severity warning;
-			
+			wait for 1 ns;
+			if (wr_i = '0' and rd_i = '1') then 
+				assert rdata_o = result_val report "rdata_o end1 = value" severity warning;
+			elsif (wr_i = '1' and rd_i = '0') then
+				assert mem_PWDATA = result_val report "mem_PWDATA end1 = value" severity warning;
+			end if;
 			
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE end1 = 0 " severity warning;
+
+			
+			
+--op2			
+			wait until rising_edge(tb_clk) and testing = '1';wait for 1 ns;			
+			assert tb_PSTRB = PSTRB_val2 report "PSTRB beginning" severity warning;
+			assert PWRITE_out = wr_i report "PWRITE beginning" severity warning;
+			assert PENABLE_out = '1' report "PENABLE beginning2 = 1" severity warning;			--PENABLE, It is determined by FSM, is a internal signal 
+			assert mem_PRDATA = x"00000000" report "PRDATA beginning" severity warning;
+			assert busy_o = '1' report "busy_o beginning" severity warning;
+			
+			cached_PENABLE  <= PENABLE_out;
+			cached_PSTRB	<= tb_PSTRB;
+			cached_PWRITE	<= PWRITE_out;
+			cached_mem_PRDATA <=mem_PRDATA;
+			cached_busy_o	<= busy_o;
+			
 			wait until falling_edge(tb_clk) and testing = '1';wait for 1 ns;
-
-			wait until rising_edge(tb_clk); 
+			assert tb_PSTRB = cached_PSTRB report "PSTRB beginning after falling_edge" severity warning;
+			assert PWRITE_out = cached_PWRITE report "PWRITE beginning after falling_edge" severity warning;
+			assert PENABLE_out = cached_PENABLE report "PENABLE beginning2 = 1 after falling_edge" severity warning;			--PENABLE, It is determined by FSM, is a internal signal 
+			assert mem_PRDATA = cached_mem_PRDATA report "PRDATA beginning after falling_edge" severity warning;
+			assert busy_o = cached_busy_o report "busy_o beginning after falling_edge" severity warning;
 			
-			if (wr_i = '0' and rd_i = '1') then 
-				assert rdata_o = dataread_val report "rdata_o end = value" severity warning;
-			elsif (wr_i = '1' and rd_i = '0') then
-				assert mem_PWDATA = result_val2 report "mem_PWDATA2 end = value2" severity warning;
+			
+			
+			if 	num_wait > 0 then
+				for i in 0 to num_wait-1 loop
+					wait until rising_edge(tb_clk); wait for 1 ns;
+					assert tb_PSTRB = PSTRB_val2 report "PSTRB middle " severity warning;
+					assert PWRITE_out = wr_i report "PWRITE middle " severity warning;
+					assert PENABLE_out = '1' report "PENABLE middle = 1 " severity warning;
+					assert mem_PRDATA = x"00000000" report "PRDATA middle " severity warning;
+					assert busy_o = '1' report "busy_o middle " severity warning;
+					
+					cached_PENABLE  <= PENABLE_out;
+					cached_PSTRB	<= tb_PSTRB;
+					cached_PWRITE	<= PWRITE_out;
+					cached_mem_PRDATA <=mem_PRDATA;
+					cached_busy_o	<= busy_o;
+					
+					wait until falling_edge(tb_clk);wait for 1 ns;
+					assert tb_PSTRB = cached_PSTRB report "PSTRB middle after falling_edge" severity warning;
+					assert PWRITE_out = cached_PWRITE report "PWRITE middle after falling_edge" severity warning;
+					assert PENABLE_out = cached_PENABLE report "PENABLE middle = 1 after falling_edge" severity warning;			--PENABLE, It is determined by FSM, is a internal signal 
+					assert mem_PRDATA = cached_mem_PRDATA report "PRDATA middle after falling_edge" severity warning;
+					assert busy_o = cached_busy_o report "busy_o middle after falling_edge" severity warning;
+
+				end loop;  
 			end if;
-			assert PENABLE_out = '0' report "PENABLE end2 = 0 " severity warning;
-			wait for 1 ns;
 			
-
+			
+			
+			
+			
 			
 			wait until rising_edge(tb_clk); wait for 1 ns;
 			assert PENABLE_out = '0' report "PENABLE end2 = 0 " severity warning;
 			assert busy_o = '0' report "busy_o end = 0" severity warning;
-			wait until rising_edge(tb_clk); wait for 1 ns;	
+
+			
+			if (wr_i = '0' and rd_i = '1') then 
+				assert rdata_o = result_val2 report "rdata_o end = value" severity warning;
+			elsif (wr_i = '1' and rd_i = '0') then
+				assert mem_PWDATA = result_val2 report "mem_PWDATA2 end = value2" severity warning;
+			end if;
+
 
 
 		end procedure check_rd32_two_transfer;
@@ -367,21 +442,36 @@ begin
 		end loop;
 		REPORT "16-bit 2 write check finished";
 		
-		-- for i in 0 to 3 loop
-			-- wait until rising_edge(tb_clk);
-		-- end loop;				
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;				
 		
 		
-		-- REPORT "32-bit 2 write check start";
+		REPORT "32-bit 2 write check start";
 		
-		-- for i in list32_two_write'low to list32_two_write'high loop
-			-- check_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val, list32_two_write(i).PSTRB_val, list32_two_write(i).PSTRB_val2, list32_two_write(i).result_val, list32_two_write(i).result_val2);
+		for i in list32_two_write'low to list32_two_write'high loop
+			check_rd32_two_transfer(list32_two_write(i).addr_val, list32_two_write(i).size_val, list32_two_write(i).unsigned_i_val, list32_two_write(i).num_wait_val, list32_two_write(i).wdata_i_val, list32_two_write(i).dataread_val, list32_two_write(i).rd_i_val,list32_two_write(i).wr_i_val,list32_two_write(i).tb_rst_val, list32_two_write(i).PSTRB_val, list32_two_write(i).PSTRB_val2, list32_two_write(i).result_val, list32_two_write(i).result_val2);
 		
 			
-			-- wait until rising_edge(tb_clk); 
-		-- end loop;
-		-- REPORT "32-bit write check finished";
+			wait until rising_edge(tb_clk); 
+		end loop;
+		REPORT "32-bit write check finished";
 		
+		
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;			
+		
+		
+		REPORT "32-bit 2 read check start";
+		
+		for i in list32_two_read'low to list32_two_read'high loop
+			check_rd32_two_transfer(list32_two_read(i).addr_val, list32_two_read(i).size_val, list32_two_read(i).unsigned_i_val, list32_two_read(i).num_wait_val, list32_two_read(i).wdata_i_val, list32_two_read(i).dataread_val, list32_two_read(i).rd_i_val,list32_two_read(i).wr_i_val,list32_two_read(i).tb_rst_val, list32_two_read(i).PSTRB_val, list32_two_read(i).PSTRB_val2, list32_two_read(i).result_val, list32_two_read(i).result_val2);
+		
+			
+			wait until rising_edge(tb_clk); 
+		end loop;
+		REPORT "32-bit read check finished";
 		
 		wait;
     end process;
