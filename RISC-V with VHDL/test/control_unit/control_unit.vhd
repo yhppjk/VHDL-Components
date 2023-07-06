@@ -60,7 +60,7 @@ begin
 		funct3 <= (others => '0');
 		funct7_5 <= (others => '0');
 		funct12_0 <=  (others => '0');
-	elsif rising_edge(clk) then
+	elsif rising_edge(clk) and membusy = '0' then
 		opcode_6_2 <= instruction(6 downto 2);
 		funct3  <= instruction(14 downto 12);
 		funct7_5 <= instruction(29);
@@ -184,6 +184,7 @@ begin
 			when "11110" =>					--! CUSTOM-3
 				INUM <= x"D0";
 			when others =>
+			
 		end case;
 						
 						

@@ -228,6 +228,24 @@ begin
 			wait until rising_edge(tb_clk);
 		end loop;			
 		
+		REPORT "16-bit 2 read test start";
+		for i in list16_two_read'low to list16_two_read'high loop
+			test_rd32_two_transfer(list16_two_read(i).addr_val, list16_two_read(i).size_val, list16_two_read(i).unsigned_i_val, list16_two_read(i).num_wait_val, list16_two_read(i).wdata_i_val, list16_two_read(i).dataread_val, list16_two_read(i).rd_i_val,list16_two_read(i).wr_i_val,list16_two_read(i).tb_rst_val);
+			
+			rd_i <= '0';
+			wr_i <= '0';
+			tb_rst <= '1';
+			
+			-- wait for the initialization
+			
+			wait until rising_edge(tb_clk); 
+		end loop;
+		REPORT "16-bit read test finished";
+		
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;	
+		
 		
 
 		REPORT "32-bit 2 write test start";
@@ -440,11 +458,26 @@ begin
 			
 			wait until rising_edge(tb_clk); 
 		end loop;
-		REPORT "16-bit 2 write check finished";
+		REPORT "16-bit 2 write check finished"& lf;
 		
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;				
+		
+		REPORT "16-bit 2 read check start";
+		
+		for i in list16_two_read'low to list16_two_read'high loop
+			check_rd32_two_transfer(list16_two_read(i).addr_val, list16_two_read(i).size_val, list16_two_read(i).unsigned_i_val, list16_two_read(i).num_wait_val, list16_two_read(i).wdata_i_val, list16_two_read(i).dataread_val, list16_two_read(i).rd_i_val,list16_two_read(i).wr_i_val,list16_two_read(i).tb_rst_val, list16_two_read(i).PSTRB_val, list16_two_read(i).PSTRB_val2,list16_two_read(i).result_val, list16_two_read(i).result_val2);
+		
+			
+			wait until rising_edge(tb_clk); 
+		end loop;
+		REPORT "16-bit 2 read check finished"& lf;
+		
+		for i in 0 to 3 loop
+			wait until rising_edge(tb_clk);
+		end loop;		
+		
 		
 		
 		REPORT "32-bit 2 write check start";
@@ -455,7 +488,7 @@ begin
 			
 			wait until rising_edge(tb_clk); 
 		end loop;
-		REPORT "32-bit write check finished";
+		REPORT "32-bit write check finished"& lf;
 		
 		
 		for i in 0 to 3 loop

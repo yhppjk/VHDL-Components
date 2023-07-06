@@ -279,12 +279,12 @@ PACKAGE interface_1_pkg IS
 	CONSTANT list16_two_read : test_transfer_read16_2 := (
 	--Word Write test
 		--wait_num test	
-		(x"0000002F", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"34ABCD00", x"00000012"),	-- 00, Write 32-bit,  Expected output: 000000EE
-		(x"0000002F", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"12340000", x"0000ABCD"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 2, x"000000EE", x"1234ABCD", '1', '0', '0', "0000", "0000", x"00000012", x"0000CD12"),	-- 00, Write 32-bit,  Expected output: 000000EE
+		(x"0000002F", "01", '1', 1, x"000000EE", x"ABCD1234", '1', '0', '0', "0000", "0000", x"000000AB", x"000034AB"),	-- 00, Write 32-bit,  Expected output: 000000EE
 																				   
 		--shift left test                                                          
-		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"001234AB"), 	-- 11, Write 32-bit,  Expected output: EB000000
-		(x"0000002F", "01", '1', 3, x"EEAEEAEB", x"1234ABCD", '1', '0', '0', "0000", "0000", x"000000CD", x"001234AB") 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002F", "01", '1', 0, x"EEAEEAEB", x"12345678", '1', '0', '0', "0000", "0000", x"00000012", x"00007812"), 	-- 11, Write 32-bit,  Expected output: EB000000
+		(x"0000002F", "01", '1', 3, x"EEAEEAEB", x"A1B2C3D4", '1', '0', '0', "0000", "0000", x"000000A1", x"0000D4A1") 	-- 11, Write 32-bit,  Expected output: EB000000
 	);	
 
 	

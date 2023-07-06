@@ -141,4 +141,12 @@
 	-- create 3 more value in a test list, PSTRB2, result, result2. BUT, these values haven't be checked.
 	-- judge the unaligned to know if the transfer need op2, and do another part of procedure.
 	
-#### 27/06/2023
+#### 06/07/2023
+	-- 1. check the datapath elements, complete the ROM table,(create component PC)
+	-- 2. connect all components except control unit(signals should be correspond)
+	-- 3. a mock of memory(master and slave)
+	-- 4. test the datapath, create testbench
+	-- 5. create control unit
+	
+#### ROM table
+	
