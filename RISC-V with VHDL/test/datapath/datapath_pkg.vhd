@@ -109,7 +109,7 @@ PACKAGE datapath_pkg IS
 			rst: IN std_logic;		--low level asynchronous reset
 			
 			--memory side,AMBA APB master
-			PADDR: OUT std_logic_vector(29 DOWNTO 0);		--32 bit address
+			PADDR: OUT std_logic_vector(31 DOWNTO 0);		--32 bit address
 			PSTRB: OUT std_logic_vector(3 DOWNTO 0);		--4 bit byte lane write strobe
 			PWDATA: OUT std_logic_vector(31 DOWNTO 0);		--32 bit write data
 			PWRITE: OUT std_logic := '0';							--1 bit command; 0 = read, 1 = write

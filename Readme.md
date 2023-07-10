@@ -4,7 +4,17 @@
 
 
 ### Here I record some of the abstract of meeting
+****
 
+#### 10/07/2023
+	-- the master part is the whole cpu
+	-- the slave part is a big regfile
+	-- only memory interface and clk, rst are external signals
+	-- draw the different svg to show all instructions run
+	
+
+
+****
 #### 29/03/2023 
 		--time values
 		--read delay(time) /= 0 then
@@ -150,4 +160,5 @@
 	
 #### ROM table
 	
+
 	
