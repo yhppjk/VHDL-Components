@@ -6,6 +6,22 @@
 ### Here I record some of the abstract of meeting
 ****
 
+
+#### 12/07/2023
+	-- add another MUX at funct3 
+	-- modify the datapath mux2pc, add I-immediate to adapt JALR
+	-- create testbench to replace control unit
+	-- continue to connect the datapath
+	-- use the memory component to test
+	!!-- NOT quite sure about the assemble language part, but understand the operation
+	!!-- the test will contain a few step:
+		1. 
+	
+
+
+****
+
+
 #### 10/07/2023
 	-- the master part is the whole cpu
 	-- the slave part is a big regfile

@@ -50,7 +50,7 @@ architecture behavioral of datapath  is
 	--MUX2PC
 	signal B_immediate : std_logic_vector(31 downto 0);
 	signal J_immediate : std_logic_vector(31 downto 0);
-	signal sel2PC : std_logic;
+	signal sel2PC : std_logic_vector(1 downto 0);
 	
 	--targetPC
 	signal MUX1PC_out : std_logic_vector(31 downto 0);
@@ -67,7 +67,7 @@ architecture behavioral of datapath  is
 	signal pc_C  : std_logic;
 	
 	--PC
-	signal targetPC : std_logic_vector(63 downto 0);
+	signal targetPC : std_logic_vector(31 downto 0);
 	signal wPC_out : std_logic;
 	signal wPC : std_logic;
 	signal iPC_out : std_logic;
@@ -129,6 +129,11 @@ architecture behavioral of datapath  is
 	signal wRD : std_logic;
 	--signal rs1_value : std_logic_vector(31 downto 0);
 	--signal rs2_value : std_logic_vector(31 downto 0);
+	
+	--funct3 mux
+	signal sel_fetching : std_logic;
+	signal funct3_actual : std_logic_vector(2 downto 0);
+	
 BEGIN
 	
 	MUX1PC : mux2togen												--PC mux block1
@@ -143,7 +148,7 @@ BEGIN
 			dout => MUX1PC_out
 		);
 
-	MUX2PC : mux2togen												--PC mux block2
+	MUX2PC : mux4togen												--PC mux block2
 		GENERIC map(
 			width => 32,
 			prop_delay => 0 ns
@@ -151,6 +156,8 @@ BEGIN
 		port map(
 			din0 => B_immediate,
 			din1 => J_immediate,
+			din2 => I-immediate,
+			din3 => open,
 			sel => sel2PC,
 			dout => MUX2PC_out
 		);
@@ -278,11 +285,31 @@ BEGIN
 			wdata_i => rs2_value
 		);	
 		
+		
+	mux_funct3 : mux2togen
+		GENERIC map(
+			width => 3,
+			prop_delay => 0 ns
+		)
+		port map(
+			din0 => funct3,
+			din1 => "010",
+			sel => sel_fetching,
+			dout => funct3_actual,
+		);	
+		
 
 		funct3 <= RI_value(13 downto 11);
 		rs1 <= RI_value(18 downto 14);
 		rs2 <= RI_value(23 downto 19);
 		rd <= RI_value(10 downto 6);
+		
+		
+		target_address : process(MUX1PC_out,MUX2PC_out)
+		BEGIN
+			targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
+		end process target_address;
+		
 		
 end architecture;
 
