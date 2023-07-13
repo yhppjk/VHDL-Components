@@ -30,7 +30,26 @@ entity datapath  is
 		PWDATA : out std_logic_vector(31 downto 0);
 		PWRITE : out std_logic;
 		PENABLE : out std_logic;
-		PREQ : out std_logic
+		PREQ : out std_logic;
+		
+		--these ports are Control Unit part, for testing
+		port_sel1pc : in std_logic;
+		port_sel2pc : in std_logic_vector(1 downto 0);
+		port_ipc : in std_logic;
+		port_JB : in std_logic;
+		port_XZ : in std_logic;
+		port_XN : in std_logic;
+		port_XF : in std_logic;
+		port_wRD : in std_logic;
+		port_selRD : in std_logic;
+		port_sel1alu : in std_logic;
+		port_sel2alu : in std_logic_vector(1 downto 0);
+		port_selopalu : in std_logic_vector(3 downto 0);
+		port_wIR : in std_logic;
+		port_RD : in std_logic;
+		port_WR : in std_logic;
+		port_IDMEM : in std_logic
+		
 		
 	);
 
@@ -156,8 +175,8 @@ BEGIN
 		port map(
 			din0 => B_immediate,
 			din1 => J_immediate,
-			din2 => I-immediate,
-			din3 => open,
+			din2 => I_immediate,
+			din3 => (others => '0'),
 			sel => sel2PC,
 			dout => MUX2PC_out
 		);
@@ -295,20 +314,26 @@ BEGIN
 			din0 => funct3,
 			din1 => "010",
 			sel => sel_fetching,
-			dout => funct3_actual,
+			dout => funct3_actual
 		);	
 		
-
-		funct3 <= RI_value(13 downto 11);
-		rs1 <= RI_value(18 downto 14);
-		rs2 <= RI_value(23 downto 19);
-		rd <= RI_value(10 downto 6);
+	I_immediate <= x"00000" & RI_value(31 downto 20);
+	S_immediate <= x"00000" & RI_value(31 downto 25) & RI_value(11 downto 7);
+	U_immediate <= x"000" & RI_value(31 downto 12);
+	B_immediate <= "0000000000000000000" & RI_value(31) & RI_value(7) & RI_value(30 downto 25) & RI_value(11 downto 8) & '0';
+	J_immediate <= "00000000000" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0';	
+	
+	funct3 <= RI_value(13 downto 11);
+	rs1 <= RI_value(18 downto 14);
+	rs2 <= RI_value(23 downto 19);
+	rd <= RI_value(10 downto 6);
 		
 		
-		target_address : process(MUX1PC_out,MUX2PC_out)
-		BEGIN
-			targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
-		end process target_address;
+	target_address : process(MUX1PC_out,MUX2PC_out)
+	BEGIN
+		targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
+	end process target_address;
+	
 		
 		
 end architecture;

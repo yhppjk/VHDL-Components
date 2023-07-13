@@ -121,7 +121,7 @@ PACKAGE interface_1_pkg IS
 		num_wait_val :  integer;
 		wdata_i_val :  std_logic_vector(31 downto 0);
 		dataread_val :  std_logic_vector(31 downto 0);
-		rd_i_val :  std_logic;
+		rd_i_val :  std_logic;  
 		wr_i_val :  std_logic;
 		tb_rst_val :  std_logic;
 		PSTRB_val : std_logic_vector(3 downto 0);
