@@ -20,6 +20,7 @@ ARCHITECTURE behavior OF interface_tb IS
         clk: IN std_logic;		--clock input
         rst: IN std_logic;		--low level asynchronous reset
 		
+		--ram part
 		PRDATA : in std_logic_vector(31 downto 0);
 		PREADY : in std_logic;
 		
@@ -101,9 +102,9 @@ BEGIN
         clk => tb_clk,
         rst => tb_rst,
 		
+		--ram part
 		PRDATA => ram_PRDATA,
 		PREADY => ram_PREADY,
-		
 		PADDR => ram_PADDR,
 		PSTRB => ram_PSTRB,
 		PWDATA => ram_PWDATA,
@@ -139,32 +140,32 @@ BEGIN
 
 	simulation : PROCESS
 		-- Procedure for giving values to signal
-		procedure test_rd32_transfer(
-		constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
-		constant size_i_val : in std_logic_vector(1 DOWNTO 0);
-		constant unsigned_i_val : in std_logic;
-		constant num_wait_val: in integer;
-		constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
-		constant dataread_val: in std_logic_vector(31 downto 0);
-		constant rd_i_val : in std_logic;
-		constant wr_i_val : in std_logic;
-		constant tb_rst_val : in std_logic
-		) is
-		begin
-			addr_i <= addr_i_val;
-			size_i <= size_i_val;
-			unsigned_i <= unsigned_i_val;
-			num_wait <= num_wait_val;
-			wdata_i <= wdata_i_val;
-			dataread <= dataread_val;
-			rd_i <= rd_i_val;
-			wr_i <= wr_i_val;
-			tb_rst <= tb_rst_val;
-			wait until rising_edge(tb_clk) and testing = '1';
-			for i in 0 to num_wait loop
-				wait until rising_edge(tb_clk);
-			end loop;  
-		end procedure test_rd32_transfer;
+		-- procedure test_rd32_transfer(
+		-- constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
+		-- constant size_i_val : in std_logic_vector(1 DOWNTO 0);
+		-- constant unsigned_i_val : in std_logic;
+		-- constant num_wait_val: in integer;
+		-- constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
+		-- constant dataread_val: in std_logic_vector(31 downto 0);
+		-- constant rd_i_val : in std_logic;
+		-- constant wr_i_val : in std_logic;
+		-- constant tb_rst_val : in std_logic
+		-- ) is
+		-- begin
+			-- addr_i <= addr_i_val;
+			-- size_i <= size_i_val;
+			-- unsigned_i <= unsigned_i_val;
+			-- num_wait <= num_wait_val;
+			-- wdata_i <= wdata_i_val;
+			-- dataread <= dataread_val;
+			-- rd_i <= rd_i_val;
+			-- wr_i <= wr_i_val;
+			-- tb_rst <= tb_rst_val;
+			-- wait until rising_edge(tb_clk) and testing = '1';
+			-- for i in 0 to num_wait loop
+				-- wait until rising_edge(tb_clk);
+			-- end loop;  
+		-- end procedure test_rd32_transfer;
 	
 	
 	BEGIN

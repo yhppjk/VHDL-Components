@@ -150,6 +150,51 @@ PACKAGE datapath_pkg IS
 	);
 	end COMPONENT alu;
 
+	type test_datapath is
+	record
+		--control unit output signals
+		sel1PC : std_logic;
+		sel2PC : std_logic_vector(1 downto 0);
+		iPC : std_logic;
+		JB : std_logic;
+		XZ : std_logic;
+		XN : std_logic;
+		XF : std_logic;
+		wRD : std_logic;
+		selRD : std_logic;
+		sel1ALU : std_logic;
+		sel2ALU : std_logic_vector(1 downto 0);
+		selopALU : std_logic_vector(3 downto 0);
+		wIR : std_logic;
+		RDMEM : std_logic;
+		WRMEM : std_logic;
+		IDMEM : std_logic;
+		
+		--memory interface input signals
+		PRDATA : std_logic_vector(31 downto 0);
+		PREADY : std_logic;
+		
+		--memory interface output signals
+		PADDR : std_logic_vector(31 downto 0);
+		PSTRB : std_logic_vector(3 downto 0);
+		PWDATA : std_logic_vector(31 downto 0);
+		PWRITE : std_logic;
+		PENABLE : std_logic;
+		PREQ : std_logic;
+	end record;
+	
+	type test_1 is array (0 to 5)of test_datapath;
+
+	--CONSTANT list_test_1 : test_1 :=(
+	--word Read test
+		--addr_i, size_i, unsigned_i, numwait, wdata_i, dataread, rd_i, wr_i, rst, PSTRB1, PSTRB2, result1, result2
+		--wait_num test
+		
+		
+		--(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
+		--);
+
+
 
 END PACKAGE datapath_pkg;
 
