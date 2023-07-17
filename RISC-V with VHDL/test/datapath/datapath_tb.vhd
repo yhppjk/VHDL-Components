@@ -20,10 +20,10 @@ ARCHITECTURE behavior OF interface_tb IS
         clk: IN std_logic;		--clock input
         rst: IN std_logic;		--low level asynchronous reset
 		
-		--ram part
+		--interface in
 		PRDATA : in std_logic_vector(31 downto 0);
 		PREADY : in std_logic;
-		
+		--interface out
 		PADDR : out std_logic_vector(31 downto 0);
 		PSTRB : out std_logic_vector(3 downto 0);
 		PWDATA : out std_logic_vector(31 downto 0);
@@ -102,9 +102,10 @@ BEGIN
         clk => tb_clk,
         rst => tb_rst,
 		
-		--ram part
+		--interface in
 		PRDATA => ram_PRDATA,
 		PREADY => ram_PREADY,
+		--interface out
 		PADDR => ram_PADDR,
 		PSTRB => ram_PSTRB,
 		PWDATA => ram_PWDATA,
@@ -112,7 +113,7 @@ BEGIN
 		PENABLE => ram_PENABLE,
 		PREQ => ram_PREQ,
 		
-		--test cu
+		-- cu part
 		port_sel1pc => cu_sel1PC,
 		port_sel2pc => cu_sel2PC,
 		port_ipc => cu_iPC,

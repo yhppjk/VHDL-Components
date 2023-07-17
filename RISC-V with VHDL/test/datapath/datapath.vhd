@@ -22,9 +22,10 @@ entity datapath  is
         clk: IN std_logic;		--clock input
         rst: IN std_logic;		--low level asynchronous reset
 		
+		--interface in
 		PRDATA : in std_logic_vector(31 downto 0);
 		PREADY : in std_logic;
-		
+		--interface out
 		PADDR : out std_logic_vector(31 downto 0);
 		PSTRB : out std_logic_vector(3 downto 0);
 		PWDATA : out std_logic_vector(31 downto 0);
@@ -152,6 +153,38 @@ architecture behavioral of datapath  is
 	--funct3 mux
 	signal sel_fetching : std_logic;
 	signal funct3_actual : std_logic_vector(2 downto 0);
+	
+		--control unit output signals
+	signal cu_sel1PC : std_logic;
+	signal cu_sel2PC : std_logic_vector(1 downto 0);
+	signal cu_iPC : std_logic;
+	signal cu_JB : std_logic;
+	signal cu_XZ : std_logic;
+	signal cu_XN : std_logic;
+	signal cu_XF : std_logic;
+	signal cu_wRD : std_logic;
+	signal cu_selRD : std_logic;
+	signal cu_sel1ALU : std_logic;
+	signal cu_sel2ALU : std_logic_vector(1 downto 0);
+	signal cu_selopALU : std_logic_vector(3 downto 0);
+	signal cu_wIR : std_logic;
+	signal cu_RDMEM : std_logic;
+	signal cu_WRMEM : std_logic;
+	signal cu_IDMEM : std_logic;
+	
+	--memory interface input signals
+	signal ram_PRDATA : std_logic_vector(31 downto 0);
+	signal ram_PREADY : std_logic;
+	
+	--memory interface output signals
+	signal ram_PADDR : std_logic_vector(31 downto 0);
+	signal ram_PSTRB : std_logic_vector(3 downto 0);
+	signal ram_PWDATA : std_logic_vector(31 downto 0);
+	signal ram_PWRITE : std_logic;
+	signal ram_PENABLE : std_logic;
+	signal ram_PREQ : std_logic;
+	
+	
 	
 BEGIN
 	
@@ -304,6 +337,17 @@ BEGIN
 			wdata_i => rs2_value
 		);	
 		
+	mux_address : mux2togen
+		GENERIC map(
+			width => 32,
+			prop_delay => 0 ns
+		)
+		port map(
+			din0 => Address_to_IMEM,
+			din1 => Address_to_DMEM,
+			sel => IDMEM,
+			dout => Address_to_MEM
+		);
 		
 	mux_funct3 : mux2togen
 		GENERIC map(
@@ -328,11 +372,9 @@ BEGIN
 	rs2 <= RI_value(23 downto 19);
 	rd <= RI_value(10 downto 6);
 		
-		
-	target_address : process(MUX1PC_out,MUX2PC_out)
-	BEGIN
-		targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
-	end process target_address;
+	LoadIR <= cu_wIR and not(Membusy);	
+	targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
+
 	
 		
 		
