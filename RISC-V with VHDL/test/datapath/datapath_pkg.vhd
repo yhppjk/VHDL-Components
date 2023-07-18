@@ -153,6 +153,7 @@ PACKAGE datapath_pkg IS
 	type test_datapath is
 	record
 		--control unit output signals
+		fetching : std_logic;
 		sel1PC : std_logic;
 		sel2PC : std_logic_vector(1 downto 0);
 		iPC : std_logic;
@@ -170,29 +171,25 @@ PACKAGE datapath_pkg IS
 		WRMEM : std_logic;
 		IDMEM : std_logic;
 		
-		--memory interface input signals
-		PRDATA : std_logic_vector(31 downto 0);
-		PREADY : std_logic;
-		
-		--memory interface output signals
-		PADDR : std_logic_vector(31 downto 0);
-		PSTRB : std_logic_vector(3 downto 0);
-		PWDATA : std_logic_vector(31 downto 0);
-		PWRITE : std_logic;
-		PENABLE : std_logic;
-		PREQ : std_logic;
 	end record;
 	
-	type test_1 is array (0 to 5)of test_datapath;
+	type list_test_datapath is array (0 to 7)of test_datapath;
 
-	--CONSTANT list_test_1 : test_1 :=(
-	--word Read test
-		--addr_i, size_i, unsigned_i, numwait, wdata_i, dataread, rd_i, wr_i, rst, PSTRB1, PSTRB2, result1, result2
-		--wait_num test
+	CONSTANT list_1 : list_test_datapath :=(
+	--list of datapath test 
+	-- fetching, sel1PC, sel2PC, iPC, JB, XZ, XN, XF, wRD, selRD, sel1ALU, sel2ALU, selopALU, wIR, RD, WR, IDMEM
 		
 		
-		--(x"0000002C", "10", '1', 0, x"000000EE", x"AEAEEAEA", '1', '0', '0', "0000", "0000", x"AEAEEAEA", x"00000000"),	-- 00, Read 32-bit,  Expected output: AEAEEAEA
-		--);
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t0, zero, 1	# t0 = 1
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t1, zero, -1	# t1 = -1
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add  t0, t0, t0		# t0 = 2
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add  t1, t1, t1		# t1 = -2
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add t2, t1, t0		# t2 = 0
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--beq t2, zero, pass
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--bne t2, zero, failed
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ) 			--j failed2
+		
+	);
 
 
 

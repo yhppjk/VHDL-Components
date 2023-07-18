@@ -53,8 +53,8 @@ architecture behavioral of interface_1  is
 
 	signal inter_PSTRB : std_logic_vector(3 DOWNTO 0) := "0000";
 
-	signal WORDADDR : std_logic_vector(29 downto 0);	--high 30 bits of addr_i
-	signal WORDADDR_plus1 : std_logic_vector(29 downto 0);
+	signal WORDADDR : std_logic_vector(31 downto 0);	--high 30 bits of addr_i
+	signal WORDADDR_plus1 : std_logic_vector(31 downto 0);
 	signal ALIGNMENT : std_logic_vector(1 downto 0);	--low 2 bits of addr_i
 	signal SIZESTRB : std_logic_vector(7 downto 0);		--8 bits encoding of byte strobes in a word
 	signal BYTESTRB_3_0 : std_logic_vector(3 downto 0);		--8 bits left-shifted value of SIZESTRB
@@ -65,7 +65,7 @@ architecture behavioral of interface_1  is
 	signal register_in_PWDATA : std_logic_vector(31 downto 0);	--internal signal of register PWDATA
 	signal register_out_PWDATA : std_logic_vector(31 downto 0);	--output signal of register PWDATA
 	signal wdata64_31_0 : std_logic_vector(31 downto 0);		--register WDATA64_31_0
-	signal register_out_addr : std_logic_vector(29 downto 0);	--output signal of register addr
+	signal register_out_addr : std_logic_vector(31 downto 0);	--output signal of register addr
 	signal register_in_PRDATA : std_logic_vector(31 downto 0);	--internal signal of register PRDATA
 	signal register_out_PRDATA : std_logic_vector(31 downto 0);	--output signal of register PRDATA
 	
@@ -101,7 +101,7 @@ BEGIN
 	PWRITE <= '1' when (rd_i ='0' and wr_i = '1')						-- PWRITE value
 		else '0' when (rd_i = '1' and wr_i = '0');
 	
-	WORDADDR <= addr_i(31 downto 2);									--divide addr_i to WORDADDR
+	WORDADDR <= "00" & addr_i(31 downto 2);									--divide addr_i to WORDADDR
 	ALIGNMENT <= addr_i(1 downto 0);									--divide addr_i to ALIGNMENT
 	busy_o <= trigger when busy_sel = "00" else							--busy_o definition
 		 (unaligned or not(PREADY)) when busy_sel = "01"  else
@@ -208,7 +208,7 @@ BEGIN
 	
 	registergen_addr : registergen_interface							--address register block
 		generic map (
-			width => 30,
+			width => 32,
 			prop_delay => 0 ns	
 		)
 		port map (
@@ -220,7 +220,7 @@ BEGIN
 		);
 	mux_addr : mux2togen												-- mux of address block
 		GENERIC map(
-			width => 30,
+			width => 32,
 			prop_delay => 0 ns
 		)
 		port map(

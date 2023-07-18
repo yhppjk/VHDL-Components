@@ -33,7 +33,10 @@ entity datapath  is
 		PENABLE : out std_logic;
 		PREQ : out std_logic;
 		
+		port_Membusy : out std_logic;
+		
 		--these ports are Control Unit part, for testing
+		port_fetching : in std_logic;
 		port_sel1pc : in std_logic;
 		port_sel2pc : in std_logic_vector(1 downto 0);
 		port_ipc : in std_logic;
@@ -151,7 +154,7 @@ architecture behavioral of datapath  is
 	--signal rs2_value : std_logic_vector(31 downto 0);
 	
 	--funct3 mux
-	signal sel_fetching : std_logic;
+	--signal sel_fetching : std_logic;
 	signal funct3_actual : std_logic_vector(2 downto 0);
 	
 		--control unit output signals
@@ -355,9 +358,9 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => funct3,
-			din1 => "010",
-			sel => sel_fetching,
+			din0 => "010",
+			din1 => funct3,
+			sel => port_fetching,
 			dout => funct3_actual
 		);	
 		
@@ -375,7 +378,7 @@ BEGIN
 	LoadIR <= cu_wIR and not(Membusy);	
 	targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
 
-	
+	port_Membusy <= Membusy;
 		
 		
 end architecture;

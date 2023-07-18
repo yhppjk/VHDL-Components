@@ -10,11 +10,13 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
+use work.apb_slavedec_pkg.all;
+use work.datapath_pkg.all;
 
-ENTITY interface_tb IS
+ENTITY datapath_tb IS
 END ENTITY;
 
-ARCHITECTURE behavior OF interface_tb IS
+ARCHITECTURE behavior OF datapath_tb IS
     COMPONENT datapath
     	port (
         clk: IN std_logic;		--clock input
@@ -30,8 +32,10 @@ ARCHITECTURE behavior OF interface_tb IS
 		PWRITE : out std_logic;
 		PENABLE : out std_logic;
 		PREQ : out std_logic;
+		port_Membusy : out std_logic;
 		
 		--these ports are Control Unit part, for testing
+		port_fetching : in std_logic;
 		port_sel1pc : in std_logic;
 		port_sel2pc : in std_logic_vector(1 downto 0);
 		port_ipc : in std_logic;
@@ -54,6 +58,46 @@ ARCHITECTURE behavior OF interface_tb IS
 	);
     END COMPONENT;
 	
+	component apb_init_mem is
+		generic (ADDR_BITS: natural := 16);  -- Number of address bits
+		port (
+			PCLK    : in  std_logic;
+			PADDR   : in  std_logic_vector(ADDR_BITS-1 downto 0);
+			PSEL    : in  std_logic;
+			PENABLE : in  std_logic;
+			PWRITE  : in  std_logic;
+			PWDATA  : in  std_logic_vector(31 downto 0);
+			PSTRB   : in  std_logic_vector( 3 downto 0);
+			PREADY  : out std_logic;
+			PRDATA  : out std_logic_vector(31 downto 0)
+		);
+	end component apb_init_mem;
+
+	component apb_mem is
+		generic (ADDR_BITS: natural := 16);  -- Number of address bits
+		port (
+			PCLK    : in  std_logic;
+			PADDR   : in  std_logic_vector(ADDR_BITS-1 downto 0);
+			PSEL    : in  std_logic;
+			PENABLE : in  std_logic;
+			PWRITE  : in  std_logic;
+			PWDATA  : in  std_logic_vector(31 downto 0);
+			PSTRB   : in  std_logic_vector( 3 downto 0);
+			PREADY  : out std_logic;
+			PRDATA  : out std_logic_vector(31 downto 0)
+		);
+	end component apb_mem;
+	
+	component apb_slavedec is
+		port (
+			ADDRESS   : in  std_logic_vector(SLAVE_DECODER_A-1 downto 0);
+			ENABLE    : in  std_logic;
+			SEL       : out std_logic_vector(SLAVE_DECODER_S-1 downto 0);
+			NUM_SLAVE : out SLAVE_NUMBER_TYPE
+		);
+	end component apb_slavedec;
+	
+	
 	--clock signal definition
 	signal tb_clk:  std_logic := '1';		--clock input
 	signal tb_rst:  std_logic;		--low level asynchronous reset
@@ -63,6 +107,7 @@ ARCHITECTURE behavior OF interface_tb IS
 	
 	
 	--control unit output signals
+	signal cu_fetching : std_logic;
 	signal cu_sel1PC : std_logic;
 	signal cu_sel2PC : std_logic_vector(1 downto 0);
 	signal cu_iPC : std_logic;
@@ -91,12 +136,32 @@ ARCHITECTURE behavior OF interface_tb IS
 	signal ram_PWRITE : std_logic;
 	signal ram_PENABLE : std_logic;
 	signal ram_PREQ : std_logic;
+	signal slave_addr_error : std_logic;
+	signal ram_PSEL :std_logic_vector(2 downto 0);
+	signal ram_NUM_SLAVE : SLAVE_NUMBER_TYPE;
+	
+	signal tb_Membusy : std_logic;
+	
+		-- From master to slave decoder
+	-- From slave decoder to PSELx of each slave
+	signal PSELs      : std_logic_vector(SLAVE_DECODER_S-1 downto 0);
+	-- From slave decoder to MUXes
+	signal SLAVE_NUM  : SLAVE_NUMBER_TYPE;
+	-- From slaves to MUXes
+	type type_PRDATA_OUT is array (0 to SLAVE_DECODER_S-1) of std_logic_vector(31 downto 0);
+
+	signal PREADYs : std_logic_vector(SLAVE_DECODER_S-1 downto 0);
+	signal PRDATAs : type_PRDATA_OUT;
+	-- From MUX to master
 
 
-
-
+	
+	constant IMEM_ADDR_BITS: natural := 10; -- Instruction memories have 1024 positions (x 32 bits each)
+	constant DMEM_ADDR_BITS: natural :=  8; -- Data memory has 256 positions (x 32 bits each)
 
 BEGIN
+
+--datapath without CU
 	UUT : datapath
 	port map(
         clk => tb_clk,
@@ -112,8 +177,10 @@ BEGIN
 		PWRITE => ram_PWRITE,
 		PENABLE => ram_PENABLE,
 		PREQ => ram_PREQ,
+		port_Membusy => tb_Membusy, 
 		
 		-- cu part
+		port_fetching => cu_fetching,
 		port_sel1pc => cu_sel1PC,
 		port_sel2pc => cu_sel2PC,
 		port_ipc => cu_iPC,
@@ -131,7 +198,62 @@ BEGIN
 		port_WR => cu_WRMEM,
 		port_IDMEM => cu_IDMEM
 	);
+	
+--slave decoder
+	slave_decoder : apb_slavedec
+	port map (
+		-- Higher bits of the master address
+		ADDRESS => ram_PADDR(31 downto 8),
+		-- PREQ of master
+        ENABLE => ram_PREQ,
+		-- SELx outputs, one per slave
+    	SEL => PSELs,
+		-- Number of selected slave, for the MUXes that forward PREADY and PRDATA from the slaves to the master
+		NUM_SLAVE => ram_NUM_SLAVE
+	
+	);
 
+	imem1: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS) port map (
+		PCLK    => tb_clk, 
+		PRDATA  => PRDATAs(0), 
+		PREADY  => PREADYs(0), 
+		PADDR   => ram_PADDR(IMEM_ADDR_BITS-1 downto 0), 
+		PSTRB   => ram_PSTRB,
+		PENABLE => ram_PENABLE,
+		PSEL    => PSELs(0),
+		PWRITE  => ram_PWRITE,
+		PWDATA  => ram_PWDATA
+		); 
+		
+
+	imem2: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS) port map (
+		PCLK    => tb_clk, 
+		PRDATA  => PRDATAs(1), 
+		PREADY  => PREADYs(1), 
+		PADDR   => ram_PADDR(IMEM_ADDR_BITS-1 downto 0), 
+		PSTRB   => ram_PSTRB,
+		PENABLE => ram_PENABLE,
+		PSEL    => PSELs(1),
+		PWRITE  => ram_PWRITE,
+		PWDATA  => ram_PWDATA		
+		); 
+		
+	dmem: apb_mem generic map (ADDR_BITS => DMEM_ADDR_BITS) port map (
+		PCLK    => tb_clk, 
+		PRDATA  => PRDATAs(2), 
+		PREADY  => PREADYs(2), 
+		PADDR   => ram_PADDR(DMEM_ADDR_BITS-1 downto 0), 
+		PSTRB   => ram_PSTRB,
+		PENABLE => ram_PENABLE,
+		PSEL    => PSELs(2),		
+		PWRITE  => ram_PWRITE,
+		PWDATA  => ram_PWDATA
+		); 
+
+
+
+
+	
 	clk_process: process
     begin
         tb_clk <= not tb_clk;
@@ -141,32 +263,58 @@ BEGIN
 
 	simulation : PROCESS
 		-- Procedure for giving values to signal
-		-- procedure test_rd32_transfer(
-		-- constant addr_i_val : in std_logic_vector(31 DOWNTO 0);
-		-- constant size_i_val : in std_logic_vector(1 DOWNTO 0);
-		-- constant unsigned_i_val : in std_logic;
-		-- constant num_wait_val: in integer;
-		-- constant wdata_i_val : in std_logic_vector(31 DOWNTO 0);
-		-- constant dataread_val: in std_logic_vector(31 downto 0);
-		-- constant rd_i_val : in std_logic;
-		-- constant wr_i_val : in std_logic;
-		-- constant tb_rst_val : in std_logic
-		-- ) is
-		-- begin
-			-- addr_i <= addr_i_val;
-			-- size_i <= size_i_val;
-			-- unsigned_i <= unsigned_i_val;
-			-- num_wait <= num_wait_val;
-			-- wdata_i <= wdata_i_val;
-			-- dataread <= dataread_val;
-			-- rd_i <= rd_i_val;
-			-- wr_i <= wr_i_val;
-			-- tb_rst <= tb_rst_val;
-			-- wait until rising_edge(tb_clk) and testing = '1';
+		procedure fetch_clock1(
+			constant fetching_val : in std_logic;
+			constant sel1PC_val : in std_logic;
+			constant sel2PC_val : in std_logic_vector(1 downto 0);
+			constant iPC_val : in std_logic;
+			constant JB_val : in std_logic;
+			constant XZ_val : in std_logic;
+			constant XN_val : in std_logic;
+			constant XF_val : in std_logic;
+			constant wRD_val : in std_logic;
+			constant selRD_val : in std_logic;
+			constant sel1ALU_val : in std_logic;
+			constant sel2ALU_val : in std_logic_vector(1 downto 0);
+			constant selopALU_val : in std_logic_vector(3 downto 0);
+			constant wIR_val : in std_logic;
+			constant RDMEM_val : in std_logic;
+			constant WRMEM_val : in std_logic;
+			constant IDMEM_val : in std_logic
+		) is
+		begin
+			cu_fetching <= fetching_val;
+			cu_sel1PC 	<= sel1PC_val;
+			cu_sel2PC 	<= sel2PC_val;
+			cu_iPC 		<= iPC_val;
+			cu_JB 		<= JB_val;
+			cu_XZ 		<= XZ_val;
+			cu_XN 		<= XN_val;
+			cu_XF 		<= XF_val;
+			cu_wRD 		<= wRD_val;
+			cu_selRD 	<= selRD_val;
+			cu_sel1ALU	<= sel1ALU_val;
+			cu_sel2ALU	<= sel2ALU_val;
+			cu_selopALU	<= selopALU_val;
+			cu_wIR		<= wIR_val;
+			cu_RDMEM	<= RDMEM_val;
+			cu_WRMEM	<= WRMEM_val;
+			cu_IDMEM	<= IDMEM_val;
+			REPORT "clock 1, write CU value";
+		wait until rising_edge(tb_clk);
+			cu_wIR <= '1';
+			REPORT "clock 2, wIR = '1' and change when Membusy = 0";
+		wait until rising_edge(tb_clk) and tb_Membusy = '0';
+		cu_wRD <= '1';
+			REPORT "clock 3, using ALU";
+		wait until rising_edge(tb_clk);
+			-- wait until rising_edge(tb_clk) and ram_PREADY = '1';
+			-- while Membusy
 			-- for i in 0 to num_wait loop
 				-- wait until rising_edge(tb_clk);
 			-- end loop;  
-		-- end procedure test_rd32_transfer;
+			REPORT "end of one operation";
+		end procedure fetch_clock1;
 	
 	
 	BEGIN
@@ -176,11 +324,20 @@ BEGIN
 		for i in 0 to 3 loop
 			wait until rising_edge(tb_clk);
 		end loop;
-
+		tb_rst <= '0';
+		wait until falling_edge(tb_clk);
+		fetch_clock1(list_1(0).fetching, list_1(0).sel1PC,list_1(0).sel2PC, list_1(0).iPC, list_1(0).JB, list_1(0).XZ, list_1(0).XN, list_1(0).XF, list_1(0).wRD, list_1(0).selRD, list_1(0).sel1ALU, list_1(0).sel2ALU, list_1(0).selopALU, list_1(0).wIR, list_1(0).RDMEM, list_1(0).WRMEM, list_1(0).IDMEM);
+		
+		wait until rising_edge(tb_clk);
 	
 	
+		REPORT "addi 1 test finished";		
+		wait for 20 ns;
+		
 	
-	
+		ASSERT false
+			REPORT "Simulation ended ( not a failure actually ) "
+		SEVERITY failure;
 	
 	
 	end process simulation;
