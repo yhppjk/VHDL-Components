@@ -32,7 +32,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 		PWRITE : out std_logic;
 		PENABLE : out std_logic;
 		PREQ : out std_logic;
-		port_Membusy : out std_logic;
+		port_Membusy : out std_logic := '0';
 		
 		--these ports are Control Unit part, for testing
 		port_fetching : in std_logic;
@@ -115,36 +115,36 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal cu_XZ : std_logic;
 	signal cu_XN : std_logic;
 	signal cu_XF : std_logic;
-	signal cu_wRD : std_logic;
+	signal cu_wRD : std_logic := '0';
 	signal cu_selRD : std_logic;
 	signal cu_sel1ALU : std_logic;
 	signal cu_sel2ALU : std_logic_vector(1 downto 0);
 	signal cu_selopALU : std_logic_vector(3 downto 0);
-	signal cu_wIR : std_logic;
-	signal cu_RDMEM : std_logic;
-	signal cu_WRMEM : std_logic;
-	signal cu_IDMEM : std_logic;
+	signal cu_wIR : std_logic := '0';
+	signal cu_RDMEM : std_logic := '0';
+	signal cu_WRMEM : std_logic := '0';
+	signal cu_IDMEM : std_logic := '0';
 	
 	--memory interface input signals
-	signal ram_PRDATA : std_logic_vector(31 downto 0);
-	signal ram_PREADY : std_logic;
+	signal ram_PRDATA : std_logic_vector(31 downto 0) := (others => '0');
+	signal ram_PREADY : std_logic := '0';
 	
 	--memory interface output signals
-	signal ram_PADDR : std_logic_vector(31 downto 0);
+	signal ram_PADDR : std_logic_vector(31 downto 0) := (others => '0');
 	signal ram_PSTRB : std_logic_vector(3 downto 0);
 	signal ram_PWDATA : std_logic_vector(31 downto 0);
-	signal ram_PWRITE : std_logic;
-	signal ram_PENABLE : std_logic;
-	signal ram_PREQ : std_logic;
-	signal slave_addr_error : std_logic;
-	signal ram_PSEL :std_logic_vector(2 downto 0);
+	signal ram_PWRITE : std_logic := '0';
+	signal ram_PENABLE : std_logic := '0';
+	signal ram_PREQ : std_logic := '0';
+	signal slave_addr_error : std_logic := '0';
+	signal ram_PSEL :std_logic_vector(2 downto 0) := (others => '0');
 	signal ram_NUM_SLAVE : SLAVE_NUMBER_TYPE;
 	
-	signal tb_Membusy : std_logic;
+	signal tb_Membusy : std_logic := '0';
 	
 		-- From master to slave decoder
 	-- From slave decoder to PSELx of each slave
-	signal PSELs      : std_logic_vector(SLAVE_DECODER_S-1 downto 0);
+	signal PSELs      : std_logic_vector(SLAVE_DECODER_S-1 downto 0) := (others => '0');
 	-- From slave decoder to MUXes
 	signal SLAVE_NUM  : SLAVE_NUMBER_TYPE;
 	-- From slaves to MUXes
@@ -158,7 +158,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	
 	constant IMEM_ADDR_BITS: natural := 10; -- Instruction memories have 1024 positions (x 32 bits each)
 	constant DMEM_ADDR_BITS: natural :=  8; -- Data memory has 256 positions (x 32 bits each)
-
+	subtype SLAVE_NUMBER_TYPE is integer range 0 to SLAVE_DECODER_S-1;
 BEGIN
 
 --datapath without CU
@@ -249,8 +249,32 @@ BEGIN
 		PWRITE  => ram_PWRITE,
 		PWDATA  => ram_PWDATA
 		); 
-
-
+		
+	muxPRDATA : mux_apb_mem
+		generic map (
+			width => 32,
+			prop_delay => 0 ns
+		)
+		port map(
+			din0 => PRDATAs(0),
+			din1 => PRDATAs(1),
+			din2 => PRDATAs(2),
+			sel => ram_NUM_SLAVE,
+			dout => ram_PRDATA
+		);
+		
+	muxPREADY : mux_apb_mem
+		generic map (
+			width => 1,
+			prop_delay => 0 ns
+		)
+		port map(
+			din0 => PREADYs(0),
+			din1 => PREADYs(1),
+			din2 => PREADYs(2),
+			sel => ram_NUM_SLAVE,
+			dout => ram_PREADY
+		);
 
 
 	
@@ -319,11 +343,6 @@ BEGIN
 	
 	BEGIN
 	
-		tb_rst <= '1';
-		wait until falling_edge(tb_clk);
-		for i in 0 to 3 loop
-			wait until rising_edge(tb_clk);
-		end loop;
 		tb_rst <= '0';
 		wait until falling_edge(tb_clk);
 		fetch_clock1(list_1(0).fetching, list_1(0).sel1PC,list_1(0).sel2PC, list_1(0).iPC, list_1(0).JB, list_1(0).XZ, list_1(0).XN, list_1(0).XF, list_1(0).wRD, list_1(0).selRD, list_1(0).sel1ALU, list_1(0).sel2ALU, list_1(0).selopALU, list_1(0).wIR, list_1(0).RDMEM, list_1(0).WRMEM, list_1(0).IDMEM);

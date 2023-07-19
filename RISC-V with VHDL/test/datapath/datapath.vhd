@@ -33,7 +33,7 @@ entity datapath  is
 		PENABLE : out std_logic;
 		PREQ : out std_logic;
 		
-		port_Membusy : out std_logic;
+		port_Membusy : out std_logic := '0';
 		
 		--these ports are Control Unit part, for testing
 		port_fetching : in std_logic;
@@ -63,7 +63,7 @@ architecture behavioral of datapath  is
 
 --only create input signals
 	--Control Unit
-	signal Membusy : std_logic;
+	signal Membusy : std_logic := '0';
 
 	--MUX1PC
 	signal PC_value : std_logic_vector(31 downto 0) := (others => '0');
@@ -106,7 +106,7 @@ architecture behavioral of datapath  is
 	--signal Value_from_IMEM : std_logic_vector(31 downto 0);
 	
 	--RI
-	signal RI_value: std_logic_vector(31 downto 0);
+	signal RI_value: std_logic_vector(31 downto 0) := (others => '0');
 	--signal rs1 : std_logic_vector(4 downto 0); 
 	--signal rs2 : std_logic_vector(4 downto 0);
 	--signal rd : std_logic_vector(4 downto 0);
@@ -132,8 +132,8 @@ architecture behavioral of datapath  is
 	--Memory Interface
 	--signal PRDATA : std_logic_vector(31 downto 0);
 	--signal PREADY : std_logic;
-	signal RDMEM : std_logic;
-	signal WRMEM : std_logic;
+	--signal RDMEM : std_logic;
+	--signal WRMEM : std_logic;
 	signal Address_to_MEM : std_logic_vector(31 downto 0);
 	signal funct3_1_0 : std_logic_vector(1 downto 0);
 	signal funct3_2 : std_logic;
@@ -171,8 +171,8 @@ architecture behavioral of datapath  is
 	signal cu_sel2ALU : std_logic_vector(1 downto 0);
 	signal cu_selopALU : std_logic_vector(3 downto 0);
 	signal cu_wIR : std_logic;
-	signal cu_RDMEM : std_logic;
-	signal cu_WRMEM : std_logic;
+	signal cu_RDMEM : std_logic := '0';
+	signal cu_WRMEM : std_logic := '0';
 	signal cu_IDMEM : std_logic;
 	
 	--memory interface input signals
@@ -332,8 +332,8 @@ BEGIN
 			
 			PRDATA => PRDATA,
 			PREADY => PREADY,			
-			rd_i => RDMEM,
-			wr_i => WRMEM,
+			rd_i => cu_RDMEM,
+			wr_i => cu_WRMEM,
 			addr_i => Address_to_MEM,
 			size_i => funct3_1_0,
 			unsigned_i => funct3_2,
@@ -346,8 +346,8 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => Address_to_IMEM,
-			din1 => Address_to_DMEM,
+			din0 => PC_value,
+			din1 => rs2_value,
 			sel => IDMEM,
 			dout => Address_to_MEM
 		);
@@ -375,7 +375,7 @@ BEGIN
 	rs2 <= RI_value(23 downto 19);
 	rd <= RI_value(10 downto 6);
 		
-	LoadIR <= cu_wIR and not(Membusy);	
+	LoadIR <= port_wIR and not(Membusy);	
 	targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
 
 	port_Membusy <= Membusy;

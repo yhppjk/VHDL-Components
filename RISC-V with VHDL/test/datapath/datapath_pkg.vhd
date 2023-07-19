@@ -128,7 +128,7 @@ PACKAGE datapath_pkg IS
 			wdata_i: IN std_logic_vector(31 DOWNTO 0);		--32 bit data to be written into memory
 			
 			rdata_o: OUT std_logic_vector(31 DOWNTO 0);		--32bit data to be read from memory
-			busy_o: OUT std_logic := '0'					--1 bit used to indicate the CPU has a memory operation is ongoing and that it must wait.
+			busy_o: OUT std_logic 							--1 bit used to indicate the CPU has a memory operation is ongoing and that it must wait.
 			
 		);
 	end COMPONENT interface_1;

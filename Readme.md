@@ -6,6 +6,20 @@
 ### Here I record some of the abstract of meeting
 ****
 
+#### 19/07/2023 
+	-- the datapath testbench barely run
+	-- find lots of signals error
+	-- need to create a new (maybe 2 new) MUX for memory PRDATA and PREADY
+	
+	
+
+#### 17/07/2023
+	-- start the testbench of datapath, without CU.
+	-- connect the memory part.
+	-- build a list for testing
+
+
+
 
 #### 12/07/2023
 	-- add another MUX at funct3 
@@ -14,8 +28,8 @@
 	-- continue to connect the datapath
 	-- use the memory component to test
 	!!-- NOT quite sure about the assemble language part, but understand the operation
-	!!-- the test will contain a few step:
-		1. 
+	!!-- the test will contain a few step
+
 	
 
 
