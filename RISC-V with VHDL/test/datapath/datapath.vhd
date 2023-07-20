@@ -71,13 +71,13 @@ architecture behavioral of datapath  is
 	signal sel1PC : std_logic;
 	
 	--MUX2PC
-	signal B_immediate : std_logic_vector(31 downto 0);
-	signal J_immediate : std_logic_vector(31 downto 0);
+	signal B_immediate : std_logic_vector(31 downto 0):= (others => '0');
+	signal J_immediate : std_logic_vector(31 downto 0):= (others => '0');
 	signal sel2PC : std_logic_vector(1 downto 0);
 	
 	--targetPC
-	signal MUX1PC_out : std_logic_vector(31 downto 0);
-	signal MUX2PC_out : std_logic_vector(31 downto 0);
+	signal MUX1PC_out : std_logic_vector(31 downto 0):= (others => '0');
+	signal MUX2PC_out : std_logic_vector(31 downto 0):= (others => '0');
 	
 	--wrpc
 	signal pc_JB : std_logic;
@@ -90,7 +90,7 @@ architecture behavioral of datapath  is
 	signal pc_C  : std_logic;
 	
 	--PC
-	signal targetPC : std_logic_vector(31 downto 0);
+	signal targetPC : std_logic_vector(31 downto 0) := (others => '0');
 	signal wPC_out : std_logic;
 	signal wPC : std_logic;
 	signal iPC_out : std_logic;
@@ -119,15 +119,15 @@ architecture behavioral of datapath  is
 	
 	--MUX2ALU
 	signal rs2_value : std_logic_vector(31 downto 0);
-	signal I_immediate : std_logic_vector(31 downto 0);
-	signal U_immediate : std_logic_vector(31 downto 0);
-	signal S_immediate : std_logic_vector(31 downto 0);
+	signal I_immediate : std_logic_vector(31 downto 0):= (others => '0');
+	signal U_immediate : std_logic_vector(31 downto 0):= (others => '0');
+	signal S_immediate : std_logic_vector(31 downto 0):= (others => '0');
 	signal sel2ALU : std_logic_vector(1 downto 0);
 	
 	--alu
 	signal mux1ALU_out : std_logic_vector(31 downto 0);
 	signal mux2ALU_out : std_logic_vector(31 downto 0);
-	signal selopALU : std_logic_vector(3 downto 0); 
+	--signal selopALU : std_logic_vector(3 downto 0); 
 	
 	--Memory Interface
 	--signal PRDATA : std_logic_vector(31 downto 0);
@@ -169,7 +169,7 @@ architecture behavioral of datapath  is
 	signal cu_selRD : std_logic;
 	signal cu_sel1ALU : std_logic;
 	signal cu_sel2ALU : std_logic_vector(1 downto 0);
-	signal cu_selopALU : std_logic_vector(3 downto 0);
+	--signal cu_selopALU : std_logic_vector(3 downto 0);
 	signal cu_wIR : std_logic;
 	signal cu_RDMEM : std_logic := '0';
 	signal cu_WRMEM : std_logic := '0';
@@ -199,7 +199,7 @@ BEGIN
 		port map(
 			din0 => PC_value,
 			din1 => rs1_value,
-			sel => sel1PC,
+			sel => port_sel1pc,
 			dout => MUX1PC_out
 		);
 
@@ -213,7 +213,7 @@ BEGIN
 			din1 => J_immediate,
 			din2 => I_immediate,
 			din3 => (others => '0'),
-			sel => sel2PC,
+			sel => port_sel2pc,
 			dout => MUX2PC_out
 		);
 	
@@ -237,8 +237,22 @@ BEGIN
 			reset => rst,
 			ena_in => wPC,
 			data_in => targetPC,
-			ena_pc => iPC_out,
+			ena_pc => port_ipc,
 			current_pc => PC_value
+		);
+	
+	wrpc_datapath : wrpc
+		port map(
+			input_JB => port_JB,	--! The instruction is a jump or branch
+			input_XZ => port_XZ,	--! Use nothing, Z or C to decide
+			input_XN => port_XN,	--! Use nothing, N or C to decide
+			input_XF => port_XF,	--! The selected ALU flag must match this value to take the branch
+			alu_z => PC_flag(0),		--! ALU flag Z
+			alu_n => PC_flag(1),		--! ALU flag N	
+			alu_c => PC_flag(2),		--! ALU flag C
+			--OUTPUTS
+			wrpc_out => wPC	--! wrpc output
+		
 		);
 	
 	register_file : reg_file    
@@ -254,7 +268,7 @@ BEGIN
 		port map (
 			clk => clk,       			--! the input port of clock
 			reset => rst,				--! the input port of reset
-			writeEna => wRD,  			--! the input port of write enable
+			writeEna => port_wRD,  			--! the input port of write enable
 			writeAddress => rd,		--! the input port of wirte address
 			writeData => rd_value,			--! the input port of write data
 			readAddress1 => rs1,		--! the input port of read address1
@@ -270,9 +284,9 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => rs1_value,
-			din1 => PC_value,
-			sel => sel1ALU,
+			din0 => PC_value,
+			din1 => rs1_value,
+			sel => port_sel1alu,
 			dout => mux1ALU_out
 		);	
 	
@@ -286,7 +300,7 @@ BEGIN
 			din1 => I_immediate,
 			din2 => U_immediate,
 			din3 => S_immediate,
-			sel => sel2ALU,
+			sel => port_sel2alu,
 			dout => mux2ALU_out
 		);		
 	ALU_part : alu
@@ -297,7 +311,7 @@ BEGIN
 		port map(
 			op1 => mux1ALU_out,
 			op2 => mux2ALU_out,
-			selop => selopALU,
+			selop => port_selopalu,
 		--OUTPUTS
 			res => ALU_value,
 			flags => PC_flag
@@ -311,7 +325,7 @@ BEGIN
 		port map(
 			din0 => ALU_value,
 			din1 => Value_from_DMEM,
-			sel => selRD,
+			sel => port_selRD,
 			dout => rd_value
 		);	
 	
@@ -332,11 +346,11 @@ BEGIN
 			
 			PRDATA => PRDATA,
 			PREADY => PREADY,			
-			rd_i => cu_RDMEM,
-			wr_i => cu_WRMEM,
+			rd_i => port_RD,
+			wr_i => port_WR,
 			addr_i => Address_to_MEM,
-			size_i => funct3_1_0,
-			unsigned_i => funct3_2,
+			size_i => funct3(1 downto 0),
+			unsigned_i => funct3(2),
 			wdata_i => rs2_value
 		);	
 		
@@ -348,7 +362,7 @@ BEGIN
 		port map(
 			din0 => PC_value,
 			din1 => rs2_value,
-			sel => IDMEM,
+			sel => port_IDMEM,
 			dout => Address_to_MEM
 		);
 		
@@ -378,6 +392,9 @@ BEGIN
 	LoadIR <= port_wIR and not(Membusy);	
 	targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));
 
+	Address_to_IMEM <= PC_value;
+	Address_to_DMEM <= rs2_value;
+	
 	port_Membusy <= Membusy;
 		
 		

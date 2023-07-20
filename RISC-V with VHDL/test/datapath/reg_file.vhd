@@ -31,10 +31,10 @@ entity reg_file is
         writeEna   	: in  std_logic := '0';			--! the input port of write enable
         writeAddress : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of wirte address
         writeData 	: in  std_logic_vector(dataWidth-1 downto 0);			--! the input port of write data
-        readAddress1 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address1
-        readAddress2 : in  std_logic_vector(addressWidth-1 downto 0);		--! the input port of read address2
-        readData1 	: out std_logic_vector(dataWidth-1 downto 0);			--! the output port of read data1
-        readData2 	: out std_logic_vector(dataWidth-1 downto 0)			--! the output port of read data2
+        readAddress1 : in  std_logic_vector(addressWidth-1 downto 0):= (others => '0');		--! the input port of read address1
+        readAddress2 : in  std_logic_vector(addressWidth-1 downto 0):= (others => '0');		--! the input port of read address2
+        readData1 	: out std_logic_vector(dataWidth-1 downto 0):= (others => '0');			--! the output port of read data1
+        readData2 	: out std_logic_vector(dataWidth-1 downto 0):= (others => '0')			--! the output port of read data2
     );
 end entity reg_file;
 

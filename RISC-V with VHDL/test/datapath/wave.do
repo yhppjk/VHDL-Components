@@ -19,11 +19,11 @@ add wave -noupdate /datapath_tb/cu_wIR
 add wave -noupdate /datapath_tb/cu_RDMEM
 add wave -noupdate /datapath_tb/cu_WRMEM
 add wave -noupdate /datapath_tb/cu_IDMEM
-add wave -noupdate /datapath_tb/ram_PRDATA
+add wave -noupdate -radix hexadecimal /datapath_tb/ram_PRDATA
 add wave -noupdate /datapath_tb/ram_PREADY
-add wave -noupdate /datapath_tb/ram_PADDR
+add wave -noupdate -radix hexadecimal /datapath_tb/ram_PADDR
 add wave -noupdate /datapath_tb/ram_PSTRB
-add wave -noupdate /datapath_tb/ram_PWDATA
+add wave -noupdate -radix hexadecimal /datapath_tb/ram_PWDATA
 add wave -noupdate /datapath_tb/ram_PWRITE
 add wave -noupdate /datapath_tb/ram_PENABLE
 add wave -noupdate /datapath_tb/ram_PREQ
@@ -34,9 +34,9 @@ add wave -noupdate /datapath_tb/tb_Membusy
 add wave -noupdate /datapath_tb/PSELs
 add wave -noupdate /datapath_tb/SLAVE_NUM
 add wave -noupdate /datapath_tb/PREADYs
-add wave -noupdate /datapath_tb/PRDATAs
-add wave -noupdate /datapath_tb/UUT/memory_interface/rdata_o
-add wave -noupdate /datapath_tb/UUT/RI_value
+add wave -noupdate -radix hexadecimal /datapath_tb/PRDATAs
+add wave -noupdate -radix hexadecimal /datapath_tb/UUT/memory_interface/rdata_o
+add wave -noupdate -radix hexadecimal /datapath_tb/UUT/RI_value
 add wave -noupdate /datapath_tb/UUT/LoadIR
 add wave -noupdate /datapath_tb/cu_wIR
 add wave -noupdate /datapath_tb/tb_Membusy
@@ -45,11 +45,12 @@ add wave -noupdate /datapath_tb/UUT/Membusy
 add wave -noupdate /datapath_tb/UUT/memory_interface/busy_o
 add wave -noupdate /datapath_tb/UUT/memory_interface/trigger
 add wave -noupdate /datapath_tb/UUT/memory_interface/busy_sel
+add wave -noupdate -radix hexadecimal /datapath_tb/imem1/mem_contents
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {170687 ps} 0}
+WaveRestoreCursors {{Cursor 1} {37648 ps} 0}
 quietly wave cursor active 1
-configure wave -namecolwidth 326
-configure wave -valuecolwidth 40
+configure wave -namecolwidth 253
+configure wave -valuecolwidth 54
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
 configure wave -snapdistance 10
@@ -62,4 +63,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {170075 ps} {199711 ps}
+WaveRestoreZoom {0 ps} {99469 ps}

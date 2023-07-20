@@ -150,8 +150,8 @@ ARCHITECTURE behavior OF datapath_tb IS
 	-- From slaves to MUXes
 	type type_PRDATA_OUT is array (0 to SLAVE_DECODER_S-1) of std_logic_vector(31 downto 0);
 
-	signal PREADYs : std_logic_vector(SLAVE_DECODER_S-1 downto 0);
-	signal PRDATAs : type_PRDATA_OUT;
+	signal PREADYs : std_logic_vector(SLAVE_DECODER_S-1 downto 0) := (others => '0');
+	signal PRDATAs : type_PRDATA_OUT := (others => (others => '0'));
 	-- From MUX to master
 
 
@@ -250,7 +250,7 @@ BEGIN
 		PWDATA  => ram_PWDATA
 		); 
 		
-	muxPRDATA : mux_apb_mem
+	muxPRDATA : mux_apb_mem_PRDATA
 		generic map (
 			width => 32,
 			prop_delay => 0 ns
@@ -263,9 +263,8 @@ BEGIN
 			dout => ram_PRDATA
 		);
 		
-	muxPREADY : mux_apb_mem
+	muxPREADY : mux_apb_mem_PREADY
 		generic map (
-			width => 1,
 			prop_delay => 0 ns
 		)
 		port map(
@@ -328,8 +327,10 @@ BEGIN
 		wait until rising_edge(tb_clk);
 			cu_wIR <= '1';
 			REPORT "clock 2, wIR = '1' and change when Membusy = 0";
+		wait until falling_edge(tb_clk);
 		wait until rising_edge(tb_clk) and tb_Membusy = '0';
-		cu_wRD <= '1';
+			cu_wRD <= '1';
+			cu_iPC <= '1';
 			REPORT "clock 3, using ALU";
 		wait until rising_edge(tb_clk);
 			-- wait until rising_edge(tb_clk) and ram_PREADY = '1';
@@ -345,14 +346,19 @@ BEGIN
 	
 		tb_rst <= '0';
 		wait until falling_edge(tb_clk);
-		fetch_clock1(list_1(0).fetching, list_1(0).sel1PC,list_1(0).sel2PC, list_1(0).iPC, list_1(0).JB, list_1(0).XZ, list_1(0).XN, list_1(0).XF, list_1(0).wRD, list_1(0).selRD, list_1(0).sel1ALU, list_1(0).sel2ALU, list_1(0).selopALU, list_1(0).wIR, list_1(0).RDMEM, list_1(0).WRMEM, list_1(0).IDMEM);
+		for i in 0 to 7 loop
+			fetch_clock1(list_1(i).fetching, list_1(i).sel1PC,list_1(i).sel2PC, list_1(i).iPC, list_1(i).JB, list_1(i).XZ, list_1(i).XN, list_1(i).XF, list_1(i).wRD, list_1(i).selRD, list_1(i).sel1ALU, list_1(i).sel2ALU, list_1(i).selopALU, list_1(i).wIR, list_1(i).RDMEM, list_1(i).WRMEM, list_1(i).IDMEM);
+			
+			wait until rising_edge(tb_clk);
+		end loop;
 		
-		wait until rising_edge(tb_clk);
-	
+
+
 	
 		REPORT "addi 1 test finished";		
 		wait for 20 ns;
 		
+
 	
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "

@@ -103,6 +103,24 @@ PACKAGE datapath_pkg IS
 		);
 	end component pc;
 	
+	
+	component wrpc is
+		port(
+		--INPUTS
+		input_JB : in std_logic;	--! The instruction is a jump or branch
+		input_XZ : in std_logic;	--! Use nothing, Z or C to decide
+		input_XN : in std_logic;	--! Use nothing, N or C to decide
+		input_XF : in std_logic;	--! The selected ALU flag must match this value to take the branch
+		alu_z : in std_logic;		--! ALU flag Z
+		alu_n : in std_logic;		--! ALU flag N	
+		alu_c : in std_logic;		--! ALU flag C
+		--OUTPUTS
+		wrpc_out : out std_logic	--! wrpc output
+		);
+
+	end component;
+	
+	
 	COMPONENT interface_1	is
 		port (
 			clk: IN std_logic;		--clock input
@@ -150,6 +168,38 @@ PACKAGE datapath_pkg IS
 	);
 	end COMPONENT alu;
 
+	component mux_apb_mem_PRDATA IS
+		GENERIC (
+			width: INTEGER :=32;
+			prop_delay : time := 0 ns		--! prop delay
+	);
+		
+		PORT (
+			din0 :  IN	std_logic_vector(width-1 downto 0);	--! input 0 of mux
+			din1 :  IN  std_logic_vector(width-1 downto 0);	--! input 1 of mux
+			din2 :  IN	std_logic_vector(width-1 downto 0);	--! input 2 of mux
+			--din3 :  IN	std_logic_vector(width-1 downto 0);	--! input 3 of mux
+			sel	:	IN  integer ;	--! selection of mux
+			dout : OUT std_logic_vector(width-1 downto 0)		--! output of mux
+	);
+	END component mux_apb_mem_PRDATA;
+
+	component mux_apb_mem_PREADY IS
+		GENERIC (
+			prop_delay : time := 0 ns		--! prop delay
+	);
+		
+		PORT (
+			din0 :  IN	std_logic;	--! input 0 of mux
+			din1 :  IN  std_logic;	--! input 1 of mux
+			din2 :  IN	std_logic;	--! input 2 of mux
+			--din3 :  IN	std_logic(width-1 downto 0);	--! input 3 of mux
+			sel	:	IN  integer ;	--! selection of mux
+			dout : OUT std_logic	--! output of mux
+	);
+	END component mux_apb_mem_PREADY;
+
+
 	type test_datapath is
 	record
 		--control unit output signals
@@ -182,12 +232,12 @@ PACKAGE datapath_pkg IS
 		
 		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t0, zero, 1	# t0 = 1
 		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t1, zero, -1	# t1 = -1
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add  t0, t0, t0		# t0 = 2
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add  t1, t1, t1		# t1 = -2
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--add t2, t1, t0		# t2 = 0
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--beq t2, zero, pass
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--bne t2, zero, failed
-		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ) 			--j failed2
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','1','0','1' ),			--add  t0, t0, t0		# t0 = 2
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','1','0','1' ),			--add  t1, t1, t1		# t1 = -2
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','1','0','1' ),			--add t2, t1, t0		# t2 = 0
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","1000",  '0','1','0','0' ),			--beq t2, zero, pass
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","1000",  '0','1','0','0' ),			--bne t2, zero, failed
+		('1','1',"01",'0',  '0','0','0','0',  '0','0', '1',"01","1011",  '0','1','0','0' ) 			--j failed2
 		
 	);
 

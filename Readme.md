@@ -5,6 +5,12 @@
 
 ### Here I record some of the abstract of meeting
 ****
+#### 20/07/2023
+	-- fixed many problem of signals
+	-- can run the read and write operation
+	-- the address doesn't change when instruction change
+	-- the sel of MUX for every operation need to be check
+
 
 #### 19/07/2023 
 	-- the datapath testbench barely run

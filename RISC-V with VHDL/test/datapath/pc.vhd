@@ -26,14 +26,14 @@ entity pc is
 		ena_in: in std_logic;
 		data_in : in std_logic_vector(datawidth-1 downto 0);
 		ena_pc : in std_logic;
-		current_pc : out std_logic_vector(datawidth-1 downto 0)
+		current_pc : out std_logic_vector(datawidth-1 downto 0) 
 	);
 
 end entity;
 
 architecture behavioral of pc is
 
-    SIGNAL internal_pc : unsigned(datawidth-1 DOWNTO 0);
+    SIGNAL internal_pc : unsigned(datawidth-1 DOWNTO 0) := (others => '0');
 BEGIN
     PROCESS (clk)
     BEGIN
