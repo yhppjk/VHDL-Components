@@ -102,7 +102,7 @@ architecture behavioral of datapath  is
 	--signal Address_to_MEM : std_logic_vector(31 downto 0);
 	
 	--IR
-	signal LoadIR : std_logic;
+	signal LoadIR : std_logic := '0';
 	--signal Value_from_IMEM : std_logic_vector(31 downto 0);
 	
 	--RI
@@ -110,7 +110,7 @@ architecture behavioral of datapath  is
 	--signal rs1 : std_logic_vector(4 downto 0); 
 	--signal rs2 : std_logic_vector(4 downto 0);
 	--signal rd : std_logic_vector(4 downto 0);
-	signal funct3 : std_logic_vector(2 downto 0);
+	signal funct3 : std_logic_vector(2 downto 0) := "010";
 	
 	--MUX1ALU
 	--signal rs1_value
@@ -140,7 +140,7 @@ architecture behavioral of datapath  is
 	--signal Value_to_DMEM :std_logic_vector(31 downto 0);		--rs2 value
 	
 	--muxRD
-	signal ALU_value : std_logic_vector(31 downto 0);
+	signal ALU_value : std_logic_vector(31 downto 0) := (others => '0');
 	signal Value_from_DMEM : std_logic_vector(31 downto 0);
 	signal selRD : std_logic;
 
@@ -361,7 +361,7 @@ BEGIN
 		)
 		port map(
 			din0 => PC_value,
-			din1 => rs2_value,
+			din1 => ALU_value,
 			sel => port_IDMEM,
 			dout => Address_to_MEM
 		);

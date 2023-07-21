@@ -23,7 +23,7 @@ entity apb_mem is
 		PWDATA  : in  std_logic_vector(31 downto 0);
 		PSTRB   : in  std_logic_vector( 3 downto 0);
 		PREADY  : out std_logic;
-		PRDATA  : out std_logic_vector(31 downto 0)
+		PRDATA  : out std_logic_vector(31 downto 0) := (others => '0')
 		);
 end entity apb_mem;
 
@@ -31,7 +31,7 @@ end entity apb_mem;
 use work.mem32_init_pkg.all;   -- For the mem32_t data type
 architecture Behavioral of apb_mem is 
 	constant mem_size : natural := 2**ADDR_BITS - 1;
-	signal mem_contents : mem32_t(0 to mem_size-1);
+	signal mem_contents : mem32_t(0 to mem_size-1) := (others=>(others=> '0'));
 begin 
 
 	PREADY <= PENABLE and PSEL; 

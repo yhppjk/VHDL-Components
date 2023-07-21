@@ -4,7 +4,12 @@
 
 
 ### Here I record some of the abstract of meeting
-****
+
+#### 21/07/2023
+	-- check every ports have been correctly connected
+	-- find some problem of signals sychronization
+	-- When the first read happened, the funct3 will change but it doesn't correspond with what expected
+
 #### 20/07/2023
 	-- fixed many problem of signals
 	-- can run the read and write operation

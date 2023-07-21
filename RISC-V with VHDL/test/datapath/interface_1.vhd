@@ -56,11 +56,11 @@ architecture behavioral of interface_1  is
 	signal WORDADDR : std_logic_vector(31 downto 0);	--high 30 bits of addr_i
 	signal WORDADDR_plus1 : std_logic_vector(31 downto 0);
 	signal ALIGNMENT : std_logic_vector(1 downto 0);	--low 2 bits of addr_i
-	signal SIZESTRB : std_logic_vector(7 downto 0);		--8 bits encoding of byte strobes in a word
+	--signal SIZESTRB : std_logic_vector(7 downto 0);		--8 bits encoding of byte strobes in a word
 	signal BYTESTRB_3_0 : std_logic_vector(3 downto 0);		--8 bits left-shifted value of SIZESTRB
 	signal BYTESTRB_7_4 : std_logic_vector(3 downto 0);		--8 bits left-shifted value of SIZESTRB
 	
-	signal register_in_PSTRB : std_logic_vector(3 downto 0); 	--internal signal of register PSTRB
+	--signal register_in_PSTRB : std_logic_vector(3 downto 0); 	--internal signal of register PSTRB
 	signal register_out_PSTRB : std_logic_vector(3 downto 0); 	--output signal of register PSTRB
 	signal register_in_PWDATA : std_logic_vector(31 downto 0);	--internal signal of register PWDATA
 	signal register_out_PWDATA : std_logic_vector(31 downto 0);	--output signal of register PWDATA

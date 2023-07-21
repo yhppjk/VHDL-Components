@@ -25,7 +25,7 @@ ENTITY registergen IS
 		writ : IN std_logic;		--! Write signal input
 		rst :  IN std_logic;		--! Reset signal input
 		clk :  IN std_logic;		--! clock signal input
-		reg_out : OUT std_logic_vector (width-1 downto 0)	--! Register data output
+		reg_out : OUT std_logic_vector (width-1 downto 0) := (others => '0')	--! Register data output
 );
 END ENTITY registergen;
 

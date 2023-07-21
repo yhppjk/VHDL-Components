@@ -69,7 +69,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 			PWDATA  : in  std_logic_vector(31 downto 0);
 			PSTRB   : in  std_logic_vector( 3 downto 0);
 			PREADY  : out std_logic;
-			PRDATA  : out std_logic_vector(31 downto 0)
+			PRDATA  : out std_logic_vector(31 downto 0) := (others => '0')
 		);
 	end component apb_init_mem;
 
@@ -84,7 +84,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 			PWDATA  : in  std_logic_vector(31 downto 0);
 			PSTRB   : in  std_logic_vector( 3 downto 0);
 			PREADY  : out std_logic;
-			PRDATA  : out std_logic_vector(31 downto 0)
+			PRDATA  : out std_logic_vector(31 downto 0) := (others => '0')
 		);
 	end component apb_mem;
 	
@@ -107,7 +107,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	
 	
 	--control unit output signals
-	signal cu_fetching : std_logic;
+	signal cu_fetching : std_logic := '0';
 	signal cu_sel1PC : std_logic;
 	signal cu_sel2PC : std_logic_vector(1 downto 0);
 	signal cu_iPC : std_logic;
@@ -152,6 +152,8 @@ ARCHITECTURE behavior OF datapath_tb IS
 
 	signal PREADYs : std_logic_vector(SLAVE_DECODER_S-1 downto 0) := (others => '0');
 	signal PRDATAs : type_PRDATA_OUT := (others => (others => '0'));
+	--signal PRDATAs : type_PRDATA_OUT := ((others => '0'), (others => '0'), (others => '0'));
+
 	-- From MUX to master
 
 
@@ -343,8 +345,11 @@ BEGIN
 	
 	
 	BEGIN
-	
+		tb_rst <= '1';
+		wait for 10 ns;
 		tb_rst <= '0';
+		
+		wait for 10 ns;
 		wait until falling_edge(tb_clk);
 		for i in 0 to 7 loop
 			fetch_clock1(list_1(i).fetching, list_1(i).sel1PC,list_1(i).sel2PC, list_1(i).iPC, list_1(i).JB, list_1(i).XZ, list_1(i).XN, list_1(i).XF, list_1(i).wRD, list_1(i).selRD, list_1(i).sel1ALU, list_1(i).sel2ALU, list_1(i).selopALU, list_1(i).wIR, list_1(i).RDMEM, list_1(i).WRMEM, list_1(i).IDMEM);
@@ -355,8 +360,8 @@ BEGIN
 
 
 	
-		REPORT "addi 1 test finished";		
-		wait for 20 ns;
+		-- REPORT "addi 1 test finished";		
+		-- wait for 20 ns;
 		
 
 	

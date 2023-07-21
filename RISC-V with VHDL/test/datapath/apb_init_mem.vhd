@@ -25,7 +25,7 @@ entity apb_init_mem is
 		PWDATA  : in  std_logic_vector(31 downto 0);
 		PSTRB   : in  std_logic_vector( 3 downto 0);
 		PREADY  : out std_logic;
-		PRDATA  : out std_logic_vector(31 downto 0)
+		PRDATA  : out std_logic_vector(31 downto 0) := (others => '0')
 		);
 end entity apb_init_mem;
 
