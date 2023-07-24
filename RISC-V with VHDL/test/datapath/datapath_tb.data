@@ -1,0 +1,10 @@
+# mnemonic rd rd_value   branch_taken destination
+  addi     05 00000001   0            00000000
+  addi     t1 FFFFFFFF   0            00000000
+  add      05 00000002   0            00000000
+  add      t1 FFFFFFFE   0            00000000
+  add      t2 00000000   0            00000000
+  beq      00 00000000   1            pass
+  beq      00 00000000   0            failed
+  j        00 00000000   1            failed2
+  
