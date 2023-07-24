@@ -220,15 +220,41 @@ PACKAGE datapath_pkg IS
 		RDMEM : std_logic;
 		WRMEM : std_logic;
 		IDMEM : std_logic;
+		EOF : std_logic;
+		EOI : std_logic;
+		WaitMem: std_logic;
 		
 	end record;
 	
 	type list_test_datapath is array (0 to 7)of test_datapath;
+	
+	CONSTANT index_fetch: integer := 0;
+	CONSTANT index_addi:  integer := 4;
+	CONSTANT index_add:   integer := 8;
 
 	CONSTANT list_1 : list_test_datapath :=(
 	--list of datapath test 
-	-- fetching, sel1PC, sel2PC, iPC, JB, XZ, XN, XF, wRD, selRD, sel1ALU, sel2ALU, selopALU, wIR, RD, WR, IDMEM
+	-- EOF = End of Fetch, to be 1 at the last clock cycle of a fetch
+	-- EOI = End of instruction, to be 1 at the last clock cycle of any instruction
+	-- fetching, sel1PC, sel2PC, iPC, JB, XZ, XN, XF, wRD, selRD, sel1ALU, sel2ALU, selopALU, wIR, RD, WR, IDMEM, EOF, EOI,   result_expected 
+
+		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','1', '0', '0', '0' ),			-- fetching, clock 0
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','1','0','1', '1', '0', '1' ),			-- fetching, clock 1
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
 		
+		('0','0',"00",'1',  '0','0','0','0',  '0','0', '1',"01","0000",  '0','0','0','0', '0', '1', '0' ),			--addi, clock 0 after fetch
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+
+		('0','0',"00",'1',  '0','0','0','0',  '0','0', '1',"00","0000",  '0','0','0','0', '0', '1', '0' ),			--add, clock 0 after fetch
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+		('0','0',"00",'0',  '0','0','0','0',  '0','0', '0',"00","0000",  '0','0','0','0', '0', '0', '0' ),			-- dummy
+
+
+
 		
 		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t0, zero, 1	# t0 = 1
 		('1','0',"00",'0',  '0','0','0','0',  '0','0', '0',"01","0000",  '0','1','0','1' ),			--addi t1, zero, -1	# t1 = -1

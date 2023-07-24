@@ -38,6 +38,7 @@ architecture behavioral of rdata_interface2  is
 	constant ones8 : std_logic_vector(7 downto 0) := (others => '1');
 	constant ones16 : std_logic_vector(15 downto 0) := (others => '1');
 	
+	signal signal_rdata : std_logic_vector(31 downto 0) := (others => '0');
 	
 BEGIN	
 	process(RDATA64, ALIGNMENT, unsigned_i, size_i)
@@ -55,7 +56,7 @@ BEGIN
 			when others =>
 				var_rdata := (others => '0');
 		end case;
-
+		signal_rdata <= var_rdata;
 		case size_i is
 			when "00" =>
 				if unsigned_i = '1' then

@@ -106,7 +106,7 @@ architecture behavioral of datapath  is
 	--signal Value_from_IMEM : std_logic_vector(31 downto 0);
 	
 	--RI
-	signal RI_value: std_logic_vector(31 downto 0) := (others => '0');
+	signal RI_value: std_logic_vector(31 downto 0);
 	--signal rs1 : std_logic_vector(4 downto 0); 
 	--signal rs2 : std_logic_vector(4 downto 0);
 	--signal rd : std_logic_vector(4 downto 0);
@@ -349,8 +349,8 @@ BEGIN
 			rd_i => port_RD,
 			wr_i => port_WR,
 			addr_i => Address_to_MEM,
-			size_i => funct3(1 downto 0),
-			unsigned_i => funct3(2),
+			size_i => funct3_actual(1 downto 0),
+			unsigned_i => funct3_actual(2),
 			wdata_i => rs2_value
 		);	
 		
@@ -372,8 +372,8 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => "010",
-			din1 => funct3,
+			din1 => "010",
+			din0 => funct3,
 			sel => port_fetching,
 			dout => funct3_actual
 		);	
@@ -384,7 +384,7 @@ BEGIN
 	B_immediate <= "0000000000000000000" & RI_value(31) & RI_value(7) & RI_value(30 downto 25) & RI_value(11 downto 8) & '0';
 	J_immediate <= "00000000000" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0';	
 	
-	funct3 <= RI_value(13 downto 11);
+	funct3 <= RI_value(13 downto 11) when RI_value /= "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU";
 	rs1 <= RI_value(18 downto 14);
 	rs2 <= RI_value(23 downto 19);
 	rd <= RI_value(10 downto 6);
