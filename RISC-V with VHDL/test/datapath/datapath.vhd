@@ -52,8 +52,10 @@ entity datapath  is
 		port_wIR : in std_logic;
 		port_RD : in std_logic;
 		port_WR : in std_logic;
-		port_IDMEM : in std_logic
+		port_IDMEM : in std_logic;
 		
+		port_ALU_res : out std_logic_vector(31 downto 0);
+		port_ALU_flag : out std_logic_vector(2 downto 0)
 		
 	);
 
@@ -84,10 +86,8 @@ architecture behavioral of datapath  is
 	signal pc_XZ : std_logic;
 	signal pc_XN : std_logic;
 	signal pc_XF : std_logic;
-	signal PC_flag :std_logic_vector(2 downto 0);
-	signal pc_Z  : std_logic;
-	signal pc_N  : std_logic;
-	signal pc_C  : std_logic;
+	signal ALU_flag :std_logic_vector(2 downto 0);
+
 	
 	--PC
 	signal targetPC : std_logic_vector(31 downto 0) := (others => '0');
@@ -247,9 +247,9 @@ BEGIN
 			input_XZ => port_XZ,	--! Use nothing, Z or C to decide
 			input_XN => port_XN,	--! Use nothing, N or C to decide
 			input_XF => port_XF,	--! The selected ALU flag must match this value to take the branch
-			alu_z => PC_flag(0),		--! ALU flag Z
-			alu_n => PC_flag(1),		--! ALU flag N	
-			alu_c => PC_flag(2),		--! ALU flag C
+			alu_z => ALU_flag(0),		--! ALU flag Z
+			alu_n => ALU_flag(1),		--! ALU flag N	
+			alu_c => ALU_flag(2),		--! ALU flag C
 			--OUTPUTS
 			wrpc_out => wPC	--! wrpc output
 		
@@ -314,7 +314,7 @@ BEGIN
 			selop => port_selopalu,
 		--OUTPUTS
 			res => ALU_value,
-			flags => PC_flag
+			flags => ALU_flag
 		);
 	
 	MUX_RD : mux2togen
@@ -396,8 +396,9 @@ BEGIN
 	Address_to_DMEM <= rs2_value;
 	
 	port_Membusy <= Membusy;
-		
-		
+	port_ALU_res <= ALU_value;
+	port_ALU_flag <= ALU_flag;
+	
 end architecture;
 
 

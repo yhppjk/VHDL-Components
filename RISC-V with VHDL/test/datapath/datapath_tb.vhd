@@ -51,9 +51,10 @@ ARCHITECTURE behavior OF datapath_tb IS
 		port_wIR : in std_logic;
 		port_RD : in std_logic;
 		port_WR : in std_logic;
-		port_IDMEM : in std_logic
+		port_IDMEM : in std_logic;
 		
-		
+		port_ALU_res : out std_logic_vector(31 downto 0);
+		port_ALU_flag : out std_logic_vector(2 downto 0)
 		
 	);
     END COMPONENT;
@@ -154,9 +155,16 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal PRDATAs : type_PRDATA_OUT;
 	--signal PRDATAs : type_PRDATA_OUT := ((others => '0'), (others => '0'), (others => '0'));
 
+	--ALU output
+	signal tb_alu_res : std_logic_vector(31 downto 0);
+	signal tb_alu_flag : std_logic_vector(2 downto 0);
+
 	-- From MUX to master
 
-
+	constant t0 : integer  := 5;
+	constant t1 : integer  := 6;
+	constant t2 : integer  := 7;
+	
 	
 	constant IMEM_ADDR_BITS: natural := 10; -- Instruction memories have 1024 positions (x 32 bits each)
 	constant DMEM_ADDR_BITS: natural :=  8; -- Data memory has 256 positions (x 32 bits each)
@@ -198,7 +206,10 @@ BEGIN
 		port_wIR => cu_wIR,
 		port_RD => cu_RDMEM,
 		port_WR => cu_WRMEM,
-		port_IDMEM => cu_IDMEM
+		port_IDMEM => cu_IDMEM,
+		
+		port_ALU_res => tb_alu_res,
+		port_ALU_flag =>tb_alu_flag
 	);
 	
 --slave decoder
@@ -348,15 +359,14 @@ BEGIN
 		
 		-- Procedure for giving values to signal
 		procedure fetch_clocks(constant first_entry: in integer) is
-			var idx : in integer := first_entry;
+			variable idx : integer := first_entry;
 		begin
 			for idx in first_entry to first_entry+100 loop
 				cu_fetching <= list_1(idx).fetching;
-				...
-				...
+
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
-					if ((list_1(idx).WaitMEM = '0') or (MemBusy = '0')) then
+					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
 						exit;
 					end if;	
 				end loop;
@@ -371,15 +381,30 @@ BEGIN
 		
 		-- Procedure for giving values to signal
 		procedure exec_clocks(constant first_entry: in integer) is
-			var idx : in integer := first_entry;
+			variable idx : integer := first_entry;
 		begin
 			for idx in first_entry to first_entry+100 loop
 				cu_fetching <= list_1(idx).fetching;
-				...
-				...
+				cu_sel1PC <= list_1(idx).sel1PC;
+				cu_sel2PC <= list_1(idx).sel2PC;
+				cu_iPC <= list_1(idx).iPC;
+				cu_JB <= list_1(idx).JB;
+				cu_XZ <= list_1(idx).XZ;
+				cu_XN <= list_1(idx).XN;
+				cu_XF <= list_1(idx).XF;
+				cu_wRD <= list_1(idx).wRD;
+				cu_selRD <= list_1(idx).selRD;
+				cu_sel1ALU <= list_1(idx).sel1ALU;
+				cu_sel2ALU <= list_1(idx).sel2ALU;
+				cu_selopALU <= list_1(idx).selopALU;
+				cu_wIR <= list_1(idx).wIR;
+				cu_RDMEM <= list_1(idx).RDMEM;
+				cu_WRMEM <=list_1(idx).WRMEM;
+				cu_IDMEM <= list_1(idx).IDMEM;
+
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
-					if ((list_1(idx).WaitMEM = '0') or (MemBusy = '0')) then
+					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
 						exit;
 					end if;	
 				end loop;
@@ -392,21 +417,38 @@ BEGIN
 			REPORT "exec finished";
 		end procedure exec_clocks;
 
-		procedure exec_addi(expected results) is
+		procedure exec_addi(constant index_fetch : integer; constant index_addi : integer; constant expected_results: in integer   ) is
+			variable actual_results : integer := to_integer(unsigned(tb_alu_res));
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_addi);
-			assert actual results = expected results report "Execcution failed!" severity failure;
+			assert actual_results = expected_results report "Execcution failed!" severity failure;
 			REPORT "addi finished";
 		end procedure exec_addi;
 
-		procedure exec_add() is
+		procedure exec_add(constant index_fetch : integer; constant index_add : integer; constant expected_results: in integer   ) is
+			variable actual_results : integer := to_integer(unsigned(tb_alu_res));
+			
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_add);
+			assert actual_results = expected_results report "Execcution failed!" severity failure;
 			REPORT "add finished";
 		end procedure exec_add;
-	
+		
+		procedure exec_beq(constant index_fetch : integer; constant index_beq : integer) is
+		begin
+			fetch_clocks(index_fetch);
+			exec_clocks(index_beq);
+			REPORT "beq finished";
+		end procedure exec_beq;
+		
+		procedure exec_j(constant index_fetch : integer; constant index_j : integer) is
+		begin
+			fetch_clocks(index_fetch);
+			exec_clocks(index_j);
+			REPORT "jump finished";
+		end procedure exec_j;
 	
 	BEGIN
 		tb_rst <= '1';
@@ -416,34 +458,31 @@ BEGIN
 		wait for 10 ns;
 		wait until falling_edge(tb_clk);
 		
-		exec_addi(5, 1); -- reg dst =5, value + 1, wRD = 1
+		exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1
 		exec_addi(t1, -1);
-		exec_add(5, 2);
+		exec_add(t0, 2);
 		exec_add(t1, -2);
 		exec_add(t2, 0);
 		exec_beq(true, pass); -- branch to pass taken
 		exec_beq(false, failed); -- brach to failed not taken
 		exec_j(failed2); -- jump to failed2
 		
-		for i in 0 to 7 loop
-			fetch_clock1(list_1(i).fetching, list_1(i).sel1PC,list_1(i).sel2PC, list_1(i).iPC, list_1(i).JB, list_1(i).XZ, list_1(i).XN, list_1(i).XF, list_1(i).wRD, list_1(i).selRD, list_1(i).sel1ALU, list_1(i).sel2ALU, list_1(i).selopALU, list_1(i).wIR, list_1(i).RDMEM, list_1(i).WRMEM, list_1(i).IDMEM);
-			
-			wait until rising_edge(tb_clk);
-		end loop;
-		
-
-
-	
-		-- REPORT "addi 1 test finished";		
-		-- wait for 20 ns;
-		
-
-	
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "
 		SEVERITY failure;
-	
-	
+
+
+
+		
+		
+		-- for i in 0 to 7 loop
+			-- fetch_clock1(list_1(i).fetching, list_1(i).sel1PC,list_1(i).sel2PC, list_1(i).iPC, list_1(i).JB, list_1(i).XZ, list_1(i).XN, list_1(i).XF, list_1(i).wRD, list_1(i).selRD, list_1(i).sel1ALU, list_1(i).sel2ALU, list_1(i).selopALU, list_1(i).wIR, list_1(i).RDMEM, list_1(i).WRMEM, list_1(i).IDMEM);
+			
+			-- wait until rising_edge(tb_clk);
+		-- end loop;
+		-- REPORT "addi 1 test finished";		
+		-- wait for 20 ns;
+		
 	end process simulation;
 
 
