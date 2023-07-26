@@ -128,7 +128,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	
 	--memory interface input signals
 	signal ram_PRDATA : std_logic_vector(31 downto 0);
-	signal ram_PREADY : std_logic := '0';
+	signal ram_PREADY : std_logic;
 	
 	--memory interface output signals
 	signal ram_PADDR : std_logic_vector(31 downto 0) := (others => '0');
@@ -363,6 +363,22 @@ BEGIN
 		begin
 			for idx in first_entry to first_entry+100 loop
 				cu_fetching <= list_1(idx).fetching;
+				cu_sel1PC <= list_1(idx).sel1PC;
+				cu_sel2PC <= list_1(idx).sel2PC;
+				cu_iPC <= list_1(idx).iPC;
+				cu_JB <= list_1(idx).JB;
+				cu_XZ <= list_1(idx).XZ;
+				cu_XN <= list_1(idx).XN;
+				cu_XF <= list_1(idx).XF;
+				cu_wRD <= list_1(idx).wRD;
+				cu_selRD <= list_1(idx).selRD;
+				cu_sel1ALU <= list_1(idx).sel1ALU;
+				cu_sel2ALU <= list_1(idx).sel2ALU;
+				cu_selopALU <= list_1(idx).selopALU;
+				cu_wIR <= list_1(idx).wIR;
+				cu_RDMEM <= list_1(idx).RDMEM;
+				cu_WRMEM <=list_1(idx).WRMEM;
+				cu_IDMEM <= list_1(idx).IDMEM;
 
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
@@ -417,38 +433,40 @@ BEGIN
 			REPORT "exec finished";
 		end procedure exec_clocks;
 
-		procedure exec_addi(constant index_fetch : integer; constant index_addi : integer; constant expected_results: in integer   ) is
-			variable actual_results : integer := to_integer(unsigned(tb_alu_res));
+		procedure exec_addi(constant expected_results: in integer   ) is
+			--variable actual_results : integer := to_integer(signed(tb_alu_res));
+			variable actual_results : std_logic_vector(31 downto 0) ;
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_addi);
-			assert actual_results = expected_results report "Execcution failed!" severity failure;
+			actual_results := tb_alu_res;
+			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT "addi finished";
 		end procedure exec_addi;
 
-		procedure exec_add(constant index_fetch : integer; constant index_add : integer; constant expected_results: in integer   ) is
-			variable actual_results : integer := to_integer(unsigned(tb_alu_res));
-			
+		procedure exec_add(expected_results: in integer ) is
+			variable actual_results : std_logic_vector(31 downto 0);
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_add);
-			assert actual_results = expected_results report "Execcution failed!" severity failure;
+			actual_results := tb_alu_res;
+			assert to_integer(signed(actual_results)) = expected_results report "add Execcution failed! The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT "add finished";
 		end procedure exec_add;
 		
-		procedure exec_beq(constant index_fetch : integer; constant index_beq : integer) is
-		begin
-			fetch_clocks(index_fetch);
-			exec_clocks(index_beq);
-			REPORT "beq finished";
-		end procedure exec_beq;
+		-- procedure exec_beq() is
+		-- begin
+			-- fetch_clocks(index_fetch);
+			-- exec_clocks(index_beq);
+			-- REPORT "beq finished";
+		-- end procedure exec_beq;
 		
-		procedure exec_j(constant index_fetch : integer; constant index_j : integer) is
-		begin
-			fetch_clocks(index_fetch);
-			exec_clocks(index_j);
-			REPORT "jump finished";
-		end procedure exec_j;
+		-- procedure exec_j() is
+		-- begin
+			-- fetch_clocks(index_fetch);
+			-- exec_clocks(index_j);
+			-- REPORT "jump finished";
+		-- end procedure exec_j;
 	
 	BEGIN
 		tb_rst <= '1';
@@ -456,16 +474,24 @@ BEGIN
 		tb_rst <= '0';
 		
 		wait for 10 ns;
-		wait until falling_edge(tb_clk);
+		wait until rising_edge(tb_clk);
 		
-		exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1
-		exec_addi(t1, -1);
-		exec_add(t0, 2);
-		exec_add(t1, -2);
-		exec_add(t2, 0);
-		exec_beq(true, pass); -- branch to pass taken
-		exec_beq(false, failed); -- brach to failed not taken
-		exec_j(failed2); -- jump to failed2
+		exec_addi(1);
+		exec_addi(-1);
+		exec_add(2);	
+		exec_add(-2);
+		exec_add(0);
+		
+		--exec_addi(-1);
+		
+		-- exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1
+		-- exec_addi(t1, -1);
+		-- exec_add(t0, 2);
+		-- exec_add(t1, -2);
+		-- exec_add(t2, 0);
+		-- exec_beq(true, pass); -- branch to pass taken
+		-- exec_beq(false, failed); -- brach to failed not taken
+		-- exec_j(failed2); -- jump to failed2
 		
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "

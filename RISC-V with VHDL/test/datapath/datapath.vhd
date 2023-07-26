@@ -176,16 +176,16 @@ architecture behavioral of datapath  is
 	signal cu_IDMEM : std_logic;
 	
 	--memory interface input signals
-	signal ram_PRDATA : std_logic_vector(31 downto 0);
-	signal ram_PREADY : std_logic;
+	-- signal ram_PRDATA : std_logic_vector(31 downto 0);
+	-- signal ram_PREADY : std_logic;
 	
 	--memory interface output signals
-	signal ram_PADDR : std_logic_vector(31 downto 0);
-	signal ram_PSTRB : std_logic_vector(3 downto 0);
-	signal ram_PWDATA : std_logic_vector(31 downto 0);
-	signal ram_PWRITE : std_logic;
-	signal ram_PENABLE : std_logic;
-	signal ram_PREQ : std_logic;
+	-- signal ram_PADDR : std_logic_vector(31 downto 0);
+	-- signal ram_PSTRB : std_logic_vector(3 downto 0);
+	-- signal ram_PWDATA : std_logic_vector(31 downto 0);
+	-- signal ram_PWRITE : std_logic;
+	-- signal ram_PENABLE : std_logic;
+	-- signal ram_PREQ : std_logic;
 	
 	
 	
