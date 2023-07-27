@@ -440,7 +440,7 @@ BEGIN
 			fetch_clocks(index_fetch);
 			exec_clocks(index_addi);
 			actual_results := tb_alu_res;
-			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! The actual result is"& to_binary_string(actual_results) &"" severity failure;
+			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT "addi finished";
 		end procedure exec_addi;
 
@@ -450,7 +450,7 @@ BEGIN
 			fetch_clocks(index_fetch);
 			exec_clocks(index_add);
 			actual_results := tb_alu_res;
-			assert to_integer(signed(actual_results)) = expected_results report "add Execcution failed! The actual result is"& to_binary_string(actual_results) &"" severity failure;
+			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
 			REPORT "add finished";
 		end procedure exec_add;
 		

@@ -284,8 +284,8 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => PC_value,
-			din1 => rs1_value,
+			din0 => rs1_value,
+			din1 => PC_value,
 			sel => port_sel1alu,
 			dout => mux1ALU_out
 		);	
@@ -378,11 +378,20 @@ BEGIN
 			dout => funct3_actual
 		);	
 		
-	I_immediate <= x"00000" & RI_value(31 downto 20);
-	S_immediate <= x"00000" & RI_value(31 downto 25) & RI_value(11 downto 7);
-	U_immediate <= x"000" & RI_value(31 downto 12);
-	B_immediate <= "0000000000000000000" & RI_value(31) & RI_value(7) & RI_value(30 downto 25) & RI_value(11 downto 8) & '0';
-	J_immediate <= "00000000000" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0';	
+	I_immediate <= x"00000" & RI_value(31 downto 20) when RI_value(31) = '0'
+				else x"FFFFF" & RI_value(31 downto 20) when RI_value(31) = '1';
+				
+	S_immediate <= x"00000" & RI_value(31 downto 25) & RI_value(11 downto 7) when RI_value(31) ='0'
+				else x"FFFFF" & RI_value(31 downto 25) & RI_value(11 downto 7) when RI_value(31) = '1';
+				
+	U_immediate <= x"000" & RI_value(31 downto 12) when RI_value(31) ='0'
+				else x"FFF" & RI_value(31 downto 12) when RI_value(31) ='1';
+				
+	B_immediate <= "0000000000000000000" & RI_value(31) & RI_value(7) & RI_value(30 downto 25) & RI_value(11 downto 8) & '0' when RI_value(31) = '0'	
+				else "1111111111111111111" & RI_value(31) & RI_value(7) & RI_value(30 downto 25) & RI_value(11 downto 8) & '0' when RI_value(31) = '1';
+	
+	J_immediate <= "00000000000" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0' when RI_value(31) = '0'
+				else "11111111111" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0' when RI_value(31) = '1';
 	
 	funct3 <= RI_value(13 downto 11) when RI_value /= "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU";
 	rs1 <= RI_value(18 downto 14);
