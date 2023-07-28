@@ -91,7 +91,7 @@ architecture behavioral of datapath  is
 	
 	--PC
 	signal targetPC : std_logic_vector(31 downto 0) := (others => '0');
-	signal wPC_out : std_logic;
+	--signal wPC_out : std_logic;
 	signal wPC : std_logic;
 	signal iPC_out : std_logic;
 	
