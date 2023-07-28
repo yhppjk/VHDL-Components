@@ -1,4 +1,4 @@
-# This is a repository for my internship in UPV
+# VHDL Basic Components
 
 ## In the folder "Source", you will find the VHDL components source code
 	

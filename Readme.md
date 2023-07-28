@@ -5,6 +5,12 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 28/07/2023
+	-- The branch and jump instruction check is wrong.
+	-- Should check if it takes the branch, the pc value changed or NOT
+	-- Find a way to seperate the execu and finish, in order to check the flag. 
+	-- Make the documents more structured.
+
 #### 27/07/2023
 	-- Check the list of 7 test
 	-- create the procedure of instruction beq and jump

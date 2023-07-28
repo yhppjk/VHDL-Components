@@ -38,4 +38,4 @@
 	reg_file_pkg.vhd
 
 
-* old version 
+\* old version 
