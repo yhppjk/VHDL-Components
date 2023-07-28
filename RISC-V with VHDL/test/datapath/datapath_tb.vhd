@@ -441,7 +441,7 @@ BEGIN
 			exec_clocks(index_addi);
 			actual_results := tb_alu_res;
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
-			REPORT "addi finishedexpected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
+			REPORT "addi finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
 		procedure exec_add(expected_results: in integer ) is
@@ -451,7 +451,7 @@ BEGIN
 			exec_clocks(index_add);
 			actual_results := tb_alu_res;
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
-			REPORT "add finishedexpected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
+			REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
 		
 		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0) ) is
