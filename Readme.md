@@ -5,6 +5,10 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 27/07/2023
+	-- Check the list of 7 test
+	-- create the procedure of instruction beq and jump
+
 #### 21/07/2023
 	-- check every ports have been correctly connected
 	-- find some problem of signals sychronization

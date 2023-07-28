@@ -441,7 +441,7 @@ BEGIN
 			exec_clocks(index_addi);
 			actual_results := tb_alu_res;
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
-			REPORT "addi finished";
+			REPORT "addi finishedexpected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
 		procedure exec_add(expected_results: in integer ) is
@@ -451,22 +451,25 @@ BEGIN
 			exec_clocks(index_add);
 			actual_results := tb_alu_res;
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
-			REPORT "add finished";
+			REPORT "add finishedexpected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
 		
-		-- procedure exec_beq() is
-		-- begin
-			-- fetch_clocks(index_fetch);
-			-- exec_clocks(index_beq);
-			-- REPORT "beq finished";
-		-- end procedure exec_beq;
+		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0) ) is
+			variable actual_flags : std_logic_vector(2 downto 0);
+		begin
+			fetch_clocks(index_fetch);
+			exec_clocks(index_beq);
+			actual_flags := tb_alu_flag;
+			assert actual_flags = expected_flags report " beq Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
+			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+		end procedure exec_beq;
 		
-		-- procedure exec_j() is
-		-- begin
-			-- fetch_clocks(index_fetch);
-			-- exec_clocks(index_j);
-			-- REPORT "jump finished";
-		-- end procedure exec_j;
+		procedure exec_j(expected_results: in integer) is
+		begin
+			fetch_clocks(index_fetch);
+			exec_clocks(index_j);
+			REPORT "jump finished";
+		end procedure exec_j;
 	
 	BEGIN
 		tb_rst <= '1';
@@ -481,6 +484,9 @@ BEGIN
 		exec_add(2);	
 		exec_add(-2);
 		exec_add(0);
+		exec_beq("001");
+		exec_beq("001");
+		exec_j(0);
 		
 		--exec_addi(-1);
 		
