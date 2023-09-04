@@ -360,7 +360,8 @@ BEGIN
 			prop_delay => 0 ns
 		)
 		port map(
-			din0 => PC_value,
+			--din0 => PC_value,
+			din0 => Address_to_IMEM,
 			din1 => ALU_value,
 			sel => port_IDMEM,
 			dout => Address_to_MEM
