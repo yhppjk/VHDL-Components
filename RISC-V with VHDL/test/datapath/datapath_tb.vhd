@@ -395,7 +395,7 @@ BEGIN
 			REPORT "fetch finished";
 		end procedure fetch_clocks;
 		
-		-- Procedure for giving values to signal
+		-- Procedure for excecuting
 		procedure exec_clocks(constant first_entry: in integer) is
 			variable idx : integer := first_entry;
 		begin
@@ -471,6 +471,15 @@ BEGIN
 			REPORT "jump finished";
 		end procedure exec_j;
 	
+		--procedure check_beq()
+		--BEGIN
+			
+			
+		--end procedure check_beq;
+		
+		
+		
+		
 	BEGIN
 		tb_rst <= '1';
 		wait for 10 ns;
