@@ -1,6 +1,6 @@
 ----------------------------------------------------------
 --! @file datapath_tb.vhd
---! @A program counter  
+--! @Testbench datapath
 -- Filename: datapath_tb.vhd
 -- Description: testbench datapath
 -- Author: YIN Haoping
@@ -471,11 +471,12 @@ BEGIN
 			REPORT "jump finished";
 		end procedure exec_j;
 	
-		--procedure check_beq()
-		--BEGIN
+	
+		-- procedure check_beq()
+		-- BEGIN
 			
 			
-		--end procedure check_beq;
+		-- end procedure check_beq;
 		
 		
 		
