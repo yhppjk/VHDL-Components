@@ -10,7 +10,7 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
-
+use work.reg_file_pkg.all;
 --! reg_file entity description
 
 --! Detailed description of this
@@ -41,10 +41,10 @@ end entity reg_file;
 --! @brief Architecture definition of reg_file
 --! @details More details about this reg_file element.
 architecture behavior of reg_file is
-    constant  num_reg : positive := 2**addressWidth;				--! generic of size of register file
+    --constant  num_reg : positive := 2**addressWidth;				--! generic of size of register file
 	
 	--! a  type of register file 2d array
-	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0) ;
+	--type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0);
 	signal reg_file : reg_file_t := (others =>(others =>'0'));
 	constant zeros_address : std_logic_vector(addressWidth-1 downto 0) := (others =>'0');
 	constant zeros_data : std_logic_vector(dataWidth-1 downto 0) := (others =>'0');

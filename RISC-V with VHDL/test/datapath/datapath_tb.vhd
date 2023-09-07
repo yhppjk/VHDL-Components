@@ -12,6 +12,7 @@ use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
 use work.apb_slavedec_pkg.all;
 use work.datapath_pkg.all;
+use work.reg_file_pkg.all;
 
 ENTITY datapath_tb IS
 END ENTITY;
@@ -158,6 +159,26 @@ ARCHITECTURE behavior OF datapath_tb IS
 	--ALU output
 	signal tb_alu_res : std_logic_vector(31 downto 0);
 	signal tb_alu_flag : std_logic_vector(2 downto 0);
+
+	--alias for check internal signals
+	alias reg_file is <<signal .datapath_tb.UUT.register_file.reg_file : reg_file_t >>;
+	alias pc       is <<signal .datapath_tb.UUT.PC_value : std_logic_vector(31 downto 0) >>;
+	
+	--signal for testing 
+	signal dotest 						: boolean := false;
+	signal test_name 					: string(1 to 10);
+	signal test_type 					: integer;
+	signal test_expected_value 			: integer;
+	signal test_expected_destination_reg : positive := 0;
+			
+		-- boolean  dotest
+		-- string testname
+		-- integer testtype
+		-- integer test_expected_value
+		-- integer test_expected_destination_reg
+	--2 assert
+	--reg_file[test_expected_destination_reg] = test_expected_value
+	--pc = test_expected_value
 
 	-- From MUX to master
 
@@ -382,6 +403,11 @@ BEGIN
 
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
+					if dotest = true then
+						dotest <= false;
+						assert to_integer(signed(reg_file[test_expected_destination_reg])) = test_expected_value report "";
+						assert pc = test_expected_value report;
+					end if
 					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
 						exit;
 					end if;	
@@ -441,7 +467,7 @@ BEGIN
 			exec_clocks(index_addi);
 			actual_results := tb_alu_res;
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
-			REPORT "addi finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
+			REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
 		procedure exec_add(expected_results: in integer ) is
@@ -470,16 +496,6 @@ BEGIN
 			exec_clocks(index_j);
 			REPORT "jump finished";
 		end procedure exec_j;
-	
-	
-		-- procedure check_beq()
-		-- BEGIN
-			
-			
-		-- end procedure check_beq;
-		
-		
-		
 		
 	BEGIN
 		tb_rst <= '1';
@@ -490,7 +506,9 @@ BEGIN
 		wait until rising_edge(tb_clk);
 		
 		exec_addi(1);
+		exec_j(0);
 		exec_addi(-1);
+		
 		exec_add(2);	
 		exec_add(-2);
 		exec_add(0);

@@ -19,6 +19,14 @@ use ieee.std_logic_1164.all;
 PACKAGE reg_file_pkg IS
 --! reg_file_pkg package description
 
+	--this is for simulation only
+	-- one simulation is finished, comment these and remove comments from reg_file.vhd about num_reg and reg_file_t
+	constant addressWidth: positive := 5;
+	constant dataWidth : positive := 32;
+	constant  num_reg : positive := 2**addressWidth;				--! generic of size of register file	
+	type reg_file_t is array (0 to num_reg-1) of std_logic_vector(dataWidth-1 downto 0);
+	
+	
 --! Detailed description of this
 --! reg_file_pkg design element.
 

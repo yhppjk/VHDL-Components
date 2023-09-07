@@ -5,6 +5,15 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 07/09/2023 
+	-- use alias to access the internal signals to check if the operation is correct
+	-- put the assert in every fetch procedure to check different type of operation expected values
+	-- create a testbench signal to judge if the check should be done during fetch
+	-- 2 assert
+	--reg_file[test_expected_destination_reg] = test_expected_value
+	--pc = test_expected_value
+
+
 #### 28/07/2023
 	-- The branch and jump instruction check is wrong.
 	-- Should check if it takes the branch, the pc value changed or NOT
