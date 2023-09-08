@@ -166,10 +166,15 @@ ARCHITECTURE behavior OF datapath_tb IS
 	
 	--signal for testing 
 	signal dotest 						: boolean := false;
-	signal test_name 					: string(1 to 10);
+	signal test_name 					: string(1 to 4);
 	signal test_type 					: integer;
 	signal test_expected_value 			: integer;
-	signal test_expected_destination_reg : positive := 0;
+	signal test_expected_destination_reg : positive := 1;
+	
+	--type for different operation
+	
+	type type_list is (t_addi, t_add, t_beq, t_jump);
+	signal op_type: type_list;
 			
 		-- boolean  dotest
 		-- string testname
@@ -400,14 +405,28 @@ BEGIN
 				cu_RDMEM <= list_1(idx).RDMEM;
 				cu_WRMEM <=list_1(idx).WRMEM;
 				cu_IDMEM <= list_1(idx).IDMEM;
-
+				
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
+					
 					if dotest = true then
 						dotest <= false;
-						assert to_integer(signed(reg_file[test_expected_destination_reg])) = test_expected_value report "";
-						assert pc = test_expected_value report;
-					end if
+						case op_type is 
+							when t_addi =>
+								test_name <="addi";
+							when t_add =>
+								test_name <="add ";
+							when t_beq =>
+								test_name <="beq ";
+							when t_jump =>
+								test_name <="jump";
+							when others =>
+								test_name <="erro";
+						end case;
+						assert to_integer(signed(reg_file(test_expected_destination_reg))) = test_expected_value report test_name&" destination or value is wrong. The destination is "&integer'image(test_expected_destination_reg)&". the value is "&integer'image(to_integer(signed(reg_file(test_expected_destination_reg))));
+						assert to_integer(signed(pc)) = test_expected_value report test_name&" pc value is wrong";
+					end if;
+					
 					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
 						exit;
 					end if;	
@@ -459,23 +478,33 @@ BEGIN
 			REPORT "exec finished";
 		end procedure exec_clocks;
 
-		procedure exec_addi(constant expected_results: in integer   ) is
-			--variable actual_results : integer := to_integer(signed(tb_alu_res));
+		procedure exec_addi(constant expected_results: in integer; constant destination : in positive ) is
 			variable actual_results : std_logic_vector(31 downto 0) ;
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_addi);
 			actual_results := tb_alu_res;
+			
+			dotest <= true;
+			op_type <= t_addi;
+			test_expected_value <= expected_results;
+			test_expected_destination_reg <= destination;
+			
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
-		procedure exec_add(expected_results: in integer ) is
+		procedure exec_add(expected_results: in integer; constant destination : in positive) is
 			variable actual_results : std_logic_vector(31 downto 0);
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_add);
 			actual_results := tb_alu_res;
+			
+			dotest <= true;
+			op_type <= t_add;
+			test_expected_value <= expected_results;
+			test_expected_destination_reg <= destination;
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
 			REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
@@ -483,9 +512,14 @@ BEGIN
 		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0) ) is
 			variable actual_flags : std_logic_vector(2 downto 0);
 		begin
+			
 			fetch_clocks(index_fetch);
 			exec_clocks(index_beq);
 			actual_flags := tb_alu_flag;
+			
+			dotest <= true;
+			op_type <= t_beq;
+			test_expected_value <= 0;
 			assert actual_flags = expected_flags report " beq Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
 			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_beq;
@@ -494,6 +528,12 @@ BEGIN
 		begin
 			fetch_clocks(index_fetch);
 			exec_clocks(index_j);
+			
+			dotest <= true;
+			op_type <= t_jump;
+			test_expected_value <= expected_results;
+			
+			
 			REPORT "jump finished";
 		end procedure exec_j;
 		
@@ -505,16 +545,17 @@ BEGIN
 		wait for 10 ns;
 		wait until rising_edge(tb_clk);
 		
-		exec_addi(1);
-		exec_j(0);
-		exec_addi(-1);
+		exec_addi(1,5);
+		--exec_j(0);
+		exec_addi(-1,6);
 		
-		exec_add(2);	
-		exec_add(-2);
-		exec_add(0);
+		exec_add(2,5);	
+		exec_add(-2,6);
+		exec_add(0,7);
 		exec_beq("001");
 		exec_beq("001");
 		exec_j(0);
+		fetch_clocks(index_fetch);
 		
 		--exec_addi(-1);
 		

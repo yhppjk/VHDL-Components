@@ -394,10 +394,10 @@ BEGIN
 	J_immediate <= "00000000000" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0' when RI_value(31) = '0'
 				else "11111111111" & RI_value(31) & RI_value(19 downto 12) & RI_value(20) & RI_value(30 downto 21) & '0' when RI_value(31) = '1';
 	
-	funct3 <= RI_value(13 downto 11) when RI_value /= "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU";
-	rs1 <= RI_value(18 downto 14);
-	rs2 <= RI_value(23 downto 19);
-	rd <= RI_value(10 downto 6);
+	funct3 <= RI_value(14 downto 12) when RI_value /= "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU";
+	rs1 <= RI_value(19 downto 15);
+	rs2 <= RI_value(24 downto 20);
+	rd <= RI_value(11 downto 7);
 		
 	LoadIR <= port_wIR and not(Membusy);	
 	targetPC <= std_logic_vector(unsigned(MUX1PC_out) + unsigned(MUX2PC_out));

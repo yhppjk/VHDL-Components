@@ -5,6 +5,13 @@
 
 ### Here I record some of the abstract of meeting
 
+
+#### 07/09/2023 
+	-- Solved probleme of funct3, rs1, rs2, rd wrong position issue
+	-- The program can run and check the reg_file and the value at the right position
+	-- the beq and jump need to be checked
+
+
 #### 07/09/2023 
 	-- use alias to access the internal signals to check if the operation is correct
 	-- put the assert in every fetch procedure to check different type of operation expected values
