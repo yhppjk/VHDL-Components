@@ -23,25 +23,28 @@ package mem32_init_pkg is
 	-- initialized to init contents.
 	-- If depth is larger that init'length then only the first init'length entries are initialized,
 	-- the rest contain zero.
-	impure function mem32_init_f(init : mem32_t; depth : natural) return mem32_t;
+	impure function mem32_init_f(init : mem32_t; depth : natural; offset : integer := 0) return mem32_t;
 
 end package mem32_init_pkg;
 
 
 package body mem32_init_pkg is 
 
-	impure function mem32_init_f(init : mem32_t; depth : natural) return mem32_t is
+	impure function mem32_init_f(init : mem32_t; depth : natural; offset : integer := 0) return mem32_t is
 		variable mem_v : mem32_t(0 to depth-1);
+		variable mem_index : integer;
   	begin
 		-- report "Debug: function mem32_init_f called" ;
 		mem_v := (others => (others => '0')); -- make sure non explicitly-init entries are set to zero
 		-- Loop to initialize the first depth entries
-		for idx_v in 0 to depth-1 loop
+		mem_index := 0;
+		for idx_v in offset to offset+depth-1 loop
 			-- But init only in range of source data array
 			if (idx_v >= init'length) then
 				exit;
 			end if;
-			mem_v(idx_v) := init(idx_v);
+			mem_v(mem_index) := init(idx_v);
+			mem_index := mem_index+1;
 		end loop; -- idx_v loop
 		return mem_v;
   	end function mem32_init_f;

@@ -14,7 +14,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity apb_init_mem is
-	generic (ADDR_BITS: natural := 16);  -- Number of address bits
+	generic (ADDR_BITS: natural := 16; offset : integer := 0);  -- Number of address bits
 	port (
 		PCLK    : in  std_logic;
 		-- PRESETn : in STD_LOGIC; -- Not needed here
@@ -34,7 +34,7 @@ use work.mem32_init_pkg.all;   -- For the mem32_t data type and the mem32_init_f
 use work.apb_init_mem_pkg.all; -- For the apb_init_mem_contents constant array of initial memory values
 architecture Behavioral of apb_init_mem is 
 	constant mem_size : natural := 2**ADDR_BITS - 1;
-	signal mem_contents : mem32_t(0 to mem_size-1) := mem32_init_f(apb_init_mem_contents, mem_size);
+	signal mem_contents : mem32_t(0 to mem_size-1) := mem32_init_f(apb_init_mem_contents, mem_size, offset);
 
 begin 
 

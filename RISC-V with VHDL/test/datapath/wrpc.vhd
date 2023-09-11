@@ -38,7 +38,7 @@ architecture behavioral of wrpc is
 begin
 	control_signal <= input_JB & input_XZ & input_XN & input_XF;		--! Connect control signal
 
-	process(input_JB,input_XZ,input_XN,input_XF,alu_z,alu_n,alu_c)
+	process(control_signal,alu_z,alu_n,alu_c)
 	begin
 		wrpc_out <= '0';
 		case control_signal is
@@ -46,12 +46,14 @@ begin
 			when "1000" | "1001"=>
 				wrpc_out <= '1';
 		--! BEQ&BNE
+			--BEQ
 			when "1101" =>
                 if alu_z = '1' then
                     wrpc_out <= '1';
                 else
                     wrpc_out <= '0';
                 end if;
+			--BNE
 			when "1100" =>
                 if alu_z = '0' then
                     wrpc_out <= '1';
@@ -59,12 +61,14 @@ begin
                     wrpc_out <= '0';
                 end if;
 		--! BLT&BGE
+			--BLT
 			when "1011"	 =>
                 if alu_n = '1' then
                     wrpc_out <= '1';
                 else
                     wrpc_out <= '0';
                 end if;			
+			--BGE
 			when "1010" =>
                 if alu_n = '0' then
                     wrpc_out <= '1';
@@ -72,12 +76,14 @@ begin
                     wrpc_out <= '0';
                 end if;
 		--! BLTU&BGEU
+			--BLTU
 			when "1111" =>
                 if alu_c = '1' then
                     wrpc_out <= '1';
                 else
                     wrpc_out <= '0';
                 end if;
+			--BGEU
 			when "1110" =>
                 if alu_c = '0' then
                     wrpc_out <= '1';
@@ -85,7 +91,7 @@ begin
                     wrpc_out <= '0';
                 end if;
 			when others =>
-				wrpc_out <= 'X';		
+				wrpc_out <= '0';		
 		end case;
 	end process;
 

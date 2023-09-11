@@ -61,7 +61,7 @@ ARCHITECTURE behavior OF datapath_tb IS
     END COMPONENT;
 	
 	component apb_init_mem is
-		generic (ADDR_BITS: natural := 16);  -- Number of address bits
+		generic (ADDR_BITS: natural := 16; offset : integer := 0);  -- Number of address bits
 		port (
 			PCLK    : in  std_logic;
 			PADDR   : in  std_logic_vector(ADDR_BITS-1 downto 0);
@@ -161,8 +161,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal tb_alu_flag : std_logic_vector(2 downto 0);
 
 	--alias for check internal signals
-	alias reg_file is <<signal .datapath_tb.UUT.register_file.reg_file : reg_file_t >>;
-	alias pc       is <<signal .datapath_tb.UUT.PC_value : std_logic_vector(31 downto 0) >>;
+
 	
 	--signal for testing 
 	signal dotest 						: boolean := false;
@@ -170,10 +169,10 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal test_type 					: integer;
 	signal test_expected_value 			: integer;
 	signal test_expected_destination_reg : positive := 1;
-	
+	--signal test_expected_flags : std_logic_vector(2 downto 0);
 	--type for different operation
 	
-	type type_list is (t_addi, t_add, t_beq, t_jump);
+	type type_list is (t_regfile, t_pc);
 	signal op_type: type_list;
 			
 		-- boolean  dotest
@@ -252,7 +251,7 @@ BEGIN
 	
 	);
 
-	imem1: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS) port map (
+	imem1: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS, offset => 0) port map (
 		PCLK    => tb_clk, 
 		PRDATA  => PRDATAs(0), 
 		PREADY  => PREADYs(0), 
@@ -265,7 +264,7 @@ BEGIN
 		); 
 		
 
-	imem2: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS) port map (
+	imem2: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS, offset => 1024) port map (
 		PCLK    => tb_clk, 
 		PRDATA  => PRDATAs(1), 
 		PREADY  => PREADYs(1), 
@@ -386,6 +385,8 @@ BEGIN
 		-- Procedure for giving values to signal
 		procedure fetch_clocks(constant first_entry: in integer) is
 			variable idx : integer := first_entry;
+			alias reg_file is <<signal .datapath_tb.UUT.register_file.reg_file : reg_file_t >>;
+			alias pc       is <<signal .datapath_tb.UUT.PC_value : std_logic_vector(31 downto 0) >>;
 		begin
 			for idx in first_entry to first_entry+100 loop
 				cu_fetching <= list_1(idx).fetching;
@@ -412,19 +413,15 @@ BEGIN
 					if dotest = true then
 						dotest <= false;
 						case op_type is 
-							when t_addi =>
-								test_name <="addi";
-							when t_add =>
-								test_name <="add ";
-							when t_beq =>
-								test_name <="beq ";
-							when t_jump =>
-								test_name <="jump";
-							when others =>
-								test_name <="erro";
+							when t_regfile =>
+								assert to_integer(signed(reg_file(test_expected_destination_reg))) = test_expected_value report test_name&" destination or value is wrong. The destination is "&integer'image(test_expected_destination_reg)&". the value is "&integer'image(to_integer(signed(reg_file(test_expected_destination_reg))));
+							when t_pc =>
+								assert to_integer(unsigned(pc)) = test_expected_value report test_name&" pc value is wrong, the pc value is "&integer'image(to_integer(unsigned(pc)));
+							when others => NULL;
+								
 						end case;
-						assert to_integer(signed(reg_file(test_expected_destination_reg))) = test_expected_value report test_name&" destination or value is wrong. The destination is "&integer'image(test_expected_destination_reg)&". the value is "&integer'image(to_integer(signed(reg_file(test_expected_destination_reg))));
-						assert to_integer(signed(pc)) = test_expected_value report test_name&" pc value is wrong";
+
+						--assert to_integer(signed(reg_file(test_expected_destination_reg))) = test_expected_value report test_name&" destination or value is wrong. The destination is "&integer'image(test_expected_destination_reg)&". the value is "&integer'image(to_integer(signed(reg_file(test_expected_destination_reg))));
 					end if;
 					
 					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
@@ -445,9 +442,9 @@ BEGIN
 			variable idx : integer := first_entry;
 		begin
 			for idx in first_entry to first_entry+100 loop
-				cu_fetching <= list_1(idx).fetching;
+				--cu_fetching <= list_1(idx).fetching;
 				cu_sel1PC <= list_1(idx).sel1PC;
-				cu_sel2PC <= list_1(idx).sel2PC;
+				cu_sel2PC <= list_1(idx).sel2PC;	
 				cu_iPC <= list_1(idx).iPC;
 				cu_JB <= list_1(idx).JB;
 				cu_XZ <= list_1(idx).XZ;
@@ -478,7 +475,7 @@ BEGIN
 			REPORT "exec finished";
 		end procedure exec_clocks;
 
-		procedure exec_addi(constant expected_results: in integer; constant destination : in positive ) is
+		procedure exec_addi(constant expected_results: in integer; constant destination : in integer ) is
 			variable actual_results : std_logic_vector(31 downto 0) ;
 		begin
 			fetch_clocks(index_fetch);
@@ -486,15 +483,17 @@ BEGIN
 			actual_results := tb_alu_res;
 			
 			dotest <= true;
-			op_type <= t_addi;
+			op_type <= t_regfile;
+			test_name <="addi";
 			test_expected_value <= expected_results;
 			test_expected_destination_reg <= destination;
+			--test_expected_flags <= "000";
 			
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
-		procedure exec_add(expected_results: in integer; constant destination : in positive) is
+		procedure exec_add(expected_results: in integer; constant destination : in integer) is
 			variable actual_results : std_logic_vector(31 downto 0);
 		begin
 			fetch_clocks(index_fetch);
@@ -502,14 +501,17 @@ BEGIN
 			actual_results := tb_alu_res;
 			
 			dotest <= true;
-			op_type <= t_add;
+			op_type <= t_regfile;
+			test_name <="add ";
 			test_expected_value <= expected_results;
 			test_expected_destination_reg <= destination;
+			--test_expected_flags <= "000";
+			
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
 			REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
 		
-		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0) ) is
+		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
 			variable actual_flags : std_logic_vector(2 downto 0);
 		begin
 			
@@ -518,8 +520,10 @@ BEGIN
 			actual_flags := tb_alu_flag;
 			
 			dotest <= true;
-			op_type <= t_beq;
-			test_expected_value <= 0;
+			op_type <= t_pc;
+			test_expected_value <= expected_results;
+			--test_expected_flags <= expected_flags;
+			
 			assert actual_flags = expected_flags report " beq Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
 			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_beq;
@@ -530,9 +534,9 @@ BEGIN
 			exec_clocks(index_j);
 			
 			dotest <= true;
-			op_type <= t_jump;
+			op_type <= t_pc;
 			test_expected_value <= expected_results;
-			
+			--test_expected_flags <= "000";
 			
 			REPORT "jump finished";
 		end procedure exec_j;
@@ -552,11 +556,11 @@ BEGIN
 		exec_add(2,5);	
 		exec_add(-2,6);
 		exec_add(0,7);
-		exec_beq("001");
-		exec_beq("001");
-		exec_j(0);
-		fetch_clocks(index_fetch);
-		
+		exec_beq("001", 32);
+		--exec_beq("001");
+		exec_j(32);
+		exec_j(32);
+		exec_j(32);
 		--exec_addi(-1);
 		
 		-- exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1

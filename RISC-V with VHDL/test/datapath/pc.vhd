@@ -41,10 +41,10 @@ BEGIN
         IF reset = '1' THEN
             internal_pc <= (others => '0');
 		elsif rising_edge(clk) then
-			IF ena_pc = '1' THEN
-				internal_pc <= internal_pc + 4;
-			ELSIF ena_in = '1' THEN
+			IF ena_in = '1' THEN
 				internal_pc <= unsigned(data_in);
+			ELSIF ena_pc = '1' THEN
+				internal_pc <= internal_pc + 4;
 			END IF;    
 		end if;
     END PROCESS;

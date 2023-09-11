@@ -5,6 +5,12 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 11/09/2023
+	-- Solve the problem of RAM behavior(byte extend issue)
+	-- find out why the program counter doesn't change to j pass
+	-- 
+	-- Next meeting Wednesday
+
 
 #### 07/09/2023 
 	-- Solved probleme of funct3, rs1, rs2, rd wrong position issue
