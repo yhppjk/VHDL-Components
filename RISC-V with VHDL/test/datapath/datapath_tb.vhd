@@ -519,6 +519,7 @@ BEGIN
 			exec_clocks(index_beq);
 			actual_flags := tb_alu_flag;
 			
+			test_name <="beq ";
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
@@ -533,6 +534,7 @@ BEGIN
 			fetch_clocks(index_fetch);
 			exec_clocks(index_j);
 			
+			test_name <="jump";
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;

@@ -7,7 +7,7 @@
 
 #### 11/09/2023
 	-- Solve the problem of RAM behavior(byte extend issue)
-	-- find out why the program counter doesn't change to j pass
+	-- find out why the program counter doesn't change to j pass 
 	-- 
 	-- Next meeting Wednesday
 
