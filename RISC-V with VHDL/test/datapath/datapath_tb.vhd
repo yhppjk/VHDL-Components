@@ -529,6 +529,24 @@ BEGIN
 			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_beq;
 		
+		procedure exec_bne(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
+			variable actual_flags : std_logic_vector(2 downto 0);
+		begin
+			
+			fetch_clocks(index_fetch);
+			exec_clocks(index_bne);
+			actual_flags := tb_alu_flag;
+			
+			test_name <="bne ";
+			dotest <= true;
+			op_type <= t_pc;
+			test_expected_value <= expected_results;
+			--test_expected_flags <= expected_flags;
+			
+			assert actual_flags = expected_flags report " bne Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
+			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+		end procedure exec_bne;
+		
 		procedure exec_j(expected_results: in integer) is
 		begin
 			fetch_clocks(index_fetch);
@@ -558,6 +576,7 @@ BEGIN
 		exec_add(2,5);	
 		exec_add(-2,6);
 		exec_add(0,7);
+		exec_bne("001", 24);
 		exec_beq("001", 32);
 		--exec_beq("001");
 		exec_j(32);

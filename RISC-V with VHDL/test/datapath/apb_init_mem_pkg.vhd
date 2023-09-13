@@ -19,15 +19,15 @@ use ieee.std_logic_1164.all;
 use work.mem32_init_pkg.all;
 package apb_init_mem_pkg is
     constant apb_init_mem_contents : mem32_t := (
-        x"00100293",	--addi
-        x"fff00313",	--addi
-        x"005282b3",	--add
-        x"00630333",	--add
-        x"005303b3",	--add
-        x"00038663",	--beq pass
-        x"3e039463",	--bne failed
-        x"3e80006f",	--j failed 2
-        x"0000006f",	--j pass
+        x"00100293",
+        x"fff00313",
+        x"005282b3",
+        x"00630333",
+        x"005303b3",
+        x"3e039663",
+        x"00038463",
+        x"3e80006f",
+        x"0000006f",
         x"00000000",
         x"00000000",
         x"00000000",

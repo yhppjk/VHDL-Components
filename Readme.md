@@ -5,6 +5,13 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 13/09/2023
+	-- create procedure exec_bne to test the case bne
+	-- create react signal list for bne in datapath_pkg
+	-- change beq and bne situations (4 cases) to test if the datapath react correctly
+	-- try to use the assembler code which automatically run the Tests
+	
+
 #### 11/09/2023
 	-- Solve the problem of RAM behavior(byte extend issue)
 	-- find out why the program counter doesn't change to j pass 
