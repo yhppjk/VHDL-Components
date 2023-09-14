@@ -97,10 +97,12 @@ begin
 			res <= op1 or op2;
 		when ALU_XOR =>	
 			res <= op1 xor op2;
+		--Should I do both beq and blt to adapt ble case?
 		when ALU_BEQ =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) = 0 then
 				flags(0) <= '1';
 			end if;
+		--problem here
 		when ALU_BLT =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) < 0 then
 				flags(1) <='1';

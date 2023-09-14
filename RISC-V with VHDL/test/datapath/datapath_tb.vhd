@@ -594,15 +594,16 @@ BEGIN
 		exec_add(2,5);	
 		exec_add(-2,6);
 		exec_add(0,7);
-		exec_bne("001", 24);
-		exec_beq("001", 32);
+		--exec_beq("000", 32);
+		exec_bne("000", 24);
 		exec_ble("000", 36);
 		exec_ble("000", 40);
 		exec_ble("000", 44);
+		fetch_clocks(index_fetch);
 		--exec_beq("001");
-		exec_j(32);
-		exec_j(32);
-		exec_j(32);
+		-- exec_j(32);
+		-- exec_j(32);
+		-- exec_j(32);
 		--exec_addi(-1);
 		
 		-- exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1

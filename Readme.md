@@ -5,6 +5,10 @@
 
 ### Here I record some of the abstract of meeting
 
+#### 14/09/2023
+	-- find a problem in ALU that, the blt instruction cant react correctly
+
+
 #### 13/09/2023
 	-- create procedure exec_bne to test the case bne
 	-- create react signal list for bne in datapath_pkg
