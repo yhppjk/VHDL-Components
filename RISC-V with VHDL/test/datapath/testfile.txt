@@ -1,0 +1,11 @@
+# mnemonic dest expected-result  expected-flags expected-pc
+
+addi    05 00000001 000  # flags not used
+addi    06 FFFFFFFF 000  # flags not used
+add     05 00000002 000  # flags not used
+add     06 FFFFFFFE 000  # flags not used
+add     07 00000000 000  # flags not used
+bne     24 00000000 001  # destination register not used, destination is PC
+ble     40 00000000 010  # destination register not used, destination is PC
+ble     44 00000000 000  # destination register not used, destination is PC
+ble     48 00000000 000  # destination register not used, destination is PC

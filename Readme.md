@@ -4,6 +4,11 @@
 
 
 ### Here I record some of the abstract of meeting
+#### 15/09/2023
+	-- hopefully the branch insturction it works
+	-- to make the asembler file correspond the testfile(testbench instructions)
+	-- use vhdl read and hread to get the contents of txt
+	-- read line by line to get datas to run testbench
 
 #### 14/09/2023
 	-- find a problem in ALU that, the blt instruction cant react correctly
