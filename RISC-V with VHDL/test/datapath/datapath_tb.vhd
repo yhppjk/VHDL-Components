@@ -166,7 +166,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	--signal for testing 
 	signal dotest 						: boolean := false;
 	signal test_name 					: string(1 to 4);
-	signal test_type 					: integer;
+	--signal test_type 					: integer;
 	signal test_expected_value 			: integer;
 	signal test_expected_destination_reg : positive := 1;
 	--signal test_expected_flags : std_logic_vector(2 downto 0);
@@ -596,12 +596,12 @@ BEGIN
 		exec_add(0,7);
 		--exec_beq("000", 32);
 		exec_bne("000", 24);
-		exec_ble("000", 36);
+		exec_ble("010", 36);
 		exec_ble("000", 40);
 		exec_ble("000", 44);
 		fetch_clocks(index_fetch);
 		--exec_beq("001");
-		-- exec_j(32);
+		--exec_j(1024);
 		-- exec_j(32);
 		-- exec_j(32);
 		--exec_addi(-1);

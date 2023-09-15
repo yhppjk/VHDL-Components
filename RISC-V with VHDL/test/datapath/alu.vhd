@@ -28,8 +28,8 @@ entity alu is
 	op2 : in std_logic_vector(31 downto 0);		--! 32-bit operand2
 	selop : in std_logic_vector(3 downto 0);	--! X-bit operation selection
 	--OUTPUTS
-	res : out std_logic_vector(31 downto 0);	--! 32-bit result
-	flags : out std_logic_vector(flagbits-1 downto 0)	--! F-bit result of comparison for branch
+	res : out std_logic_vector(31 downto 0) := (others => '0');	--! 32-bit result
+	flags : out std_logic_vector(flagbits-1 downto 0) := (others => '0')	--! F-bit result of comparison for branch
 	);
 end entity alu;
 	
@@ -54,12 +54,12 @@ architecture behavioral of alu is
 	
 begin
 
-process(op1, op2)
+process(op1, op2, selop)
 begin
 
 	--! Initialization of output
-	res <= (others => '0');
-	flags <= (others => '0');
+	--res <= (others => '0');
+	--flags <= (others => '0');
 
 	--! Case for different selop, running different operation
 	case selop is
@@ -101,15 +101,21 @@ begin
 		when ALU_BEQ =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) = 0 then
 				flags(0) <= '1';
+			else 
+				flags(0) <= '0';
 			end if;
 		--problem here
 		when ALU_BLT =>
 			if to_integer(signed(op1))-to_integer(signed(op2)) < 0 then
 				flags(1) <='1';
+			else 
+				flags(1) <='0';
 			end if;
 		when ALU_BLTU =>
 			if unsigned(op1) < unsigned(op2)  then
 				flags(2) <='1';
+			else 
+				flags(2) <='0';
 			end if;		
 		when ALU_JAL =>
 			res <= op1;

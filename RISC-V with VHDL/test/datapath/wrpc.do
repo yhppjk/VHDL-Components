@@ -76,12 +76,17 @@ add wave -noupdate /datapath_tb/UUT/wrpc_datapath/control_signal
 add wave -noupdate /datapath_tb/UUT/pc_datapath/clk
 add wave -noupdate /datapath_tb/UUT/pc_datapath/reset
 add wave -noupdate /datapath_tb/UUT/pc_datapath/ena_in
-add wave -noupdate /datapath_tb/UUT/pc_datapath/data_in
+add wave -noupdate -radix decimal /datapath_tb/UUT/pc_datapath/data_in
 add wave -noupdate /datapath_tb/UUT/pc_datapath/ena_pc
-add wave -noupdate /datapath_tb/UUT/pc_datapath/current_pc
-add wave -noupdate /datapath_tb/UUT/pc_datapath/internal_pc
+add wave -noupdate -radix decimal /datapath_tb/UUT/pc_datapath/current_pc
+add wave -noupdate -radix decimal /datapath_tb/UUT/pc_datapath/internal_pc
+add wave -noupdate -radix hexadecimal /datapath_tb/UUT/ALU_part/op1
+add wave -noupdate -radix hexadecimal /datapath_tb/UUT/ALU_part/op2
+add wave -noupdate /datapath_tb/UUT/ALU_part/selop
+add wave -noupdate -radix hexadecimal /datapath_tb/UUT/ALU_part/res
+add wave -noupdate /datapath_tb/UUT/ALU_part/flags
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {780993 ps} 0} {{Cursor 2} {172995 ps} 0}
+WaveRestoreCursors {{Cursor 1} {931513 ps} 0} {{Cursor 2} {172995 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 276
 configure wave -valuecolwidth 54
@@ -97,4 +102,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {460035 ps} {977680 ps}
+WaveRestoreZoom {436749 ps} {954394 ps}
