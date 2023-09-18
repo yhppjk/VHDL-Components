@@ -59,7 +59,7 @@ begin
 
 	--! Initialization of output
 	--res <= (others => '0');
-	--flags <= (others => '0');
+	flags <= (others => '0');
 
 	--! Case for different selop, running different operation
 	case selop is
