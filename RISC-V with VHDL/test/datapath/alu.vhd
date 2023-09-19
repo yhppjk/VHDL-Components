@@ -111,6 +111,7 @@ begin
 			else 
 				flags(1) <='0';
 			end if;
+			report "BLT result, op1-op2 = "&integer'image(to_integer(signed(op1))-to_integer(signed(op2)));
 		when ALU_BLTU =>
 			if unsigned(op1) < unsigned(op2)  then
 				flags(2) <='1';
