@@ -4,8 +4,7 @@
 	alu.vhd
 	alu_pkg.vhd
 	alu_tb.vhd
-*this component is tested.	
-	
+
 ### amba-apb
 	apb_init_mem.vhd
 	apb_init_mem_pkg.vhd
@@ -14,11 +13,9 @@
 	apb_slavedec_pkg.vhd
 	apb_system_simple.vhd
 	mem32_init_pkg.vhd
-*this component is tested.
 
 ### control_unit
 	control_unit.vhd
-*this component is not finished.
 
 ### datapath
 	addr_interface.vhd
@@ -52,7 +49,6 @@
 	size_interface.vhd
 	wdata_interface.vhd
 	wrpc.vhd
-	
 
 ### interface
 
@@ -71,7 +67,6 @@
 	registergen_PRDATA.vhd
 	size_interface.vhd
 	wdata_interface.vhd
-*this component is tested.
 
 #### unused_code
 
@@ -80,7 +75,7 @@
 	mux2pc.vhd
 	pc.vhd
 	pc_tb.vhd
-*this component is tested.	
+	
 
 ### wrpc
 	wrpc.vhd
