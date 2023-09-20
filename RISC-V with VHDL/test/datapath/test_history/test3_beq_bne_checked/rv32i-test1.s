@@ -22,7 +22,7 @@ var_a:
 	.word 10	# Global variable
 
 
-
+#test beq_bne
 	.text
 _start:	
 	addi t0, zero, 1	# t0 = 1 	#0
@@ -30,21 +30,20 @@ _start:
 	add  t0, t0, t0		# t0 = 2	#8
 	add  t1, t1, t1		# t1 = -2	#12
 	add t2, t1, t0		# t2 = 0	#16
-	bne t1, zero, pass				#20
-	beq t1, zero, failed			#24
+	beq t1, zero, failed			#20	
+	bne t1, zero, pass				#24
 	j failed2						#28
 	
-
 pass:
-	ble t1, zero, step2				#32
+	blt t1, zero, step2				#32 
 	
 	j pass							#36
 	
 step2:
-	ble t2, zero, step3				#40
+	blt t2, zero, step3				#40
 	
 step3:
-	ble t2, t1, failed				#44
+	blt t2, t1, failed				#44
 
 	
 	.org 1024

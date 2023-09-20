@@ -6,9 +6,10 @@
 ### Here I record some of the abstract of meeting
 
 #### 20/09/2023
-	--
-
-
+	-- seems that the whole work can't be finish in 10 days, i should do the documentation.
+	-- To simplify the continue works, i would explain how the testbenches work and the input, output, etc
+	-- Commit it when everything is fine and tell prof.
+	
 
 #### 15/09/2023
 	-- hopefully the branch insturction it works

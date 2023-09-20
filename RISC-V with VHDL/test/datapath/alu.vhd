@@ -59,7 +59,7 @@ begin
 
 	--! Initialization of output
 	--res <= (others => '0');
-	flags <= (others => '0');
+	--flags <= (others => '0');
 
 	--! Case for different selop, running different operation
 	case selop is
@@ -99,13 +99,18 @@ begin
 			res <= op1 xor op2;
 		--Should I do both beq and blt to adapt ble case?
 		when ALU_BEQ =>
+			flags(2) <= '0';
+			flags(1) <= '0';
 			if to_integer(signed(op1))-to_integer(signed(op2)) = 0 then
 				flags(0) <= '1';
 			else 
 				flags(0) <= '0';
 			end if;
+			report "BEQ result, op1-op2 = "&integer'image(to_integer(signed(op1))-to_integer(signed(op2)));
 		--problem here
 		when ALU_BLT =>
+			flags(2) <= '0';
+			flags(0) <= '0';
 			if to_integer(signed(op1))-to_integer(signed(op2)) < 0 then
 				flags(1) <='1';
 			else 
@@ -113,6 +118,8 @@ begin
 			end if;
 			report "BLT result, op1-op2 = "&integer'image(to_integer(signed(op1))-to_integer(signed(op2)));
 		when ALU_BLTU =>
+			flags(0) <= '0';
+			flags(1) <= '0';
 			if unsigned(op1) < unsigned(op2)  then
 				flags(2) <='1';
 			else 
@@ -123,6 +130,7 @@ begin
 		when ALU_LUI => 
 			res <= op2;
 		when others =>
+			null;
 	end case;
 	
 end process;

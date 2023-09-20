@@ -5,7 +5,8 @@ addi    06 FFFFFFFF 000 08 # flags not used
 add     05 00000002 000 12 # flags not used
 add     06 FFFFFFFE 000 16 # flags not used
 add     07 00000000 000 20 # flags not used
-bne     00 00000000 000 32 # destination 
-ble     00 00000000 010 40 # destination 
-ble     00 00000000 000 44 # destination 
-ble     00 00000000 000 48 # destination
+beq     00 00000000 000 24 # flags and pc
+bne     00 00000000 000 32 # flags and pc
+blt     00 00000000 010 40 # flags and pc
+blt     00 00000000 000 44 # flags and pc
+blt     00 00000000 000 48 # flags and pc

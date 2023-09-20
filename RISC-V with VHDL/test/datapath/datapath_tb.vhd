@@ -566,14 +566,14 @@ BEGIN
 			exec_clocks(index_ble);
 			actual_flags := tb_alu_flag;
 			
-			test_name <="ble ";
+			test_name <="blt ";
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
 			--test_expected_flags <= expected_flags;
 			
-			assert actual_flags = expected_flags report " ble Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
-			REPORT "ble finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+			assert actual_flags = expected_flags report " blt Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
+			REPORT "blt finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_ble;
 		
 		procedure exec_j(expected_results: in integer) is
@@ -608,7 +608,7 @@ BEGIN
 					return 2;
 				when "bne    " =>
 					return 3;
-				when "ble    " =>
+				when "blt    " =>
 					return 4;
 				when "jump   " =>
 					return 5;
