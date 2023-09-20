@@ -17,6 +17,7 @@ use work.datapath_pkg.all;
 use work.reg_file_pkg.all;
 
 ENTITY datapath_tb IS
+--! parts for using Textio, this will make filename be defined by Modelsim
 generic(
 	filename : string:= ""
 );
@@ -66,6 +67,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	);
     END COMPONENT;
 	
+	--memory part with init value
 	component apb_init_mem is
 		generic (ADDR_BITS: natural := 16; offset : integer := 0);  -- Number of address bits
 		port (
@@ -81,6 +83,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 		);
 	end component apb_init_mem;
 
+	--memory part without init value
 	component apb_mem is
 		generic (ADDR_BITS: natural := 16);  -- Number of address bits
 		port (
@@ -96,6 +99,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 		);
 	end component apb_mem;
 	
+	--memory slave decoder
 	component apb_slavedec is
 		port (
 			ADDRESS   : in  std_logic_vector(SLAVE_DECODER_A-1 downto 0);
@@ -110,8 +114,6 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal tb_clk:  std_logic := '1';		--clock input
 	signal tb_rst:  std_logic;		--low level asynchronous reset
 	constant clk_period : time := 10 ns;
-	
-	--instruction part
 	
 	
 	--control unit output signals
@@ -147,10 +149,8 @@ ARCHITECTURE behavior OF datapath_tb IS
 	signal slave_addr_error : std_logic := '0';
 	signal ram_PSEL :std_logic_vector(2 downto 0) := (others => '0');
 	signal ram_NUM_SLAVE : SLAVE_NUMBER_TYPE;
-	
 	signal tb_Membusy : std_logic := '0';
 	
-		-- From master to slave decoder
 	-- From slave decoder to PSELx of each slave
 	signal PSELs      : std_logic_vector(SLAVE_DECODER_S-1 downto 0) := (others => '0');
 	-- From slave decoder to MUXes
@@ -160,35 +160,20 @@ ARCHITECTURE behavior OF datapath_tb IS
 
 	signal PREADYs : std_logic_vector(SLAVE_DECODER_S-1 downto 0) := (others => '0');
 	signal PRDATAs : type_PRDATA_OUT;
-	--signal PRDATAs : type_PRDATA_OUT := ((others => '0'), (others => '0'), (others => '0'));
 
 	--ALU output
 	signal tb_alu_res : std_logic_vector(31 downto 0);
 	signal tb_alu_flag : std_logic_vector(2 downto 0);
 
-	--alias for check internal signals
-
 	
 	--signal for testing 
 	signal dotest 						: boolean := false;
 	signal test_name 					: string(1 to 4);
-	--signal test_type 					: integer;
 	signal test_expected_value 			: integer;
 	signal test_expected_destination_reg : integer := 1;
-	--signal test_expected_flags : std_logic_vector(2 downto 0);
-	--type for different operation
 	
 	type type_list is (t_regfile, t_pc);
 	signal op_type: type_list;
-			
-		-- boolean  dotest
-		-- string testname
-		-- integer testtype
-		-- integer test_expected_value
-		-- integer test_expected_destination_reg
-	--2 assert
-	--reg_file[test_expected_destination_reg] = test_expected_value
-	--pc = test_expected_value
 
 	-- From MUX to master
 
@@ -196,6 +181,7 @@ ARCHITECTURE behavior OF datapath_tb IS
 	constant t1 : integer  := 6;
 	constant t2 : integer  := 7;
 	
+	-- Textio testing signals init
 	signal mnemonic_out : string(1 to 7);
 	signal dest_out :std_logic_vector(4 downto 0);
 	signal flag_out : std_logic_vector(2 downto 0);
@@ -248,7 +234,7 @@ BEGIN
 		port_ALU_flag =>tb_alu_flag
 	);
 	
---slave decoder
+	-- memory slave decoder
 	slave_decoder : apb_slavedec
 	port map (
 		-- Higher bits of the master address
@@ -261,7 +247,7 @@ BEGIN
 		NUM_SLAVE => ram_NUM_SLAVE
 	
 	);
-
+	-- memory part1, init value of 0 ~ 1023
 	imem1: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS, offset => 0) port map (
 		PCLK    => tb_clk, 
 		PRDATA  => PRDATAs(0), 
@@ -274,7 +260,7 @@ BEGIN
 		PWDATA  => ram_PWDATA
 		); 
 		
-
+	-- memory part2, init value of 1024 ~ 2047
 	imem2: apb_init_mem generic map (ADDR_BITS => IMEM_ADDR_BITS, offset => 1024) port map (
 		PCLK    => tb_clk, 
 		PRDATA  => PRDATAs(1), 
@@ -286,7 +272,8 @@ BEGIN
 		PWRITE  => ram_PWRITE,
 		PWDATA  => ram_PWDATA		
 		); 
-		
+	
+	-- empty memory part3
 	dmem: apb_mem generic map (ADDR_BITS => DMEM_ADDR_BITS) port map (
 		PCLK    => tb_clk, 
 		PRDATA  => PRDATAs(2), 
@@ -299,6 +286,7 @@ BEGIN
 		PWDATA  => ram_PWDATA
 		); 
 		
+	-- Memory PRDATA mux
 	muxPRDATA : mux_apb_mem_PRDATA
 		generic map (
 			width => 32,
@@ -312,6 +300,7 @@ BEGIN
 			dout => ram_PRDATA
 		);
 		
+	-- Memory PREADY mux		
 	muxPREADY : mux_apb_mem_PREADY
 		generic map (
 			prop_delay => 0 ns
@@ -324,8 +313,7 @@ BEGIN
 			dout => ram_PREADY
 		);
 
-
-	
+	--main clk
 	clk_process: process
     begin
         tb_clk <= not tb_clk;
@@ -334,68 +322,11 @@ BEGIN
     END PROCESS clk_process;
 
 	simulation : PROCESS
-		-- Procedure for giving values to signal
-		procedure fetch_clock1(
-			constant fetching_val : in std_logic;
-			constant sel1PC_val : in std_logic;
-			constant sel2PC_val : in std_logic_vector(1 downto 0);
-			constant iPC_val : in std_logic;
-			constant JB_val : in std_logic;
-			constant XZ_val : in std_logic;
-			constant XN_val : in std_logic;
-			constant XF_val : in std_logic;
-			constant wRD_val : in std_logic;
-			constant selRD_val : in std_logic;
-			constant sel1ALU_val : in std_logic;
-			constant sel2ALU_val : in std_logic_vector(1 downto 0);
-			constant selopALU_val : in std_logic_vector(3 downto 0);
-			constant wIR_val : in std_logic;
-			constant RDMEM_val : in std_logic;
-			constant WRMEM_val : in std_logic;
-			constant IDMEM_val : in std_logic
-		) is
-		begin
-			cu_fetching <= fetching_val;
-			cu_sel1PC 	<= sel1PC_val;
-			cu_sel2PC 	<= sel2PC_val;
-			cu_iPC 		<= iPC_val;
-			cu_JB 		<= JB_val;
-			cu_XZ 		<= XZ_val;
-			cu_XN 		<= XN_val;
-			cu_XF 		<= XF_val;
-			cu_wRD 		<= wRD_val;
-			cu_selRD 	<= selRD_val;
-			cu_sel1ALU	<= sel1ALU_val;
-			cu_sel2ALU	<= sel2ALU_val;
-			cu_selopALU	<= selopALU_val;
-			cu_wIR		<= wIR_val;
-			cu_RDMEM	<= RDMEM_val;
-			cu_WRMEM	<= WRMEM_val;
-			cu_IDMEM	<= IDMEM_val;
-			REPORT "clock 1, write CU value";
-		wait until rising_edge(tb_clk);
-			cu_wIR <= '1';
-			REPORT "clock 2, wIR = '1' and change when Membusy = 0";
-		wait until falling_edge(tb_clk);
-		wait until rising_edge(tb_clk) and tb_Membusy = '0';
-			cu_wRD <= '1';
-			cu_iPC <= '1';
-			REPORT "clock 3, using ALU";
-		wait until falling_edge(tb_clk);
-		wait until rising_edge(tb_clk);
-			-- wait until rising_edge(tb_clk) and ram_PREADY = '1';
-			-- while Membusy
-			-- for i in 0 to num_wait loop
-				-- wait until rising_edge(tb_clk);
-			-- end loop;  
-		wait until falling_edge(tb_clk);
-			REPORT "end of one operation";
-		end procedure fetch_clock1;
-		
 		
 		-- Procedure for giving values to signal
 		procedure fetch_clocks(constant first_entry: in integer) is
 			variable idx : integer := first_entry;
+			--alias for check internal signals
 			alias reg_file is <<signal .datapath_tb.UUT.register_file.reg_file : reg_file_t >>;
 			alias pc       is <<signal .datapath_tb.UUT.PC_value : std_logic_vector(31 downto 0) >>;
 		begin
@@ -421,6 +352,7 @@ BEGIN
 				for i in 0 to 100 loop
 					wait until rising_edge(tb_clk);
 					
+					-- check the if the values are as expected ones.
 					if dotest = true then
 						dotest <= false;
 						case op_type is 
@@ -429,17 +361,16 @@ BEGIN
 							when t_pc =>
 								assert to_integer(unsigned(pc)) = test_expected_value report test_name&" pc value is wrong, the pc value is "&integer'image(to_integer(unsigned(pc)));
 							when others => NULL;
-								
 						end case;
-
-						--assert to_integer(signed(reg_file(test_expected_destination_reg))) = test_expected_value report test_name&" destination or value is wrong. The destination is "&integer'image(test_expected_destination_reg)&". the value is "&integer'image(to_integer(signed(reg_file(test_expected_destination_reg))));
 					end if;
 					
+					--exit the check loop when memory is busy
 					if ((list_1(idx).WaitMEM = '0') or (tb_Membusy = '0')) then
 						exit;
 					end if;	
 				end loop;
 				
+				--exit fetch clock
 				if (list_1(idx).EOF = '1') then
 					exit;
 				end if;
@@ -453,7 +384,6 @@ BEGIN
 			variable idx : integer := first_entry;
 		begin
 			for idx in first_entry to first_entry+100 loop
-				--cu_fetching <= list_1(idx).fetching;
 				cu_sel1PC <= list_1(idx).sel1PC;
 				cu_sel2PC <= list_1(idx).sel2PC;	
 				cu_iPC <= list_1(idx).iPC;
@@ -477,7 +407,7 @@ BEGIN
 						exit;
 					end if;	
 				end loop;
-				
+				--exit exec clock when End of Instruction
 				if (list_1(idx).EOI = '1') then
 					exit;
 				end if;
@@ -486,6 +416,7 @@ BEGIN
 			REPORT "exec finished";
 		end procedure exec_clocks;
 
+		--ADDI
 		procedure exec_addi(constant expected_results: in integer; constant destination : in integer ) is
 			variable actual_results : std_logic_vector(31 downto 0) ;
 		begin
@@ -498,12 +429,12 @@ BEGIN
 			test_name <="addi";
 			test_expected_value <= expected_results;
 			test_expected_destination_reg <= destination;
-			--test_expected_flags <= "000";
 			
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
 			REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
+		--ADD
 		procedure exec_add(expected_results: in integer; constant destination : in integer) is
 			variable actual_results : std_logic_vector(31 downto 0);
 		begin
@@ -516,12 +447,12 @@ BEGIN
 			test_name <="add ";
 			test_expected_value <= expected_results;
 			test_expected_destination_reg <= destination;
-			--test_expected_flags <= "000";
 			
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
 			REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
 		
+		--BEQ
 		procedure exec_beq(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
 			variable actual_flags : std_logic_vector(2 downto 0);
 		begin
@@ -534,12 +465,12 @@ BEGIN
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
-			--test_expected_flags <= expected_flags;
 			
 			assert actual_flags = expected_flags report " beq Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
 			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_beq;
 		
+		--BNE
 		procedure exec_bne(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
 			variable actual_flags : std_logic_vector(2 downto 0);
 		begin
@@ -552,30 +483,30 @@ BEGIN
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
-			--test_expected_flags <= expected_flags;
 			
 			assert actual_flags = expected_flags report " bne Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" ; --severity failure;
 			REPORT "bne finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_bne;
 		
-		procedure exec_ble(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
+		--BLT
+		procedure exec_blt(expected_flags: std_logic_vector(2 downto 0); expected_results: in integer ) is
 			variable actual_flags : std_logic_vector(2 downto 0);
 		begin
 			
 			fetch_clocks(index_fetch);
-			exec_clocks(index_ble);
+			exec_clocks(index_blt);
 			actual_flags := tb_alu_flag;
 			
 			test_name <="blt ";
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
-			--test_expected_flags <= expected_flags;
 			
 			assert actual_flags = expected_flags report " blt Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
 			REPORT "blt finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
-		end procedure exec_ble;
+		end procedure exec_blt;
 		
+		--JUMP
 		procedure exec_j(expected_results: in integer) is
 		begin
 			fetch_clocks(index_fetch);
@@ -585,7 +516,6 @@ BEGIN
 			dotest <= true;
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
-			--test_expected_flags <= "000";
 			
 			REPORT "jump finished";
 		end procedure exec_j;
@@ -594,9 +524,10 @@ BEGIN
 		constant mnemonic_add:  integer := 1;
 		constant mnemonic_beq:  integer := 2;
 		constant mnemonic_bne:  integer := 3;
-		constant mnemonic_ble:  integer := 4;
+		constant mnemonic_blt:  integer := 4;
 		constant mnemonic_j:    integer := 5;
 		
+		--function to decode the name of test in order to reacting properly 
 		function decode_mnemonic(constant mnemonic : string(1 to 7))  return integer is
 		BEGIN
 			case mnemonic is
@@ -623,7 +554,7 @@ BEGIN
 	variable line_num : line;
 	variable mnemonic : string(1 to 7);
 	variable space_character : character;
-	variable destination_register : std_logic_vector(4 downto 0);	--why this format?
+	variable destination_register : std_logic_vector(4 downto 0);
 	variable vGoodRead      : boolean := true;
 	variable expected_value : std_logic_vector(31 downto 0);
 	variable text_expected_flags : std_logic_vector(2 downto 0);
@@ -639,18 +570,19 @@ BEGIN
 		wait for 10 ns;
 		wait until rising_edge(tb_clk);
 		
+		--this loop will start read the list line by line and do the test case until finished
 		while not endfile(file_pointer) loop
 			vGoodRead := true;
 			readline(file_pointer, line_num);
-			ASSERT vGoodRead = true report "read failed0";
+			ASSERT vGoodRead = true report "read failed0";--debug
 			
-			if line_num'length <25 then
+			if line_num'length <25 then		--avoid empty line
 				next;
 			end if;
 			read(line_num, mnemonic);
-			ASSERT vGoodRead = true report "read failed1";
+			ASSERT vGoodRead = true report "read failed1";--debug
 			
-			if mnemonic(1) = '#' then
+			if mnemonic(1) = '#' then		--avoid comment line
 				next;
 			end if;
 			read(line_num, space_character);
@@ -659,7 +591,7 @@ BEGIN
 			end if;
 			hread(line_num, destination_register, vGoodRead);
 			
-			ASSERT vGoodRead = true report "read failed2";
+			ASSERT vGoodRead = true report "read failed2";--debug
 			if vGoodRead = false then
 				next;
 			end if;
@@ -669,7 +601,7 @@ BEGIN
 				next;
 			end if;
 			hread(line_num, expected_value, vGoodRead);
-			ASSERT vGoodRead = true report "read failed3";
+			ASSERT vGoodRead = true report "read failed3";--debug
 			if vGoodRead = false then
 				next;
 			end if;
@@ -679,7 +611,7 @@ BEGIN
 				next;
 			end if;
 			read(line_num, text_expected_flags, vGoodRead);
-			ASSERT vGoodRead = true report "read failed4";
+			ASSERT vGoodRead = true report "read failed4";--debug
 			if vGoodRead = false then
 				next;
 			end if;
@@ -689,16 +621,16 @@ BEGIN
 				next;
 			end if;
 			read(line_num, expected_pc, vGoodRead);
-			ASSERT vGoodRead = true report "read failed5";
+			ASSERT vGoodRead = true report "read failed5";--debug
 			if vGoodRead = false then
 				next;
 			end if;
 			
-			mnemonic_out <= mnemonic;
-			dest_out <= destination_register;
-			flag_out <= text_expected_flags;
-			success <= endfile(file_pointer);
-			vGoodRead_out <= vGoodRead;
+			mnemonic_out <= mnemonic;--debug
+			dest_out <= destination_register;--debug
+			flag_out <= text_expected_flags;--debug
+			success <= endfile(file_pointer);--debug
+			vGoodRead_out <= vGoodRead;--debug
 			
 			
 			case decode_mnemonic(mnemonic) IS
@@ -710,61 +642,23 @@ BEGIN
 					exec_beq(text_expected_flags, expected_pc);
 				when mnemonic_bne =>
 					exec_bne(text_expected_flags, expected_pc);
-				when mnemonic_ble =>
-					exec_ble(text_expected_flags, expected_pc);
+				when mnemonic_blt =>
+					exec_blt(text_expected_flags, expected_pc);
 				when mnemonic_j =>
 					exec_j(expected_pc);
 				when others =>
 					null;
 			end case;
 		end loop;
-		success <= endfile(file_pointer);
-		vGoodRead_out <= vGoodRead;
-	/*	
-		exec_addi(1,5);
-		--exec_j(0);
-		exec_addi(-1,6);
 		
-		exec_add(2,5);	
-		exec_add(-2,6);
-		exec_add(0,7);
-		--exec_beq("000", 32);
-		exec_bne("000", 24);
-		exec_ble("010", 40);
-		exec_ble("000", 44);
-		exec_ble("000", 48);
-		fetch_clocks(index_fetch);
-		--exec_beq("001");
-		--exec_j(1024);
-		-- exec_j(32);
-		-- exec_j(32);
-		--exec_addi(-1);
+		--debug
+		success <= endfile(file_pointer);--debug
+		vGoodRead_out <= vGoodRead;--debug
 		
-		-- exec_addi(t0, 1); -- reg dst =5, value + 1, wRD = 1
-		-- exec_addi(t1, -1);
-		-- exec_add(t0, 2);
-		-- exec_add(t1, -2);
-		-- exec_add(t2, 0);
-		-- exec_beq(true, pass); -- branch to pass taken
-		-- exec_beq(false, failed); -- brach to failed not taken
-		-- exec_j(failed2); -- jump to failed2
-		*/
-		fetch_clocks(index_fetch);
+		fetch_clocks(index_fetch);		--to check the value whether it is correct
 		ASSERT false
 			REPORT "Simulation ended ( not a failure actually ) "
 		SEVERITY failure;
-
-
-
-		
-		
-		-- for i in 0 to 7 loop
-			-- fetch_clock1(list_1(i).fetching, list_1(i).sel1PC,list_1(i).sel2PC, list_1(i).iPC, list_1(i).JB, list_1(i).XZ, list_1(i).XN, list_1(i).XF, list_1(i).wRD, list_1(i).selRD, list_1(i).sel1ALU, list_1(i).sel2ALU, list_1(i).selopALU, list_1(i).wIR, list_1(i).RDMEM, list_1(i).WRMEM, list_1(i).IDMEM);
-			
-			-- wait until rising_edge(tb_clk);
-		-- end loop;
-		-- REPORT "addi 1 test finished";		
-		-- wait for 20 ns;
 		
 	end process simulation;
 

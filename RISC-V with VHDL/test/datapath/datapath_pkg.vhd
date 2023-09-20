@@ -235,7 +235,7 @@ PACKAGE datapath_pkg IS
 	CONSTANT index_add:   integer := 8;
 	constant index_beq:   integer := 12;
 	constant index_bne:   integer := 16;
-	constant index_ble:	  integer := 20;
+	constant index_blt:	  integer := 20;
 	constant index_j:     integer := 24;
 	
 
