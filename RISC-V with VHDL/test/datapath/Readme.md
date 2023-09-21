@@ -61,3 +61,6 @@ This is the testbench of datapath, which is the biggest testbench in this projet
 	-- It will check the result and destination for add and addi
 	-- It will check flags and PC value for beq, bne, blt
 	-- It will check PC value for jump.
+	
+	
+## The datapath 

@@ -7,11 +7,13 @@
 -- Date: july 13, 2023
 ----------------------------------------------------------
 --! Use standard library
+--! Use textio library
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
 use STD.textio.all; 
 
+--! Import packages
 use work.apb_slavedec_pkg.all;
 use work.datapath_pkg.all;
 use work.reg_file_pkg.all;
@@ -520,6 +522,7 @@ BEGIN
 			REPORT "jump finished";
 		end procedure exec_j;
 		
+		--mnemonic decode
 		constant mnemonic_addi: integer := 0;
 		constant mnemonic_add:  integer := 1;
 		constant mnemonic_beq:  integer := 2;
@@ -576,63 +579,63 @@ BEGIN
 			readline(file_pointer, line_num);
 			ASSERT vGoodRead = true report "read failed0";--debug
 			
-			if line_num'length <25 then		--avoid empty line
+			if line_num'length <25 then						--avoid empty line
 				next;
 			end if;
 			read(line_num, mnemonic);
 			ASSERT vGoodRead = true report "read failed1";--debug
 			
-			if mnemonic(1) = '#' then		--avoid comment line
+			if mnemonic(1) = '#' then						--avoid comment line
 				next;
 			end if;
-			read(line_num, space_character);
+			read(line_num, space_character);				--recognize space as divider
 			if space_character /= ' ' then
 				next;
 			end if;
-			hread(line_num, destination_register, vGoodRead);
+			hread(line_num, destination_register, vGoodRead);	--read reg_file destination 
 			
 			ASSERT vGoodRead = true report "read failed2";--debug
-			if vGoodRead = false then
+			if vGoodRead = false then						-- quit if read failed
 				next;
 			end if;
 			
-			read(line_num, space_character);
+			read(line_num, space_character);				--recognize space as divider
 			if space_character /= ' ' then
 				next;
 			end if;
-			hread(line_num, expected_value, vGoodRead);
+			hread(line_num, expected_value, vGoodRead);			--read expected value
 			ASSERT vGoodRead = true report "read failed3";--debug
 			if vGoodRead = false then
 				next;
 			end if;
 			
-			read(line_num, space_character);
+			read(line_num, space_character);				--recognize space as divider
 			if space_character /= ' ' then
 				next;
 			end if;
-			read(line_num, text_expected_flags, vGoodRead);
+			read(line_num, text_expected_flags, vGoodRead);	--read expected flags
 			ASSERT vGoodRead = true report "read failed4";--debug
 			if vGoodRead = false then
 				next;
 			end if;
 			
-			read(line_num, space_character);
+			read(line_num, space_character);				--recognize space as divider
 			if space_character /= ' ' then
 				next;
 			end if;
-			read(line_num, expected_pc, vGoodRead);
+			read(line_num, expected_pc, vGoodRead);			--read expected pc value
 			ASSERT vGoodRead = true report "read failed5";--debug
 			if vGoodRead = false then
 				next;
 			end if;
 			
-			mnemonic_out <= mnemonic;--debug
-			dest_out <= destination_register;--debug
-			flag_out <= text_expected_flags;--debug
-			success <= endfile(file_pointer);--debug
-			vGoodRead_out <= vGoodRead;--debug
+			mnemonic_out <= mnemonic;			--debug
+			dest_out <= destination_register;	--debug
+			flag_out <= text_expected_flags;	--debug
+			success <= endfile(file_pointer);	--debug
+			vGoodRead_out <= vGoodRead;			--debug
 			
-			
+			-- according to the decode result, run different execution procedure.
 			case decode_mnemonic(mnemonic) IS
 				when mnemonic_addi =>
 					exec_addi(to_integer(signed(expected_value)),to_integer(unsigned(destination_register)));
@@ -651,7 +654,6 @@ BEGIN
 			end case;
 		end loop;
 		
-		--debug
 		success <= endfile(file_pointer);--debug
 		vGoodRead_out <= vGoodRead;--debug
 		

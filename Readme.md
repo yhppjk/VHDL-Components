@@ -9,6 +9,7 @@
 	-- Test the parts to make sure they work properly.
 	-- Assemble the datapath by the individual parts.
 	-- Test the datapath by creating a generic way(using some script or some list of test cases)
+
 ###Now, the datapath and the test history will show how the testbench work.
 	
 ### Here I record some of the abstract of meeting
@@ -18,7 +19,7 @@
 	-- To simplify the continue works, i would explain how the testbenches work and the input, output, etc
 	-- Commit it when everything is fine and tell prof.
 	
-####**NOTICE:**
+####NOTICE:
 	At first the "blt" instruction was "ble", which means "branch less and equal".
 	But, in the ALU, I didn't designed a "ble instruction", neither in the CU.
 	However this is to check whether the "less than" part works, so is should be OK. 
