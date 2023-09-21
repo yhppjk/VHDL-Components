@@ -1,12 +1,12 @@
 # This Folder has stored 4 test cases of datapath_tb
 
-## 2 Addi, 3 Add, 1 BNE, 3 BLT
+	-- 2 Addi, 3 Add, 1 BNE, 3 BLT
 
-## 2 Addi, 3 Add, 1 BEQ, 3 BLT
+	-- 2 Addi, 3 Add, 1 BEQ, 3 BLT
 
-## 2 Addi, 3 Add, 1 BNE, 1 BEQ, 3 BLT
+	-- 2 Addi, 3 Add, 1 BNE, 1 BEQ, 3 BLT
 
-## 2 Addi, 3 Add, 1 BEQ, 1 BNE, 3 BLT
+	-- 2 Addi, 3 Add, 1 BEQ, 1 BNE, 3 BLT
 
 #Each cases have 3 files
 	-- rv32i-test1.s

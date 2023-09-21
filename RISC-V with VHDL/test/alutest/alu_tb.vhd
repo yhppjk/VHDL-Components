@@ -6,6 +6,7 @@
 -- Author: YIN Haoping
 -- Date: April 19, 2023
 --------------------------------------------------------
+--! Use standard library
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;

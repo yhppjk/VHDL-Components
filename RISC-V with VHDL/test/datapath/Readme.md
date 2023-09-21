@@ -13,8 +13,7 @@ This is the testbench of datapath, which is the biggest testbench in this projet
 	5. Register 
 	6. Register file
 	7. Write-to-PC
-	8. Memory parts
-	etc...
+	8. Memory parts 
 
 ### Packages
 	1. alu package
