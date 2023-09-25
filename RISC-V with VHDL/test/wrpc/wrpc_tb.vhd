@@ -6,7 +6,8 @@
 -- Author: YIN Haoping
 -- Date: May 4, 2023
 ----------------------------------------------------------
---! Use standard libraryLIBRARY ieee;
+--! Use standard library
+LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
@@ -103,7 +104,10 @@ BEGIN
 		--others
         input_JB <= '0'; input_XZ <= '0'; input_XN <= '0'; input_XF <= '0'; alu_z <= '0'; alu_n <= '0'; alu_c <= '0'; wait for 10 ns;
         -- Indicate the end of the test
-        wait;
+		ASSERT false
+			REPORT "Simulation ended ( not a failure actually ) "
+		SEVERITY failure;
+
     END PROCESS;
 
 END ARCHITECTURE;

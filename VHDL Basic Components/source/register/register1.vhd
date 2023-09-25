@@ -19,11 +19,11 @@ ENTITY register1 IS
 		prop_delay : time := 0 ns		--! prop delay
 	);	
 	PORT (
-		reg_in : IN std_logic_vector (1 downto 0); 	--Register data input
+		reg_in : IN std_logic; 	--Register data input
 		writ : IN std_logic;		--! Write signal input
 		rst :  IN std_logic;		--! Reset signal input
 		clk :  IN std_logic;		--! clock signal input
-		reg_out : OUT std_logic_vector (1 downto 0)	--! Register data output
+		reg_out : OUT std_logic	--! Register data output
 );
 END ENTITY register1;
 

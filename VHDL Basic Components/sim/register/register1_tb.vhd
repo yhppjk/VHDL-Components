@@ -26,19 +26,19 @@ END ENTITY register1_tb;
 ARCHITECTURE behavior OF register1_tb IS 
    COMPONENT register1
    PORT (
-	 reg_in : IN std_logic_vector (1 downto 0); 	--Register data input
+	 reg_in : IN std_logic; 	--Register data input
 	 writ : IN std_logic :='0';		--! Write signal input
 	 rst :  IN std_logic :='0';		--! Reset signal input
 	 clk :  IN std_logic :='0';		--! clock signal input
-	 reg_out : OUT std_logic_vector (1 downto 0)	--! Register data output
+	 reg_out : OUT std_logic	--! Register data output
 );
     END COMPONENT register1;
     
-	 signal reg_in :  std_logic_vector (1 downto 0) :='0'; 	--Register data input
+	 signal reg_in :  std_logic :='0'; 	--Register data input
 	 signal writ :  std_logic;		--! Write signal input
 	 signal rst :   std_logic;		--! Reset signal input
 	 signal clk :   std_logic;		--! clock signal input
-	 signal reg_out :  std_logic_vector (1 downto 0);	--! Register data output
+	 signal reg_out :  std_logic;	--! Register data output
  
 BEGIN
  
