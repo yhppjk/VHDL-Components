@@ -1,4 +1,5 @@
 # VHDL Basic Components
+_mgc_location_map is a path file which may be different in different PC, change it before start simulation_
 
 ## In the folder "documents", you will find some description or reference files
 	
