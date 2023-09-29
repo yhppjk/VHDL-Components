@@ -422,18 +422,18 @@ BEGIN
 		procedure exec_addi(constant expected_results: in integer; constant destination : in integer ) is
 			variable actual_results : std_logic_vector(31 downto 0) ;
 		begin
-			fetch_clocks(index_fetch);
-			exec_clocks(index_addi);
-			actual_results := tb_alu_res;
+			fetch_clocks(index_fetch);			-- index_* is the position of list which control cu signal 
+			exec_clocks(index_addi);			-- *_clock is different instruction execution
+			actual_results := tb_alu_res;	
 			
 			dotest <= true;
-			op_type <= t_regfile;
-			test_name <="addi";
+			op_type <= t_regfile;				-- Arithmetic = t_regfile which will store the result in register
+			test_name <="addi";					-- Logic = t_pc which may change pc value
 			test_expected_value <= expected_results;
 			test_expected_destination_reg <= destination;
 			
 			assert to_integer(signed(actual_results)) = expected_results report "addi Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is"& to_binary_string(actual_results) &"" severity failure;
-			REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
+			--REPORT test_name&" finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_addi;
 
 		--ADD
@@ -451,7 +451,7 @@ BEGIN
 			test_expected_destination_reg <= destination;
 			
 			assert to_integer(signed(actual_results)) = expected_results report " add Execcution failed! expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"" severity failure;
-			REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
+			--REPORT "add finished expected_results is " &integer'image(expected_results) & " The actual result is  "& to_binary_string(actual_results) &"";
 		end procedure exec_add;
 		
 		--BEQ
@@ -469,7 +469,7 @@ BEGIN
 			test_expected_value <= expected_results;
 			
 			assert actual_flags = expected_flags report " beq Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
-			REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+			--REPORT "beq finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_beq;
 		
 		--BNE
@@ -487,7 +487,7 @@ BEGIN
 			test_expected_value <= expected_results;
 			
 			assert actual_flags = expected_flags report " bne Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" ; --severity failure;
-			REPORT "bne finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+			--REPORT "bne finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_bne;
 		
 		--BLT
@@ -505,7 +505,7 @@ BEGIN
 			test_expected_value <= expected_results;
 			
 			assert actual_flags = expected_flags report " blt Execcution failed! expected_results is " &to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"" severity failure;
-			REPORT "blt finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
+			--REPORT "blt finished expected_results is " & to_binary_string(expected_flags) & " The actual result is  "& to_binary_string(actual_flags) &"";
 		end procedure exec_blt;
 		
 		--JUMP
@@ -519,7 +519,7 @@ BEGIN
 			op_type <= t_pc;
 			test_expected_value <= expected_results;
 			
-			REPORT "jump finished";
+			--REPORT "jump finished";
 		end procedure exec_j;
 		
 		--mnemonic decode
